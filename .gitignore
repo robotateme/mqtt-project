@@ -1,0 +1,15 @@
+.idea/
+laradock/
+
+bus/vendor/
+bus/.env
+bus/storage/logs/*.log
+bus/storage/runtime/*.json
+
+core/vendor/
+core/node_modules/
+core/.env
+core/.phpunit.result.cache
+core/storage/logs/*.log
+core/bootstrap/cache/*.php
+core/database/*.sqlite*
