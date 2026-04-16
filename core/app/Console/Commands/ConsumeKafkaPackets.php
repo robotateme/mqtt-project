@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Support\ClickHouse\ClickHouseClient;
 use App\Support\Packets\PacketInterpreter;
+use Core\Application\Packets\PacketStoragePort;
 use Illuminate\Console\Command;
 use RdKafka\Conf;
 use RdKafka\KafkaConsumer;
@@ -18,7 +18,7 @@ class ConsumeKafkaPackets extends Command
 
     protected $description = 'Consume MQTT packet events from Kafka and store them in ClickHouse.';
 
-    public function handle(ClickHouseClient $clickHouse, PacketInterpreter $interpreter): int
+    public function handle(PacketStoragePort $packetStorage, PacketInterpreter $interpreter): int
     {
         $consumer = $this->consumer();
         $topic = config('ingestion.kafka.packet_topic');
@@ -36,7 +36,7 @@ class ConsumeKafkaPackets extends Command
             $message = $consumer->consume($timeoutMs);
 
             if ($message->err === RD_KAFKA_RESP_ERR__TIMED_OUT) {
-                $this->flushBatch($clickHouse, $consumer, $batch, $messages);
+                $this->flushBatch($packetStorage, $consumer, $batch, $messages);
                 continue;
             }
 
@@ -49,7 +49,7 @@ class ConsumeKafkaPackets extends Command
             $consumed++;
 
             if (count($batch) >= $batchSize) {
-                $this->flushBatch($clickHouse, $consumer, $batch, $messages);
+                $this->flushBatch($packetStorage, $consumer, $batch, $messages);
 
                 if ($this->option('once')) {
                     return self::SUCCESS;
@@ -57,7 +57,7 @@ class ConsumeKafkaPackets extends Command
             }
 
             if ($maxMessages > 0 && $consumed >= $maxMessages) {
-                $this->flushBatch($clickHouse, $consumer, $batch, $messages);
+                $this->flushBatch($packetStorage, $consumer, $batch, $messages);
 
                 return self::SUCCESS;
             }
@@ -94,13 +94,13 @@ class ConsumeKafkaPackets extends Command
         ];
     }
 
-    private function flushBatch(ClickHouseClient $clickHouse, KafkaConsumer $consumer, array &$batch, array &$messages): void
+    private function flushBatch(PacketStoragePort $packetStorage, KafkaConsumer $consumer, array &$batch, array &$messages): void
     {
         if ($batch === []) {
             return;
         }
 
-        $clickHouse->insertJsonEachRow(config('ingestion.clickhouse.packets_table'), $batch);
+        $packetStorage->store($batch);
 
         foreach ($messages as $message) {
             $consumer->commit($message);
