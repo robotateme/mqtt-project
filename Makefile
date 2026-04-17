@@ -98,7 +98,7 @@ bus-ready:
 
 check:
 	$(DC) config --services >/dev/null
-	$(DC) exec -T workspace bash -lc 'cd $(CORE) && find app config database routes -type f -name "*.php" -print0 | xargs -0 -n1 php -l >/dev/null'
+	$(DC) exec -T workspace bash -lc 'cd $(CORE) && find app src config database routes -type f -name "*.php" -print0 | xargs -0 -n1 php -l >/dev/null'
 	$(DC) exec -T workspace bash -lc 'cd $(BUS) && find app bin config public -type f -name "*.php" -print0 | xargs -0 -n1 php -l >/dev/null'
 	$(MAKE) core-test
 	$(MAKE) core-health
