@@ -7,7 +7,8 @@ use Bus\Support\RuntimeStatus;
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 $config = require dirname(__DIR__) . '/config/config.php';
-$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+$path = is_string($requestPath) && $requestPath !== '' ? $requestPath : '/';
 
 header('Content-Type: application/json; charset=utf-8');
 

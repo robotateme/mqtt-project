@@ -14,9 +14,12 @@ final class RuntimeStatus
     ) {
     }
 
+    /**
+     * @param array<string, mixed> $status
+     */
     public function write(array $status, bool $force = false): void
     {
-        $nowMs = (int) floor(microtime(true) * 1000);
+        $nowMs = (int) floor(microtime(true) * 1000.0);
 
         if (!$force && $nowMs - $this->lastWriteMs < $this->intervalMs) {
             return;
@@ -37,6 +40,9 @@ final class RuntimeStatus
         $this->lastWriteMs = $nowMs;
     }
 
+    /**
+     * @return array<array-key, mixed>|null
+     */
     public static function read(string $path): ?array
     {
         if (!is_file($path)) {
@@ -49,6 +55,7 @@ final class RuntimeStatus
             return null;
         }
 
+        /** @var mixed $decoded */
         $decoded = json_decode($payload, true);
 
         return is_array($decoded) ? $decoded : null;

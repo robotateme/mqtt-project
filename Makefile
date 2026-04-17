@@ -8,8 +8,8 @@ BUS := /var/www/bus
 .DEFAULT_GOAL := help
 
 .PHONY: help build up down restart status ps logs shell \
-	core-install core-migrate core-clickhouse core-consume core-test core-health \
-	bus-install bus-consume bus-health bus-ready check
+	core-install core-migrate core-clickhouse core-consume core-test core-phpstan core-psalm core-analyse core-health \
+	bus-install bus-consume bus-phpstan bus-psalm bus-analyse bus-health bus-ready analyse check
 
 help:
 	@printf '%s\n' \
@@ -30,15 +30,22 @@ help:
 		'  core-clickhouse    Create ClickHouse schema' \
 		'  core-consume       Consume Kafka packets into ClickHouse' \
 		'  core-test          Run Laravel tests' \
+		'  core-phpstan       Run PHPStan level 8 for core' \
+		'  core-psalm         Run Psalm strict analysis for core' \
+		'  core-analyse       Run core static analysis' \
 		'  core-health        Check core HTTP health endpoints' \
 		'' \
 		'Bus:' \
 		'  bus-install        Composer install for bus worker' \
 		'  bus-consume        Run MQTT -> Kafka worker' \
+		'  bus-phpstan        Run PHPStan level 8 for bus' \
+		'  bus-psalm          Run Psalm strict analysis for bus' \
+		'  bus-analyse        Run bus static analysis' \
 		'  bus-health         Check bus liveness endpoint' \
 		'  bus-ready          Check bus worker readiness endpoint' \
 		'' \
 		'Validation:' \
+		'  analyse            Run static analysis for core and bus' \
 		'  check              Run syntax/tests/health checks'
 
 build:
@@ -76,6 +83,15 @@ core-consume:
 core-test:
 	$(DC) exec -T workspace bash -lc 'cd $(CORE) && php artisan test'
 
+core-phpstan:
+	$(DC) exec -T workspace bash -lc 'cd $(CORE) && composer phpstan'
+
+core-psalm:
+	$(DC) exec -T workspace bash -lc 'cd $(CORE) && composer psalm'
+
+core-analyse:
+	$(DC) exec -T workspace bash -lc 'cd $(CORE) && composer analyse'
+
 core-health:
 	curl -fsS -H 'Host: core.localhost' http://localhost/health
 	@printf '\n'
@@ -88,6 +104,15 @@ bus-install:
 bus-consume:
 	$(DC) exec workspace bash -lc 'cd $(BUS) && php bin/mqtt-consume.php'
 
+bus-phpstan:
+	$(DC) exec -T workspace bash -lc 'cd $(BUS) && composer phpstan'
+
+bus-psalm:
+	$(DC) exec -T workspace bash -lc 'cd $(BUS) && composer psalm'
+
+bus-analyse:
+	$(DC) exec -T workspace bash -lc 'cd $(BUS) && composer analyse'
+
 bus-health:
 	curl -fsS -H 'Host: bus.localhost' http://localhost/health
 	@printf '\n'
@@ -96,10 +121,15 @@ bus-ready:
 	curl -fsS -H 'Host: bus.localhost' http://localhost/ready
 	@printf '\n'
 
+analyse:
+	$(MAKE) core-analyse
+	$(MAKE) bus-analyse
+
 check:
 	$(DC) config --services >/dev/null
 	$(DC) exec -T workspace bash -lc 'cd $(CORE) && find app src config database routes -type f -name "*.php" -print0 | xargs -0 -n1 php -l >/dev/null'
 	$(DC) exec -T workspace bash -lc 'cd $(BUS) && find app bin config public -type f -name "*.php" -print0 | xargs -0 -n1 php -l >/dev/null'
+	$(MAKE) analyse
 	$(MAKE) core-test
 	$(MAKE) core-health
 	$(MAKE) bus-health

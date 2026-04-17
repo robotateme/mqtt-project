@@ -1,0 +1,295 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method App\\Console\\Commands\\ConsumeKafkaPackets\:\:flushBatch\(\) has parameter \$batch with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Console/Commands/ConsumeKafkaPackets.php
+
+		-
+			message: '#^Method App\\Console\\Commands\\ConsumeKafkaPackets\:\:flushBatch\(\) has parameter \$messages with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Console/Commands/ConsumeKafkaPackets.php
+
+		-
+			message: '#^Method App\\Console\\Commands\\ConsumeKafkaPackets\:\:row\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Console/Commands/ConsumeKafkaPackets.php
+
+		-
+			message: '#^Property RdKafka\\Message\:\:\$headers \(array\<string, string\>\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: app/Console/Commands/ConsumeKafkaPackets.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Admin/MeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Admin/MeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$email_verified_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Admin/MeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Admin/MeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Admin/MeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Admin/MeController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\Admin\\MeController\:\:userPayload\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/Admin/MeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/LoginController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/LoginController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$email_verified_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/LoginController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/LoginController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/LoginController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/LoginController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\Auth\\LoginController\:\:userPayload\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/Auth/LoginController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Http\\Controllers\\Api\\Auth\\LoginController\:\:userPayload\(\) expects App\\Models\\User, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/Auth/LoginController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/MeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/MeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$email_verified_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/MeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/MeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/MeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/MeController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\Auth\\MeController\:\:userPayload\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/Auth/MeController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Http\\Controllers\\Api\\Auth\\MeController\:\:userPayload\(\) expects App\\Models\\User, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/Auth/MeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/RegisterController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/RegisterController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$email_verified_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/RegisterController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/RegisterController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/RegisterController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/Auth/RegisterController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\Auth\\RegisterController\:\:userPayload\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/Auth/RegisterController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Http\\Controllers\\Api\\Auth\\RegisterController\:\:userPayload\(\) expects App\\Models\\User, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/Auth/RegisterController.php
+
+		-
+			message: '#^Method App\\Models\\Device\:\:user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Device.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\DeviceFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Models/Device.php
+
+		-
+			message: '#^Type Database\\Factories\\DeviceFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\DeviceFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: app/Models/Device.php
+
+		-
+			message: '#^Method App\\Models\\User\:\:devices\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Method App\\Support\\ClickHouse\\ClickHouseClient\:\:insertJsonEachRow\(\) has parameter \$rows with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/ClickHouse/ClickHouseClient.php
+
+		-
+			message: '#^Method App\\Support\\Packets\\PacketInterpreter\:\:deviceIdentifier\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/Packets/PacketInterpreter.php
+
+		-
+			message: '#^Method App\\Support\\Packets\\PacketInterpreter\:\:interpret\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/Packets/PacketInterpreter.php
+
+		-
+			message: '#^Undefined variable\: \$this$#'
+			identifier: variable.undefined
+			count: 1
+			path: routes/console.php
+
+		-
+			message: '#^Method Core\\Application\\Auth\\Data\\AuthToken\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Application/Auth/Data/AuthToken.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$password\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Auth/Handlers/LoginHandler.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Infrastructure/Jwt/FirebaseJwtTokenService.php
+
+		-
+			message: '#^Unknown parameter \$previous in call to Illuminate\\Auth\\AuthenticationException constructor\.$#'
+			identifier: argument.unknown
+			count: 1
+			path: src/Infrastructure/Jwt/FirebaseJwtTokenService.php
+
+		-
+			message: '#^Method Core\\Infrastructure\\PostgreSql\\EloquentDeviceRepository\:\:findForUser\(\) should return Illuminate\\Support\\Collection\<int, App\\Models\\Device\> but returns Illuminate\\Support\\Collection\<int, stdClass\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Infrastructure/PostgreSql/EloquentDeviceRepository.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/ExampleTest.php

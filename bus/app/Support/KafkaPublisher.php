@@ -68,6 +68,9 @@ final class KafkaPublisher
         throw new \RuntimeException('Unable to flush Kafka producer queue.');
     }
 
+    /**
+     * @return array{published_messages: int, pending_messages: int, producer_outq_len: int, backpressure_events: int}
+     */
     public function stats(): array
     {
         return [
@@ -80,7 +83,7 @@ final class KafkaPublisher
 
     private function waitForCapacity(): void
     {
-        $deadline = microtime(true) + ($this->backpressureTimeoutMs / 1000);
+        $deadline = microtime(true) + ((float) $this->backpressureTimeoutMs / 1000.0);
 
         while ($this->producer->getOutQLen() >= $this->maxOutstanding) {
             $this->backpressureEvents++;

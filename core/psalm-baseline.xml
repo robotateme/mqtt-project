@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="6.16.1@f1f5de594dc76faf8784e02d3dc4716c91c6f6ac">
+  <file src="app/Console/Commands/ConsumeKafkaPackets.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[ConsumeKafkaPackets]]></code>
+    </ClassMustBeFinal>
+    <MixedArgument>
+      <code><![CDATA[$message]]></code>
+      <code><![CDATA[$timeoutMs]]></code>
+      <code><![CDATA[$topic]]></code>
+      <code><![CDATA[config('ingestion.kafka.brokers')]]></code>
+      <code><![CDATA[config('ingestion.kafka.group_id')]]></code>
+      <code><![CDATA[config('ingestion.kafka.offset_reset')]]></code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$batch]]></code>
+    </MixedArgumentTypeCoercion>
+    <MixedAssignment>
+      <code><![CDATA[$batchSize]]></code>
+      <code><![CDATA[$message]]></code>
+      <code><![CDATA[$timeoutMs]]></code>
+      <code><![CDATA[$topic]]></code>
+    </MixedAssignment>
+    <PropertyNotSetInConstructor>
+      <code><![CDATA[ConsumeKafkaPackets]]></code>
+      <code><![CDATA[ConsumeKafkaPackets]]></code>
+      <code><![CDATA[ConsumeKafkaPackets]]></code>
+      <code><![CDATA[ConsumeKafkaPackets]]></code>
+      <code><![CDATA[ConsumeKafkaPackets]]></code>
+    </PropertyNotSetInConstructor>
+    <RedundantCast>
+      <code><![CDATA[(string) $message->payload]]></code>
+    </RedundantCast>
+    <RiskyCast>
+      <code><![CDATA[$this->option('max-messages')]]></code>
+    </RiskyCast>
+    <RiskyTruthyFalsyComparison>
+      <code><![CDATA[$this->option('once')]]></code>
+    </RiskyTruthyFalsyComparison>
+    <UnusedClass>
+      <code><![CDATA[ConsumeKafkaPackets]]></code>
+    </UnusedClass>
+  </file>
+  <file src="app/Console/Commands/MigrateClickHouse.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[MigrateClickHouse]]></code>
+    </ClassMustBeFinal>
+    <MixedArgument>
+      <code><![CDATA[$database]]></code>
+      <code><![CDATA[$table]]></code>
+    </MixedArgument>
+    <MixedAssignment>
+      <code><![CDATA[$database]]></code>
+      <code><![CDATA[$table]]></code>
+    </MixedAssignment>
+    <PropertyNotSetInConstructor>
+      <code><![CDATA[MigrateClickHouse]]></code>
+      <code><![CDATA[MigrateClickHouse]]></code>
+      <code><![CDATA[MigrateClickHouse]]></code>
+      <code><![CDATA[MigrateClickHouse]]></code>
+      <code><![CDATA[MigrateClickHouse]]></code>
+    </PropertyNotSetInConstructor>
+    <UnusedClass>
+      <code><![CDATA[MigrateClickHouse]]></code>
+    </UnusedClass>
+  </file>
+  <file src="app/Http/Controllers/Api/Admin/MeController.php">
+    <MixedArgument>
+      <code><![CDATA[$request->user()]]></code>
+    </MixedArgument>
+  </file>
+  <file src="app/Http/Controllers/Api/Auth/LoginController.php">
+    <MixedArgument>
+      <code><![CDATA[$data['email']]]></code>
+      <code><![CDATA[$data['email']]]></code>
+      <code><![CDATA[$data['password']]]></code>
+    </MixedArgument>
+    <PossiblyNullArgument>
+      <code><![CDATA[$user]]></code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="app/Http/Controllers/Api/Auth/MeController.php">
+    <MixedMethodCall>
+      <code><![CDATA[getKey]]></code>
+    </MixedMethodCall>
+    <PossiblyNullArgument>
+      <code><![CDATA[$user]]></code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="app/Http/Controllers/Api/Auth/RefreshController.php">
+    <MixedArgument>
+      <code><![CDATA[$data['refresh_token']]]></code>
+    </MixedArgument>
+  </file>
+  <file src="app/Http/Controllers/Api/Auth/RegisterController.php">
+    <MixedArgument>
+      <code><![CDATA[$data['email']]]></code>
+      <code><![CDATA[$data['email']]]></code>
+      <code><![CDATA[$data['name']]]></code>
+      <code><![CDATA[$data['password']]]></code>
+    </MixedArgument>
+    <PossiblyNullArgument>
+      <code><![CDATA[$user]]></code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="app/Http/Controllers/Api/Concerns/RespondsWithUser.php">
+    <MixedMethodCall>
+      <code><![CDATA[toISOString]]></code>
+      <code><![CDATA[toISOString]]></code>
+      <code><![CDATA[toISOString]]></code>
+    </MixedMethodCall>
+    <UndefinedMagicPropertyFetch>
+      <code><![CDATA[$user->created_at]]></code>
+      <code><![CDATA[$user->email]]></code>
+      <code><![CDATA[$user->email_verified_at]]></code>
+      <code><![CDATA[$user->name]]></code>
+      <code><![CDATA[$user->role]]></code>
+      <code><![CDATA[$user->updated_at]]></code>
+    </UndefinedMagicPropertyFetch>
+  </file>
+  <file src="app/Http/Middleware/AuthenticateJwt.php">
+    <MixedReturnStatement>
+      <code><![CDATA[$next($request)]]></code>
+    </MixedReturnStatement>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[handle]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="app/Http/Middleware/EnsureAdmin.php">
+    <MixedPropertyFetch>
+      <code><![CDATA[$request->user()?->role]]></code>
+    </MixedPropertyFetch>
+    <MixedReturnStatement>
+      <code><![CDATA[$next($request)]]></code>
+    </MixedReturnStatement>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[handle]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="app/Models/Device.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[Device]]></code>
+    </ClassMustBeFinal>
+    <InvalidTemplateParam>
+      <code><![CDATA[HasFactory]]></code>
+    </InvalidTemplateParam>
+    <MissingOverrideAttribute>
+      <code><![CDATA[protected function casts(): array]]></code>
+    </MissingOverrideAttribute>
+    <MixedReturnStatement>
+      <code><![CDATA[$this->belongsTo(User::class)]]></code>
+    </MixedReturnStatement>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[user]]></code>
+    </PossiblyUnusedMethod>
+    <UndefinedDocblockClass>
+      <code><![CDATA[Device]]></code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="app/Models/User.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[User]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[protected function casts(): array]]></code>
+    </MissingOverrideAttribute>
+    <MixedReturnStatement>
+      <code><![CDATA[$this->hasMany(Device::class)]]></code>
+    </MixedReturnStatement>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[devices]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="app/Providers/AppServiceProvider.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[AppServiceProvider]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function register(): void]]></code>
+    </MissingOverrideAttribute>
+    <MixedArgument>
+      <code><![CDATA[config('ingestion.clickhouse.database')]]></code>
+      <code><![CDATA[config('ingestion.clickhouse.host')]]></code>
+      <code><![CDATA[config('ingestion.clickhouse.packets_table')]]></code>
+      <code><![CDATA[config('ingestion.clickhouse.password')]]></code>
+      <code><![CDATA[config('ingestion.clickhouse.port')]]></code>
+      <code><![CDATA[config('ingestion.clickhouse.username')]]></code>
+      <code><![CDATA[config('ingestion.packets.device_topic_regex')]]></code>
+      <code><![CDATA[config('jwt.audience')]]></code>
+      <code><![CDATA[config('jwt.issuer')]]></code>
+      <code><![CDATA[config('jwt.leeway_seconds')]]></code>
+      <code><![CDATA[config('jwt.refresh_ttl_minutes')]]></code>
+      <code><![CDATA[config('jwt.secret')]]></code>
+      <code><![CDATA[config('jwt.ttl_minutes')]]></code>
+    </MixedArgument>
+    <UnusedClass>
+      <code><![CDATA[AppServiceProvider]]></code>
+    </UnusedClass>
+  </file>
+  <file src="app/Support/ClickHouse/ClickHouseClient.php">
+    <MixedArgument>
+      <code><![CDATA[$response->body()]]></code>
+      <code><![CDATA[$response->status()]]></code>
+    </MixedArgument>
+    <PossiblyUndefinedMethod>
+      <code><![CDATA[body]]></code>
+      <code><![CDATA[failed]]></code>
+      <code><![CDATA[status]]></code>
+    </PossiblyUndefinedMethod>
+  </file>
+  <file src="app/Support/Packets/PacketInterpreter.php">
+    <ArgumentTypeCoercion>
+      <code><![CDATA[$this->deviceTopicRegex]]></code>
+    </ArgumentTypeCoercion>
+    <MixedArgument>
+      <code><![CDATA[$isJson ? $decodedPayload : []]]></code>
+    </MixedArgument>
+    <MixedAssignment>
+      <code><![CDATA[$decodedPayload]]></code>
+    </MixedAssignment>
+  </file>
+  <file src="config/filesystems.php">
+    <MixedArgument>
+      <code><![CDATA[env('APP_URL', 'http://localhost')]]></code>
+    </MixedArgument>
+  </file>
+  <file src="config/logging.php">
+    <MixedOperand>
+      <code><![CDATA[env('PAPERTRAIL_PORT')]]></code>
+      <code><![CDATA[env('PAPERTRAIL_URL')]]></code>
+    </MixedOperand>
+  </file>
+  <file src="database/factories/UserFactory.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[UserFactory]]></code>
+    </ClassMustBeFinal>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function definition(): array]]></code>
+    </MissingOverrideAttribute>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[unverified]]></code>
+    </PossiblyUnusedMethod>
+    <PropertyNotSetInConstructor>
+      <code><![CDATA[UserFactory]]></code>
+    </PropertyNotSetInConstructor>
+    <UnusedClosureParam>
+      <code><![CDATA[$attributes]]></code>
+    </UnusedClosureParam>
+  </file>
+  <file src="database/migrations/0001_01_01_000000_create_users_table.php">
+    <MixedMethodCall>
+      <code><![CDATA[index]]></code>
+    </MixedMethodCall>
+    <UndefinedMagicMethod>
+      <code><![CDATA[index]]></code>
+      <code><![CDATA[nullable]]></code>
+      <code><![CDATA[nullable]]></code>
+      <code><![CDATA[nullable]]></code>
+      <code><![CDATA[nullable]]></code>
+      <code><![CDATA[nullable]]></code>
+      <code><![CDATA[primary]]></code>
+      <code><![CDATA[primary]]></code>
+      <code><![CDATA[unique]]></code>
+    </UndefinedMagicMethod>
+  </file>
+  <file src="database/migrations/0001_01_01_000001_create_cache_table.php">
+    <UndefinedMagicMethod>
+      <code><![CDATA[index]]></code>
+      <code><![CDATA[index]]></code>
+      <code><![CDATA[primary]]></code>
+      <code><![CDATA[primary]]></code>
+    </UndefinedMagicMethod>
+  </file>
+  <file src="database/migrations/0001_01_01_000002_create_jobs_table.php">
+    <UndefinedMagicMethod>
+      <code><![CDATA[index]]></code>
+      <code><![CDATA[nullable]]></code>
+      <code><![CDATA[nullable]]></code>
+      <code><![CDATA[nullable]]></code>
+      <code><![CDATA[nullable]]></code>
+      <code><![CDATA[primary]]></code>
+      <code><![CDATA[unique]]></code>
+      <code><![CDATA[useCurrent]]></code>
+    </UndefinedMagicMethod>
+  </file>
+  <file src="database/migrations/2026_05_01_000000_create_devices_table.php">
+    <MixedMethodCall>
+      <code><![CDATA[constrained]]></code>
+      <code><![CDATA[nullOnDelete]]></code>
+    </MixedMethodCall>
+    <UndefinedMagicMethod>
+      <code><![CDATA[nullable]]></code>
+      <code><![CDATA[nullable]]></code>
+      <code><![CDATA[nullable]]></code>
+      <code><![CDATA[unique]]></code>
+    </UndefinedMagicMethod>
+  </file>
+  <file src="database/migrations/2026_05_01_010000_add_role_to_users_table.php">
+    <MixedMethodCall>
+      <code><![CDATA[after]]></code>
+      <code><![CDATA[index]]></code>
+    </MixedMethodCall>
+    <UndefinedMagicMethod>
+      <code><![CDATA[default]]></code>
+    </UndefinedMagicMethod>
+  </file>
+  <file src="database/seeders/DatabaseSeeder.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[DatabaseSeeder]]></code>
+    </ClassMustBeFinal>
+    <UnusedClass>
+      <code><![CDATA[DatabaseSeeder]]></code>
+    </UnusedClass>
+  </file>
+  <file src="routes/console.php">
+    <InvalidScope>
+      <code><![CDATA[$this]]></code>
+    </InvalidScope>
+  </file>
+  <file src="routes/web.php">
+    <MixedOperand>
+      <code><![CDATA[config('database.connections.pgsql.host')]]></code>
+      <code><![CDATA[config('database.connections.pgsql.port')]]></code>
+      <code><![CDATA[config('ingestion.clickhouse.host')]]></code>
+      <code><![CDATA[config('ingestion.clickhouse.port')]]></code>
+    </MixedOperand>
+  </file>
+  <file src="src/Application/Auth/Data/JwtPayload.php">
+    <PossiblyUnusedProperty>
+      <code><![CDATA[$expiresAt]]></code>
+      <code><![CDATA[$role]]></code>
+    </PossiblyUnusedProperty>
+  </file>
+  <file src="src/Application/Auth/Handlers/GetAuthenticatedUserHandler.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Application/Auth/Handlers/LoginHandler.php">
+    <MixedArgument>
+      <code><![CDATA[$user->password]]></code>
+    </MixedArgument>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+    <UndefinedMagicPropertyFetch>
+      <code><![CDATA[$user->password]]></code>
+    </UndefinedMagicPropertyFetch>
+  </file>
+  <file src="src/Application/Auth/Handlers/RefreshTokenHandler.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Application/Auth/Handlers/RegisterUserHandler.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Application/Devices/DeviceRepository.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[create]]></code>
+      <code><![CDATA[delete]]></code>
+      <code><![CDATA[findByExternalId]]></code>
+      <code><![CDATA[findById]]></code>
+      <code><![CDATA[findForUser]]></code>
+      <code><![CDATA[paginateForAdmin]]></code>
+      <code><![CDATA[update]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Application/Users/UserRepository.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[delete]]></code>
+      <code><![CDATA[paginateForAdmin]]></code>
+      <code><![CDATA[update]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="src/Infrastructure/ClickHouse/ClickHousePacketStorage.php">
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function store(array $packets): void]]></code>
+    </MissingOverrideAttribute>
+  </file>
+  <file src="src/Infrastructure/Jwt/FirebaseJwtTokenService.php">
+    <InvalidNamedArgument>
+      <code><![CDATA[previous]]></code>
+    </InvalidNamedArgument>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function decode(string $token): JwtPayload]]></code>
+      <code><![CDATA[public function issueFor(User $user): AuthToken]]></code>
+      <code><![CDATA[public function refresh(string $refreshToken): AuthToken]]></code>
+    </MissingOverrideAttribute>
+    <UndefinedMagicPropertyFetch>
+      <code><![CDATA[$user->role]]></code>
+    </UndefinedMagicPropertyFetch>
+    <UnusedProperty>
+      <code><![CDATA[$leewaySeconds]]></code>
+    </UnusedProperty>
+  </file>
+  <file src="src/Infrastructure/PostgreSql/EloquentDeviceRepository.php">
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function create(array $attributes): Device]]></code>
+      <code><![CDATA[public function delete(Device $device): void]]></code>
+      <code><![CDATA[public function findByExternalId(string $externalId): ?Device]]></code>
+      <code><![CDATA[public function findById(int $id): ?Device]]></code>
+      <code><![CDATA[public function findForUser(User $user): Collection]]></code>
+      <code><![CDATA[public function paginateForAdmin(int $perPage = 50): LengthAwarePaginator]]></code>
+      <code><![CDATA[public function update(Device $device, array $attributes): Device]]></code>
+    </MissingOverrideAttribute>
+    <MixedReturnTypeCoercion>
+      <code><![CDATA[Device::query()
+            ->with('user:id,name,email')
+            ->latest('id')
+            ->paginate($perPage)]]></code>
+      <code><![CDATA[LengthAwarePaginator]]></code>
+    </MixedReturnTypeCoercion>
+  </file>
+  <file src="src/Infrastructure/PostgreSql/EloquentUserRepository.php">
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function create(array $attributes): User]]></code>
+      <code><![CDATA[public function delete(User $user): void]]></code>
+      <code><![CDATA[public function findByEmail(string $email): ?User]]></code>
+      <code><![CDATA[public function findById(int $id): ?User]]></code>
+      <code><![CDATA[public function paginateForAdmin(int $perPage = 50): LengthAwarePaginator]]></code>
+      <code><![CDATA[public function update(User $user, array $attributes): User]]></code>
+    </MissingOverrideAttribute>
+    <MixedReturnTypeCoercion>
+      <code><![CDATA[LengthAwarePaginator]]></code>
+      <code><![CDATA[User::query()
+            ->latest('id')
+            ->paginate($perPage)]]></code>
+    </MixedReturnTypeCoercion>
+  </file>
+  <file src="tests/Feature/AuthApiTest.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[AuthApiTest]]></code>
+    </ClassMustBeFinal>
+    <MixedArgument>
+      <code><![CDATA[$login->json('token.access_token')]]></code>
+      <code><![CDATA[$token]]></code>
+    </MixedArgument>
+    <MixedAssignment>
+      <code><![CDATA[$token]]></code>
+    </MixedAssignment>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[test_regular_user_cannot_access_admin_panel]]></code>
+      <code><![CDATA[test_user_can_login_and_access_profile]]></code>
+      <code><![CDATA[test_user_can_register_and_receive_jwt_tokens]]></code>
+    </PossiblyUnusedMethod>
+    <PropertyNotSetInConstructor>
+      <code><![CDATA[AuthApiTest]]></code>
+      <code><![CDATA[AuthApiTest]]></code>
+      <code><![CDATA[AuthApiTest]]></code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="tests/Feature/ExampleTest.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[ExampleTest]]></code>
+    </ClassMustBeFinal>
+    <PropertyNotSetInConstructor>
+      <code><![CDATA[ExampleTest]]></code>
+      <code><![CDATA[ExampleTest]]></code>
+      <code><![CDATA[ExampleTest]]></code>
+    </PropertyNotSetInConstructor>
+    <UnusedClass>
+      <code><![CDATA[ExampleTest]]></code>
+    </UnusedClass>
+  </file>
+  <file src="tests/Unit/ExampleTest.php">
+    <ClassMustBeFinal>
+      <code><![CDATA[ExampleTest]]></code>
+    </ClassMustBeFinal>
+    <UnusedClass>
+      <code><![CDATA[ExampleTest]]></code>
+    </UnusedClass>
+  </file>
+</files>
