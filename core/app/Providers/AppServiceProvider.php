@@ -4,6 +4,14 @@ namespace App\Providers;
 
 use App\Support\ClickHouse\ClickHouseClient;
 use App\Support\Packets\PacketInterpreter;
+use Core\Application\Devices\DeviceRepository;
+use Core\Application\Auth\JwtTokenService;
+use Core\Application\Packets\PacketStoragePort;
+use Core\Application\Users\UserRepository;
+use Core\Infrastructure\ClickHouse\ClickHousePacketStorage;
+use Core\Infrastructure\Jwt\FirebaseJwtTokenService;
+use Core\Infrastructure\PostgreSql\EloquentDeviceRepository;
+use Core\Infrastructure\PostgreSql\EloquentUserRepository;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,6 +35,28 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(PacketInterpreter::class, function (): PacketInterpreter {
             return new PacketInterpreter(config('ingestion.packets.device_topic_regex'));
+        });
+
+        $this->app->singleton(PacketStoragePort::class, function (): PacketStoragePort {
+            return new ClickHousePacketStorage(
+                $this->app->make(ClickHouseClient::class),
+                config('ingestion.clickhouse.packets_table'),
+            );
+        });
+
+        $this->app->bind(UserRepository::class, EloquentUserRepository::class);
+        $this->app->bind(DeviceRepository::class, EloquentDeviceRepository::class);
+
+        $this->app->singleton(JwtTokenService::class, function (): JwtTokenService {
+            return new FirebaseJwtTokenService(
+                $this->app->make(UserRepository::class),
+                config('jwt.secret'),
+                config('jwt.issuer'),
+                config('jwt.audience'),
+                config('jwt.ttl_minutes'),
+                config('jwt.refresh_ttl_minutes'),
+                config('jwt.leeway_seconds'),
+            );
         });
     }
 
