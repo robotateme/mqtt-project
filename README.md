@@ -39,3 +39,4 @@ make core-consume
 - [Core](docs/core.md)
 - [Проверка и статический анализ](docs/validation.md)
 - [Замечания](docs/notes.md)
+- [Отчеты о проделанной работе](docs/work-reports.md)

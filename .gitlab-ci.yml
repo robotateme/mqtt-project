@@ -1,0 +1,75 @@
+image: php:8.4-cli
+
+stages:
+  - validate
+  - test
+
+variables:
+  COMPOSER_ALLOW_SUPERUSER: "1"
+  COMPOSER_CACHE_DIR: "$CI_PROJECT_DIR/.composer-cache"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - .composer-cache/
+    - core/vendor/
+    - bus/vendor/
+
+.php_setup:
+  before_script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends git unzip curl ca-certificates libpq-dev libsqlite3-dev librdkafka-dev $PHPIZE_DEPS
+    - docker-php-ext-install pdo_pgsql pdo_sqlite
+    - printf "\n" | pecl install rdkafka
+    - docker-php-ext-enable rdkafka
+    - curl -fsSL https://getcomposer.org/installer -o composer-setup.php
+    - php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+    - rm composer-setup.php
+
+validate:composer:
+  stage: validate
+  extends: .php_setup
+  script:
+    - cd core
+    - composer validate --strict --no-check-publish
+    - composer install --prefer-dist --no-interaction --no-progress
+    - cd ../bus
+    - composer validate --strict --no-check-publish
+    - composer install --prefer-dist --no-interaction --no-progress
+
+validate:syntax:
+  stage: validate
+  extends: .php_setup
+  script:
+    - cd core
+    - composer install --prefer-dist --no-interaction --no-progress
+    - find app src config database routes -type f -name "*.php" -print0 | xargs -0 -n1 php -l >/dev/null
+    - cd ../bus
+    - composer install --prefer-dist --no-interaction --no-progress
+    - find app bin config public -type f -name "*.php" -print0 | xargs -0 -n1 php -l >/dev/null
+
+analyse:core:
+  stage: test
+  extends: .php_setup
+  script:
+    - cd core
+    - composer install --prefer-dist --no-interaction --no-progress
+    - composer analyse
+
+analyse:bus:
+  stage: test
+  extends: .php_setup
+  script:
+    - cd bus
+    - composer install --prefer-dist --no-interaction --no-progress
+    - composer analyse
+
+test:core:
+  stage: test
+  extends: .php_setup
+  script:
+    - cd core
+    - composer install --prefer-dist --no-interaction --no-progress
+    - cp .env.example .env
+    - php artisan key:generate --ansi
+    - php artisan test

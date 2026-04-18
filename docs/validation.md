@@ -34,3 +34,15 @@ make core-health
 make bus-health
 make bus-ready
 ```
+
+## GitLab CI
+
+Pipeline описан в `.gitlab-ci.yml` и запускает:
+
+- Composer validation для `core` и `bus`.
+- PHP syntax checks для `core` и `bus`.
+- PHPStan/Psalm через `composer analyse` для `core` и `bus`.
+- Laravel tests для `core`.
+
+HTTP health endpoints не запускаются в CI, потому что они требуют поднятой
+Laradock-инфраструктуры.
