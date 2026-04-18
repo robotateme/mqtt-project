@@ -4,12 +4,14 @@ DC := docker compose -f laradock/docker-compose.yml --env-file laradock/.env
 SERVICES := nginx php-fpm workspace postgres clickhouse zookeeper kafka mosquitto
 CORE := /var/www/core
 BUS := /var/www/bus
+FRONTEND := /var/www/frontend
 
 .DEFAULT_GOAL := help
 
 .PHONY: help build up down restart status ps logs shell \
 	core-install core-migrate core-clickhouse core-consume core-test core-phpstan core-psalm core-analyse core-health \
-	bus-install bus-consume bus-phpstan bus-psalm bus-analyse bus-health bus-ready analyse check
+	bus-install bus-consume bus-phpstan bus-psalm bus-analyse bus-health bus-ready \
+	frontend-install frontend-build frontend-health analyse check
 
 help:
 	@printf '%s\n' \
@@ -43,6 +45,11 @@ help:
 		'  bus-analyse        Run bus static analysis' \
 		'  bus-health         Check bus liveness endpoint' \
 		'  bus-ready          Check bus worker readiness endpoint' \
+		'' \
+		'Frontend:' \
+		'  frontend-install   NPM install for Vue frontend' \
+		'  frontend-build     Build Vue frontend assets' \
+		'  frontend-health    Check frontend HTTP entrypoint' \
 		'' \
 		'Validation:' \
 		'  analyse            Run static analysis for core and bus' \
@@ -93,9 +100,9 @@ core-analyse:
 	$(DC) exec -T workspace bash -lc 'cd $(CORE) && composer analyse'
 
 core-health:
-	curl -fsS -H 'Host: core.localhost' http://localhost/health
+	curl -fsS -H 'Host: api.mqtt.local' http://localhost/health
 	@printf '\n'
-	curl -fsS -H 'Host: core.localhost' http://localhost/ready
+	curl -fsS -H 'Host: api.mqtt.local' http://localhost/ready
 	@printf '\n'
 
 bus-install:
@@ -121,6 +128,16 @@ bus-ready:
 	curl -fsS -H 'Host: bus.localhost' http://localhost/ready
 	@printf '\n'
 
+frontend-install:
+	$(DC) exec -T workspace bash -lc 'cd $(FRONTEND) && npm install'
+
+frontend-build:
+	$(DC) exec -T workspace bash -lc 'cd $(FRONTEND) && npm run build'
+
+frontend-health:
+	curl -fsS -H 'Host: mqtt.local' http://localhost/ >/dev/null
+	@printf 'frontend ok\n'
+
 analyse:
 	$(MAKE) core-analyse
 	$(MAKE) bus-analyse
@@ -133,3 +150,4 @@ check:
 	$(MAKE) core-test
 	$(MAKE) core-health
 	$(MAKE) bus-health
+	$(MAKE) frontend-health

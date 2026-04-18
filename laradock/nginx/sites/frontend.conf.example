@@ -1,0 +1,19 @@
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name mqtt.local frontend.localhost frontend.test;
+    root /var/www/frontend/dist;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location ~ /\. {
+        deny all;
+    }
+
+    error_log /var/log/nginx/frontend_error.log;
+    access_log /var/log/nginx/frontend_access.log;
+}

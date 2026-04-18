@@ -1,5 +1,4 @@
 .idea/
-laradock/
 
 bus/vendor/
 bus/.env

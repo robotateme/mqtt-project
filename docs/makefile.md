@@ -40,6 +40,14 @@ make bus-health
 make bus-ready
 ```
 
+## Frontend
+
+```bash
+make frontend-install
+make frontend-build
+make frontend-health
+```
+
 ## Проверка проекта
 
 ```bash

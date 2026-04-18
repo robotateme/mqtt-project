@@ -25,8 +25,16 @@
 HTTP endpoints доступны через `Host` header:
 
 ```bash
-curl -H 'Host: core.localhost' http://localhost/health
-curl -H 'Host: core.localhost' http://localhost/ready
+curl -H 'Host: api.mqtt.local' http://localhost/health
+curl -H 'Host: api.mqtt.local' http://localhost/ready
 curl -H 'Host: bus.localhost' http://localhost/health
 curl -H 'Host: bus.localhost' http://localhost/ready
+curl -H 'Host: mqtt.local' http://localhost/
+```
+
+Для локального деплоя добавьте домены в `/etc/hosts`:
+
+```text
+127.0.0.1 api.mqtt.local
+127.0.0.1 mqtt.local
 ```
