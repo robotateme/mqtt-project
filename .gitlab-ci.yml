@@ -19,7 +19,7 @@ cache:
   before_script:
     - apt-get update
     - apt-get install -y --no-install-recommends git unzip curl ca-certificates libpq-dev libsqlite3-dev librdkafka-dev $PHPIZE_DEPS
-    - docker-php-ext-install pdo_pgsql pdo_sqlite
+    - docker-php-ext-install pcntl pdo_pgsql pdo_sqlite
     - printf "\n" | pecl install rdkafka
     - docker-php-ext-enable rdkafka
     - curl -fsSL https://getcomposer.org/installer -o composer-setup.php
