@@ -4,7 +4,7 @@
 записывает пакетные данные в ClickHouse. Пользователи, устройства, сессии,
 cache и queue metadata хранятся в PostgreSQL.
 Очереди API обрабатываются через Redis/Horizon, отладочная телеметрия
-доступна через Telescope.
+доступна через Telescope. Realtime-события публикуются в Mercure hub.
 
 Миграции PostgreSQL:
 
@@ -41,6 +41,7 @@ make core-horizon
 
 - Horizon: `http://api.mqtt.local/horizon`
 - Telescope: `http://api.mqtt.local/telescope`
+- Mercure: `http://localhost:1337/.well-known/mercure`
 
 В `local` окружении панели доступны локально. В остальных окружениях доступ
 разрешается пользователям с ролью `admin`.
@@ -66,6 +67,10 @@ make core-horizon
 | `HORIZON_PATH` | URI панели Horizon |
 | `TELESCOPE_ENABLED` | Включение записи Telescope |
 | `TELESCOPE_PATH` | URI панели Telescope |
+| `MERCURE_PUBLIC_URL` | URL Mercure hub для браузера/frontend |
+| `MERCURE_INTERNAL_URL` | URL Mercure hub внутри Docker network |
+| `MERCURE_PUBLISHER_JWT_KEY` | JWT key для публикации событий |
+| `MERCURE_SUBSCRIBER_JWT_KEY` | JWT key для приватных подписок |
 | `JWT_SECRET`, `JWT_ISSUER`, `JWT_AUDIENCE` | Настройки JWT API |
 
 ## HTTP endpoints

@@ -52,6 +52,7 @@ make check
 | API | `http://api.mqtt.local` |
 | Horizon | `http://api.mqtt.local/horizon` |
 | Telescope | `http://api.mqtt.local/telescope` |
+| Mercure | `http://localhost:1337/.well-known/mercure` |
 | Frontend | `http://mqtt.local` |
 | Bus health | `http://localhost` с заголовком `Host: bus.localhost` |
 

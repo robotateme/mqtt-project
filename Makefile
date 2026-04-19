@@ -1,7 +1,7 @@
 SHELL := /usr/bin/env bash
 
 DC := docker compose -f laradock/docker-compose.yml --env-file laradock/.env
-SERVICES := nginx php-fpm workspace postgres redis clickhouse zookeeper kafka mosquitto
+SERVICES := nginx php-fpm workspace postgres redis mercure clickhouse zookeeper kafka mosquitto
 CORE := /var/www/core
 BUS := /var/www/bus
 FRONTEND := /var/www/frontend

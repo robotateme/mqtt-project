@@ -10,6 +10,7 @@
 - `zookeeper`
 - `postgres`
 - `redis`
+- `mercure`
 - `clickhouse`
 
 Порты на хосте:
@@ -19,6 +20,8 @@
 | HTTP/nginx | `80` |
 | PostgreSQL | `5433` -> container `5432` |
 | Redis | `6379` |
+| Mercure HTTP | `1337` -> container `80` |
+| Mercure HTTPS | `1338` -> container `443` |
 | Kafka | `9092` |
 | ClickHouse HTTP | `8123` |
 | ClickHouse native | `9000` |

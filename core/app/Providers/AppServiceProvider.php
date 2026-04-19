@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Support\ClickHouse\ClickHouseClient;
+use App\Support\Mercure\MercureClient;
 use App\Support\Packets\PacketInterpreter;
 use Core\Application\Devices\DeviceRepository;
 use Core\Application\Auth\JwtTokenService;
@@ -35,6 +36,15 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(PacketInterpreter::class, function (): PacketInterpreter {
             return new PacketInterpreter(config('ingestion.packets.device_topic_regex'));
+        });
+
+        $this->app->singleton(MercureClient::class, function (): MercureClient {
+            return new MercureClient(
+                $this->app->make(HttpFactory::class),
+                (string) config('mercure.internal_url'),
+                (string) config('mercure.publisher_jwt_key'),
+                (string) config('mercure.jwt_algorithm'),
+            );
         });
 
         $this->app->singleton(PacketStoragePort::class, function (): PacketStoragePort {
