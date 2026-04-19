@@ -1,7 +1,7 @@
 SHELL := /usr/bin/env bash
 
 DC := docker compose -f laradock/docker-compose.yml --env-file laradock/.env
-SERVICES := nginx php-fpm workspace postgres clickhouse zookeeper kafka mosquitto
+SERVICES := nginx php-fpm workspace postgres redis clickhouse zookeeper kafka mosquitto
 CORE := /var/www/core
 BUS := /var/www/bus
 FRONTEND := /var/www/frontend
@@ -10,6 +10,7 @@ FRONTEND := /var/www/frontend
 
 .PHONY: help build up down restart status ps logs shell \
 	core-install core-migrate core-clickhouse core-consume core-test core-phpstan core-psalm core-analyse core-health \
+	core-horizon core-horizon-status core-telescope-prune \
 	bus-install bus-consume bus-phpstan bus-psalm bus-analyse bus-health bus-ready \
 	frontend-install frontend-build frontend-health analyse check
 
@@ -31,6 +32,9 @@ help:
 		'  core-migrate       Run PostgreSQL migrations' \
 		'  core-clickhouse    Create ClickHouse schema' \
 		'  core-consume       Consume Kafka packets into ClickHouse' \
+		'  core-horizon       Run Horizon queue worker' \
+		'  core-horizon-status Show Horizon status' \
+		'  core-telescope-prune Prune Telescope entries' \
 		'  core-test          Run Laravel tests' \
 		'  core-phpstan       Run PHPStan level 8 for core' \
 		'  core-psalm         Run Psalm strict analysis for core' \
@@ -86,6 +90,15 @@ core-clickhouse:
 
 core-consume:
 	$(DC) exec workspace bash -lc 'cd $(CORE) && php artisan kafka:consume-packets'
+
+core-horizon:
+	$(DC) exec workspace bash -lc 'cd $(CORE) && php artisan horizon'
+
+core-horizon-status:
+	$(DC) exec -T workspace bash -lc 'cd $(CORE) && php artisan horizon:status'
+
+core-telescope-prune:
+	$(DC) exec -T workspace bash -lc 'cd $(CORE) && php artisan telescope:prune --hours=48'
 
 core-test:
 	$(DC) exec -T workspace bash -lc 'cd $(CORE) && php artisan test'

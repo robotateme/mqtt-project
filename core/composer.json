@@ -11,6 +11,8 @@
         "ext-rdkafka": "*",
         "firebase/php-jwt": "^7.0",
         "laravel/framework": "^13.0",
+        "laravel/horizon": "^5.46",
+        "laravel/telescope": "^5.20",
         "laravel/tinker": "^3.0"
     },
     "require-dev": {

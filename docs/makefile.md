@@ -21,6 +21,9 @@ make core-install
 make core-migrate
 make core-clickhouse
 make core-consume
+make core-horizon
+make core-horizon-status
+make core-telescope-prune
 make core-test
 make core-phpstan
 make core-psalm

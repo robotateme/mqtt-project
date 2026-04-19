@@ -3,6 +3,8 @@
 `core` читает Kafka topic `mqtt.events`, интерпретирует MQTT topic и payload,
 записывает пакетные данные в ClickHouse. Пользователи, устройства, сессии,
 cache и queue metadata хранятся в PostgreSQL.
+Очереди API обрабатываются через Redis/Horizon, отладочная телеметрия
+доступна через Telescope.
 
 Миграции PostgreSQL:
 
@@ -29,6 +31,20 @@ docker compose -f laradock/docker-compose.yml --env-file laradock/.env exec work
   bash -lc 'cd /var/www/core && php artisan kafka:consume-packets --max-messages=100'
 ```
 
+Запуск Horizon worker:
+
+```bash
+make core-horizon
+```
+
+Панели API:
+
+- Horizon: `http://api.mqtt.local/horizon`
+- Telescope: `http://api.mqtt.local/telescope`
+
+В `local` окружении панели доступны локально. В остальных окружениях доступ
+разрешается пользователям с ролью `admin`.
+
 ## Ключевые параметры
 
 | Переменная | Назначение |
@@ -44,6 +60,12 @@ docker compose -f laradock/docker-compose.yml --env-file laradock/.env exec work
 | `CLICKHOUSE_DATABASE=core` | База ClickHouse |
 | `CLICKHOUSE_PACKETS_TABLE=mqtt_packets` | Таблица с пакетами |
 | `PACKET_DEVICE_TOPIC_REGEX` | Regex для извлечения device identifier |
+| `QUEUE_CONNECTION=redis` | Redis queue для Horizon |
+| `CACHE_STORE=redis` | Redis cache store |
+| `REDIS_HOST=redis` | Host Redis внутри Docker network |
+| `HORIZON_PATH` | URI панели Horizon |
+| `TELESCOPE_ENABLED` | Включение записи Telescope |
+| `TELESCOPE_PATH` | URI панели Telescope |
 | `JWT_SECRET`, `JWT_ISSUER`, `JWT_AUDIENCE` | Настройки JWT API |
 
 ## HTTP endpoints
