@@ -14,7 +14,6 @@
         <directory name="public" />
         <ignoreFiles>
             <directory name="vendor" />
-            <directory name="storage" />
         </ignoreFiles>
     </projectFiles>
 </psalm>
