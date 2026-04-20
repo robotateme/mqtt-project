@@ -1,0 +1,144 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-composer:
+    name: Validate Composer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pcntl, pdo_pgsql, pdo_sqlite, rdkafka
+          tools: composer:v2
+          coverage: none
+
+      - name: Validate core
+        working-directory: core
+        run: |
+          composer validate --strict --no-check-publish
+          composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Validate bus
+        working-directory: bus
+        run: |
+          composer validate --strict --no-check-publish
+          composer install --prefer-dist --no-interaction --no-progress
+
+  validate-syntax:
+    name: Validate Syntax
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pcntl, pdo_pgsql, pdo_sqlite, rdkafka
+          tools: composer:v2
+          coverage: none
+
+      - name: Install core dependencies
+        working-directory: core
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Check core syntax
+        working-directory: core
+        run: find app src config database routes -type f -name "*.php" -print0 | xargs -0 -n1 php -l >/dev/null
+
+      - name: Install bus dependencies
+        working-directory: bus
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Check bus syntax
+        working-directory: bus
+        run: find app bin config public -type f -name "*.php" -print0 | xargs -0 -n1 php -l >/dev/null
+
+  analyse-core:
+    name: Analyse Core
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pcntl, pdo_pgsql, pdo_sqlite, rdkafka
+          tools: composer:v2
+          coverage: none
+
+      - name: Install dependencies
+        working-directory: core
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Analyse
+        working-directory: core
+        run: composer analyse
+
+  analyse-bus:
+    name: Analyse Bus
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: rdkafka
+          tools: composer:v2
+          coverage: none
+
+      - name: Install dependencies
+        working-directory: bus
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Analyse
+        working-directory: bus
+        run: composer analyse
+
+  test-core:
+    name: Test Core
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pcntl, pdo_pgsql, pdo_sqlite, rdkafka
+          tools: composer:v2
+          coverage: none
+
+      - name: Install dependencies
+        working-directory: core
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Prepare environment
+        working-directory: core
+        run: |
+          cp .env.example .env
+          php artisan key:generate --ansi
+
+      - name: Test
+        working-directory: core
+        run: php artisan test

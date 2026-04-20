@@ -1,0 +1,117 @@
+@startuml
+title MQTT Project - полная архитектура
+
+skinparam shadowing false
+skinparam componentStyle rectangle
+skinparam defaultFontName DejaVu Sans
+skinparam packageStyle rectangle
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #667085
+  BackgroundColor #F9FAFB
+}
+skinparam database {
+  BorderColor #475467
+  BackgroundColor #EEF4FF
+}
+skinparam queue {
+  BorderColor #475467
+  BackgroundColor #ECFDF3
+}
+
+actor "Устройства MQTT" as Devices
+actor "Пользователь / оператор" as User
+
+node "Локальная машина разработчика" as Host {
+  component "Browser\nmqtt.local" as Browser
+  component "PhpStorm\nDB client" as PhpStorm
+}
+
+node "Laradock / Docker Compose" as Docker {
+  component "nginx\n:80 / :443" as Nginx
+  component "php-fpm" as PhpFpm
+  component "workspace\nCLI tools" as Workspace
+
+  package "Frontend" as FrontendBox {
+    component "frontend\nVue 3 + Bootstrap 5\n/var/www/frontend/dist" as Frontend
+  }
+
+  package "API core" as CoreBox {
+    component "core Laravel API\napi.mqtt.local" as Core
+    component "JWT Auth\nAdmin API" as Auth
+    component "Packet interpreter" as Interpreter
+    component "Kafka consumer\nphp artisan kafka:consume-packets" as CoreConsumer
+    component "Horizon\n/horizon" as Horizon
+    component "Telescope\n/telescope" as Telescope
+    component "Mercure publisher client" as MercureClient
+  }
+
+  package "Bus" as BusBox {
+    component "bus MQTT worker\nphp bin/mqtt-consume.php" as Bus
+    component "Runtime status HTTP\nbus.localhost" as BusHttp
+  }
+
+  component "Mosquitto\nMQTT / WebSocket :9001" as Mosquitto
+  queue "Kafka\nmqtt.events :9092" as Kafka
+  database "PostgreSQL\ncore data :5433->5432" as PostgreSQL
+  database "ClickHouse\npackets :8123/:9000" as ClickHouse
+  database "Redis\nqueues/cache :6379" as Redis
+  component "Mercure Hub\n:1337 / :1338" as Mercure
+}
+
+cloud "External CI" as CI {
+  component "GitLab CI" as GitLabCI
+  component "GitHub Actions" as GitHubCI
+}
+
+User --> Browser : открывает frontend
+Browser --> Nginx : http://mqtt.local
+Browser --> Nginx : http://api.mqtt.local/api/*
+Browser --> Mercure : EventSource subscribe\nMERCURE_PUBLIC_URL
+PhpStorm --> PostgreSQL : JDBC\n127.0.0.1:5433
+
+Nginx --> Frontend : static files
+Nginx --> PhpFpm : FastCGI
+PhpFpm --> Core : Laravel request lifecycle
+Core --> Auth : register/login/refresh/me
+Core --> PostgreSQL : users, devices,\nsessions, Telescope
+Core --> Redis : cache, queues
+Core --> Horizon : queue dashboard
+Core --> Telescope : observability
+Core --> MercureClient : realtime events
+MercureClient --> Mercure : publish\nMERCURE_INTERNAL_URL
+
+Devices --> Mosquitto : MQTT publish
+Mosquitto --> Bus : topic subscriptions
+Bus --> Kafka : publish events
+BusHttp --> Nginx : health/ready
+CoreConsumer --> Kafka : consume mqtt.events
+CoreConsumer --> Interpreter : parse topic/payload
+CoreConsumer --> ClickHouse : JSONEachRow inserts
+CoreConsumer --> MercureClient : packet notifications
+
+Workspace --> Core : artisan/composer
+Workspace --> Bus : composer/worker commands
+Workspace --> Frontend : npm install/build
+
+GitLabCI --> Core : composer validate/analyse/test
+GitLabCI --> Bus : composer validate/analyse
+GitHubCI --> Core : composer validate/analyse/test
+GitHubCI --> Bus : composer validate/analyse
+
+note right of PostgreSQL
+Host connection for IDE:
+127.0.0.1:5433
+database=core
+user=default
+end note
+
+note bottom of Mercure
+Public URL:
+http://localhost:1337/.well-known/mercure
+
+Internal URL:
+http://mercure/.well-known/mercure
+end note
+
+@enduml
