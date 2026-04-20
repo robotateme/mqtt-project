@@ -72,4 +72,12 @@ test:core:
     - composer install --prefer-dist --no-interaction --no-progress
     - cp .env.example .env
     - php artisan key:generate --ansi
-    - php artisan test
+    - TELESCOPE_ENABLED=false php artisan test
+
+test:bus:
+  stage: test
+  extends: .php_setup
+  script:
+    - cd bus
+    - composer install --prefer-dist --no-interaction --no-progress
+    - composer test

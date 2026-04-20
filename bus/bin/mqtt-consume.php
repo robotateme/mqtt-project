@@ -11,7 +11,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 $config = require dirname(__DIR__) . '/config/config.php';
 
-$publisher = new KafkaPublisher(
+$publisher = KafkaPublisher::connect(
     $config['kafka']['brokers'],
     $config['kafka']['topic'],
     $config['kafka']['batch_size'],

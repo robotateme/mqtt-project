@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Support\Packets\PacketInterpreter;
+use App\Support\Kafka\KafkaPacketMapper;
 use Core\Application\Packets\PacketStoragePort;
 use Illuminate\Console\Command;
 use RdKafka\Conf;
@@ -18,7 +18,7 @@ class ConsumeKafkaPackets extends Command
 
     protected $description = 'Consume MQTT packet events from Kafka and store them in ClickHouse.';
 
-    public function handle(PacketStoragePort $packetStorage, PacketInterpreter $interpreter): int
+    public function handle(PacketStoragePort $packetStorage, KafkaPacketMapper $mapper): int
     {
         $consumer = $this->consumer();
         $topic = config('ingestion.kafka.packet_topic');
@@ -44,7 +44,7 @@ class ConsumeKafkaPackets extends Command
                 throw new RuntimeException($message->errstr(), $message->err);
             }
 
-            $batch[] = $this->row($message, $interpreter);
+            $batch[] = $this->row($message, $mapper);
             $messages[] = $message;
             $consumed++;
 
@@ -75,23 +75,16 @@ class ConsumeKafkaPackets extends Command
         return new KafkaConsumer($conf);
     }
 
-    private function row(Message $message, PacketInterpreter $interpreter): array
+    private function row(Message $message, KafkaPacketMapper $mapper): array
     {
-        $mqttTopic = (string) $message->key;
-        $payload = (string) $message->payload;
-        $interpreted = $interpreter->interpret($mqttTopic, $payload);
-
-        return [
-            'kafka_topic' => $message->topic_name,
-            'kafka_partition' => $message->partition,
-            'kafka_offset' => $message->offset,
-            'mqtt_topic' => $mqttTopic,
-            'device_identifier' => $interpreted['device_identifier'],
-            'payload_type' => $interpreted['payload_type'],
-            'payload' => $payload,
-            'payload_json' => json_encode($interpreted['payload_json'], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES),
-            'headers_json' => json_encode($message->headers ?? [], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES),
-        ];
+        return $mapper->map(
+            $message->topic_name,
+            $message->partition,
+            $message->offset,
+            (string) $message->key,
+            (string) $message->payload,
+            $message->headers ?? [],
+        );
     }
 
     private function flushBatch(PacketStoragePort $packetStorage, KafkaConsumer $consumer, array &$batch, array &$messages): void

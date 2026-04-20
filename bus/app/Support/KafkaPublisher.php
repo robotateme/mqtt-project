@@ -4,13 +4,8 @@ declare(strict_types=1);
 
 namespace Bus\Support;
 
-use RdKafka\Conf;
-use RdKafka\Producer;
-
 final class KafkaPublisher
 {
-    private Producer $producer;
-    private \RdKafka\ProducerTopic $topic;
     private int $batchSize;
     private int $maxOutstanding;
     private int $backpressureTimeoutMs;
@@ -19,6 +14,17 @@ final class KafkaPublisher
     private int $backpressureEvents = 0;
 
     public function __construct(
+        private KafkaProducerPort $producer,
+        int $batchSize,
+        int $maxOutstanding,
+        int $backpressureTimeoutMs,
+    ) {
+        $this->batchSize = $batchSize;
+        $this->maxOutstanding = $maxOutstanding;
+        $this->backpressureTimeoutMs = $backpressureTimeoutMs;
+    }
+
+    public static function connect(
         string $brokers,
         string $topic,
         int $batchSize,
@@ -26,27 +32,27 @@ final class KafkaPublisher
         int $maxOutstanding,
         int $backpressureTimeoutMs,
         int $messageTimeoutMs,
-    )
-    {
-        $conf = new Conf();
-        $conf->set('metadata.broker.list', $brokers);
-        $conf->set('queue.buffering.max.messages', (string) $maxOutstanding);
-        $conf->set('linger.ms', (string) $lingerMs);
-        $conf->set('batch.num.messages', (string) $batchSize);
-        $conf->set('message.timeout.ms', (string) $messageTimeoutMs);
-
-        $this->producer = new Producer($conf);
-        $this->topic = $this->producer->newTopic($topic);
-        $this->batchSize = $batchSize;
-        $this->maxOutstanding = $maxOutstanding;
-        $this->backpressureTimeoutMs = $backpressureTimeoutMs;
+    ): self {
+        return new self(
+            new RdKafkaProducerPort(
+                $brokers,
+                $topic,
+                $batchSize,
+                $lingerMs,
+                $maxOutstanding,
+                $messageTimeoutMs,
+            ),
+            $batchSize,
+            $maxOutstanding,
+            $backpressureTimeoutMs,
+        );
     }
 
     public function publish(string $mqttTopic, string $payload): void
     {
         $this->waitForCapacity();
 
-        $this->topic->produce(RD_KAFKA_PARTITION_UA, 0, $payload, $mqttTopic);
+        $this->producer->produce($mqttTopic, $payload);
         $this->pendingMessages++;
         $this->publishedMessages++;
         $this->producer->poll(0);
@@ -59,7 +65,7 @@ final class KafkaPublisher
     public function flush(int $timeoutMs = 1000): void
     {
         for ($retries = 0; $retries < 10; $retries++) {
-            if ($this->producer->flush($timeoutMs) === RD_KAFKA_RESP_ERR_NO_ERROR) {
+            if ($this->producer->flush($timeoutMs) === 0) {
                 $this->pendingMessages = 0;
                 return;
             }
@@ -76,7 +82,7 @@ final class KafkaPublisher
         return [
             'published_messages' => $this->publishedMessages,
             'pending_messages' => $this->pendingMessages,
-            'producer_outq_len' => $this->producer->getOutQLen(),
+            'producer_outq_len' => $this->producer->outQLen(),
             'backpressure_events' => $this->backpressureEvents,
         ];
     }
@@ -85,7 +91,7 @@ final class KafkaPublisher
     {
         $deadline = microtime(true) + ((float) $this->backpressureTimeoutMs / 1000.0);
 
-        while ($this->producer->getOutQLen() >= $this->maxOutstanding) {
+        while ($this->producer->outQLen() >= $this->maxOutstanding) {
             $this->backpressureEvents++;
             $this->producer->poll(100);
 

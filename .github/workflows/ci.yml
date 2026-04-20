@@ -141,4 +141,27 @@ jobs:
 
       - name: Test
         working-directory: core
-        run: php artisan test
+        run: TELESCOPE_ENABLED=false php artisan test
+
+  test-bus:
+    name: Test Bus
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: rdkafka
+          tools: composer:v2
+          coverage: none
+
+      - name: Install dependencies
+        working-directory: bus
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Test
+        working-directory: bus
+        run: composer test
