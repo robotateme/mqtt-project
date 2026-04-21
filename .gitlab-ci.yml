@@ -20,8 +20,8 @@ cache:
     - apt-get update
     - apt-get install -y --no-install-recommends git unzip curl ca-certificates libpq-dev libsqlite3-dev librdkafka-dev $PHPIZE_DEPS
     - docker-php-ext-install pcntl pdo_pgsql pdo_sqlite
-    - printf "\n" | pecl install rdkafka
-    - docker-php-ext-enable rdkafka
+    - printf "\n" | pecl install rdkafka redis
+    - docker-php-ext-enable rdkafka redis
     - curl -fsSL https://getcomposer.org/installer -o composer-setup.php
     - php composer-setup.php --install-dir=/usr/local/bin --filename=composer
     - rm composer-setup.php
@@ -71,7 +71,7 @@ test:core:
     - cd core
     - composer install --prefer-dist --no-interaction --no-progress
     - cp .env.example .env
-    - php artisan key:generate --ansi
+    - TELESCOPE_ENABLED=false php artisan key:generate --ansi
     - TELESCOPE_ENABLED=false php artisan test
 
 test:bus:

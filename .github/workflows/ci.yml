@@ -21,7 +21,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: pcntl, pdo_pgsql, pdo_sqlite, rdkafka
+          extensions: pcntl, pdo_pgsql, pdo_sqlite, rdkafka, redis
           tools: composer:v2
           coverage: none
 
@@ -48,7 +48,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: pcntl, pdo_pgsql, pdo_sqlite, rdkafka
+          extensions: pcntl, pdo_pgsql, pdo_sqlite, rdkafka, redis
           tools: composer:v2
           coverage: none
 
@@ -79,7 +79,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: pcntl, pdo_pgsql, pdo_sqlite, rdkafka
+          extensions: pcntl, pdo_pgsql, pdo_sqlite, rdkafka, redis
           tools: composer:v2
           coverage: none
 
@@ -125,7 +125,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: pcntl, pdo_pgsql, pdo_sqlite, rdkafka
+          extensions: pcntl, pdo_pgsql, pdo_sqlite, rdkafka, redis
           tools: composer:v2
           coverage: none
 
@@ -137,7 +137,7 @@ jobs:
         working-directory: core
         run: |
           cp .env.example .env
-          php artisan key:generate --ansi
+          TELESCOPE_ENABLED=false php artisan key:generate --ansi
 
       - name: Test
         working-directory: core
