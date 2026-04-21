@@ -64,7 +64,7 @@ curl http://api.mqtt.local/ready
 ```
 
 Frontend собирается в `frontend/dist` и обслуживается nginx из
-`laradock/nginx/sites/frontend.conf`.
+`laradock/nginx/sites/00-frontend.conf`.
 
 ## Локальная разработка frontend
 

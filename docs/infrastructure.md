@@ -34,9 +34,11 @@ curl -H 'Host: api.mqtt.local' http://localhost/health
 curl -H 'Host: api.mqtt.local' http://localhost/ready
 curl -H 'Host: api.mqtt.local' http://localhost/horizon
 curl -H 'Host: api.mqtt.local' http://localhost/telescope
+curl -H 'Host: core.localhost' http://localhost/health
 curl -H 'Host: bus.localhost' http://localhost/health
 curl -H 'Host: bus.localhost' http://localhost/ready
 curl -H 'Host: mqtt.local' http://localhost/
+curl -H 'Host: frontend.localhost' http://localhost/
 ```
 
 Для локального деплоя добавьте домены в `/etc/hosts`:

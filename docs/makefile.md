@@ -36,6 +36,7 @@ make core-health
 ```bash
 make bus-install
 make bus-consume
+make bus-test
 make bus-phpstan
 make bus-psalm
 make bus-analyse
@@ -58,4 +59,4 @@ make check
 ```
 
 `make check` проверяет Docker Compose config, PHP syntax в `core` и `bus`,
-PHPStan/Psalm, Laravel tests, а также HTTP health endpoints.
+PHPStan/Psalm, Laravel tests, bus PHPUnit tests, а также HTTP health endpoints.

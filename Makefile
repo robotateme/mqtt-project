@@ -5,13 +5,14 @@ SERVICES := nginx php-fpm workspace postgres redis mercure clickhouse zookeeper 
 CORE := /var/www/core
 BUS := /var/www/bus
 FRONTEND := /var/www/frontend
+SAFE_GIT := git config --global --add safe.directory /var/www >/dev/null 2>&1 || true
 
 .DEFAULT_GOAL := help
 
 .PHONY: help build up down restart status ps logs shell \
 	core-install core-migrate core-clickhouse core-consume core-test core-phpstan core-psalm core-analyse core-health \
 	core-horizon core-horizon-status core-telescope-prune \
-	bus-install bus-consume bus-phpstan bus-psalm bus-analyse bus-health bus-ready \
+	bus-install bus-consume bus-test bus-phpstan bus-psalm bus-analyse bus-health bus-ready \
 	frontend-install frontend-build frontend-health analyse check
 
 help:
@@ -44,6 +45,7 @@ help:
 		'Bus:' \
 		'  bus-install        Composer install for bus worker' \
 		'  bus-consume        Run MQTT -> Kafka worker' \
+		'  bus-test           Run bus PHPUnit tests' \
 		'  bus-phpstan        Run PHPStan level 8 for bus' \
 		'  bus-psalm          Run Psalm strict analysis for bus' \
 		'  bus-analyse        Run bus static analysis' \
@@ -80,7 +82,7 @@ shell:
 	$(DC) exec workspace bash
 
 core-install:
-	$(DC) exec -T workspace bash -lc 'cd $(CORE) && composer install'
+	$(DC) exec -T workspace bash -lc '$(SAFE_GIT); cd $(CORE) && composer install'
 
 core-migrate:
 	$(DC) exec -T workspace bash -lc 'cd $(CORE) && php artisan migrate --force'
@@ -101,37 +103,40 @@ core-telescope-prune:
 	$(DC) exec -T workspace bash -lc 'cd $(CORE) && php artisan telescope:prune --hours=48'
 
 core-test:
-	$(DC) exec -T workspace bash -lc 'cd $(CORE) && php artisan test'
+	$(DC) exec -T workspace bash -lc '$(SAFE_GIT); cd $(CORE) && TELESCOPE_ENABLED=false php artisan test'
 
 core-phpstan:
-	$(DC) exec -T workspace bash -lc 'cd $(CORE) && composer phpstan'
+	$(DC) exec -T workspace bash -lc '$(SAFE_GIT); cd $(CORE) && composer phpstan'
 
 core-psalm:
-	$(DC) exec -T workspace bash -lc 'cd $(CORE) && composer psalm'
+	$(DC) exec -T workspace bash -lc '$(SAFE_GIT); cd $(CORE) && composer psalm'
 
 core-analyse:
-	$(DC) exec -T workspace bash -lc 'cd $(CORE) && composer analyse'
+	$(DC) exec -T workspace bash -lc '$(SAFE_GIT); cd $(CORE) && composer analyse'
 
 core-health:
-	curl -fsS -H 'Host: api.mqtt.local' http://localhost/health
+	curl -fsS -H 'Host: core.localhost' http://localhost/health
 	@printf '\n'
-	curl -fsS -H 'Host: api.mqtt.local' http://localhost/ready
+	curl -fsS -H 'Host: core.localhost' http://localhost/ready
 	@printf '\n'
 
 bus-install:
-	$(DC) exec -T workspace bash -lc 'cd $(BUS) && composer install'
+	$(DC) exec -T workspace bash -lc '$(SAFE_GIT); cd $(BUS) && composer install'
 
 bus-consume:
 	$(DC) exec workspace bash -lc 'cd $(BUS) && php bin/mqtt-consume.php'
 
+bus-test:
+	$(DC) exec -T workspace bash -lc '$(SAFE_GIT); cd $(BUS) && composer test'
+
 bus-phpstan:
-	$(DC) exec -T workspace bash -lc 'cd $(BUS) && composer phpstan'
+	$(DC) exec -T workspace bash -lc '$(SAFE_GIT); cd $(BUS) && composer phpstan'
 
 bus-psalm:
-	$(DC) exec -T workspace bash -lc 'cd $(BUS) && composer psalm'
+	$(DC) exec -T workspace bash -lc '$(SAFE_GIT); cd $(BUS) && composer psalm'
 
 bus-analyse:
-	$(DC) exec -T workspace bash -lc 'cd $(BUS) && composer analyse'
+	$(DC) exec -T workspace bash -lc '$(SAFE_GIT); cd $(BUS) && composer analyse'
 
 bus-health:
 	curl -fsS -H 'Host: bus.localhost' http://localhost/health
@@ -142,13 +147,13 @@ bus-ready:
 	@printf '\n'
 
 frontend-install:
-	$(DC) exec -T workspace bash -lc 'cd $(FRONTEND) && npm install'
+	$(DC) exec -T workspace bash -lc '$(SAFE_GIT); cd $(FRONTEND) && npm install'
 
 frontend-build:
-	$(DC) exec -T workspace bash -lc 'cd $(FRONTEND) && npm run build'
+	$(DC) exec -T workspace bash -lc '$(SAFE_GIT); cd $(FRONTEND) && npm run build'
 
 frontend-health:
-	curl -fsS -H 'Host: mqtt.local' http://localhost/ >/dev/null
+	curl -fsS -H 'Host: frontend.localhost' http://localhost/ >/dev/null
 	@printf 'frontend ok\n'
 
 analyse:
@@ -161,6 +166,7 @@ check:
 	$(DC) exec -T workspace bash -lc 'cd $(BUS) && find app bin config public -type f -name "*.php" -print0 | xargs -0 -n1 php -l >/dev/null'
 	$(MAKE) analyse
 	$(MAKE) core-test
+	$(MAKE) bus-test
 	$(MAKE) core-health
 	$(MAKE) bus-health
 	$(MAKE) frontend-health

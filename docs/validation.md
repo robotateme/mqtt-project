@@ -37,6 +37,7 @@ PHPStan настроен на `level: 8`, Psalm - на `errorLevel="1"`. Для 
 
 ```bash
 make core-test
+make bus-test
 make core-health
 make bus-health
 make bus-ready

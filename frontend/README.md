@@ -19,7 +19,7 @@ make frontend-install
 make frontend-build
 ```
 
-Frontend обслуживается nginx из `laradock/nginx/sites/frontend.conf` на
+Frontend обслуживается nginx из `laradock/nginx/sites/00-frontend.conf` на
 `http://mqtt.local`. API доступен на `http://api.mqtt.local`.
 
 ## Разработка

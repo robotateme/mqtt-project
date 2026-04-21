@@ -1,5 +1,5 @@
 *.conf
 !default.conf
+!00-frontend.conf
 !bus.conf
 !core.conf
-!frontend.conf
