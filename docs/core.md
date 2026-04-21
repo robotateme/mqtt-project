@@ -6,6 +6,11 @@ cache и queue metadata хранятся в PostgreSQL.
 Очереди API обрабатываются через Redis/Horizon, отладочная телеметрия
 доступна через Telescope. Realtime-события публикуются в Mercure hub.
 
+Kafka consumer преобразует сообщения через `KafkaPacketMapper`: Kafka key
+считается исходным MQTT topic, Kafka payload - исходным MQTT payload. Mapper
+формирует ClickHouse row с Kafka metadata, `device_identifier`, типом payload и
+JSON-представлением headers.
+
 Миграции PostgreSQL:
 
 ```bash
@@ -35,6 +40,13 @@ docker compose -f laradock/docker-compose.yml --env-file laradock/.env exec work
 
 ```bash
 make core-horizon
+```
+
+Локальные тесты:
+
+```bash
+make core-test
+php artisan test --filter=KafkaPacketMapperTest
 ```
 
 Панели API:

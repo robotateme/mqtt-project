@@ -98,6 +98,22 @@ make core-consume
 make core-horizon
 ```
 
+## Проверки и CI
+
+Локальные проверки:
+
+```bash
+make check
+make core-test
+cd bus && composer test
+```
+
+В GitLab CI и GitHub Actions настроены одинаковые проверки: Composer validate,
+PHP syntax checks, PHPStan/Psalm для `core` и `bus`, Laravel tests для `core` и
+unit-тесты `bus`. Core test jobs устанавливают PHP extensions `pcntl`, `redis`,
+`pdo_pgsql`, `pdo_sqlite` и `rdkafka`; Telescope отключается на `key:generate`
+и тестах через `TELESCOPE_ENABLED=false`.
+
 ## Полезные команды
 
 ```bash

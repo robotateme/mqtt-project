@@ -16,6 +16,16 @@ composer install
 php bin/mqtt-consume.php
 ```
 
+Локальные тесты:
+
+```bash
+composer test
+```
+
+Тесты проверяют контракт публикации в Kafka: MQTT topic передается как Kafka
+message key, payload передается как Kafka message value, batch flush происходит
+при достижении `KAFKA_BATCH_SIZE`.
+
 ## Ключевые параметры
 
 | Переменная | Назначение |
