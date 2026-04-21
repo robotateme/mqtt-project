@@ -9,6 +9,18 @@
 make bus-consume
 ```
 
+Экземпляров `bus` может быть несколько. Масштабирование делается запуском
+нескольких одинаковых worker-процессов с разными env-настройками:
+
+- отдельный `MQTT_TOPIC` на группу topics;
+- отдельный `MQTT_HOST`/`MQTT_PORT` на Mosquitto-кластер;
+- отдельный `MQTT_CLIENT_ID` для каждого worker-экземпляра;
+- общий или отдельный `KAFKA_TOPIC`, если downstream-процессинг нужно
+  разделить по потокам.
+
+Базовый контракт для `core` одинаковый для всех экземпляров: Kafka message key
+содержит MQTT topic, Kafka message value содержит MQTT payload.
+
 Локальный запуск внутри `bus`:
 
 ```bash

@@ -5,13 +5,17 @@
 Исходник диаграммы: [architecture.puml](architecture.puml).
 
 ```text
-Devices -> Mosquitto -> bus -> Kafka -> core -> ClickHouse
-                                      |
-                                      -> PostgreSQL: users, devices, app data
+Devices -> Mosquitto cluster(s) -> bus instance(s) -> Kafka -> core -> ClickHouse
+                                                              |
+                                                              -> PostgreSQL: users, devices, app data
 ```
 
 - `bus` - PHP CLI worker, который подписывается на MQTT topics в Mosquitto и
   публикует события в Kafka topic `mqtt.events`.
+- Интеграционных шин может быть несколько: по одной на группу MQTT topics,
+  tenant/site, домен нагрузки или отдельный Mosquitto-кластер. Все экземпляры
+  используют одинаковый Kafka-контракт: key - исходный MQTT topic, value -
+  исходный MQTT payload.
 - `core` - Laravel-приложение: HTTP API, пользователи, устройства,
   интерпретация MQTT-пакетов и запись пакетных данных в ClickHouse.
 - `frontend` - Vue 3 + Bootstrap 5 интерфейс, обслуживается nginx на

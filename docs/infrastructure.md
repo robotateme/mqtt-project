@@ -13,6 +13,12 @@
 - `mercure`
 - `clickhouse`
 
+`mosquitto` и `bus` в локальном Laradock представлены одним экземпляром для
+разработки. В production-схеме допускается несколько Mosquitto-кластеров и
+несколько `bus` worker-ов: по topic filter, tenant/site, нагрузочному домену
+или отдельному MQTT-кластеру. Все такие worker-ы публикуют события в Kafka по
+одному контракту, поэтому `core` consumer остается общим downstream-слоем.
+
 Порты на хосте:
 
 | Сервис | Порт |

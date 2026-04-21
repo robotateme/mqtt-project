@@ -46,12 +46,19 @@ node "Laradock / Docker Compose" as Docker {
     component "Mercure publisher client" as MercureClient
   }
 
-  package "Bus" as BusBox {
-    component "bus MQTT worker\nphp bin/mqtt-consume.php" as Bus
-    component "Runtime status HTTP\nbus.localhost" as BusHttp
+  package "Integration buses\nhorizontal scale" as BusBox {
+    component "bus A\nMQTT worker\nMQTT_TOPIC=devices/+/telemetry" as BusA
+    component "bus B\nMQTT worker\nMQTT_TOPIC=devices/+/state" as BusB
+    component "bus N\nMQTT worker\nper topic group or broker cluster" as BusN
+    component "Runtime status HTTP\nbus.localhost\nper bus instance" as BusHttp
   }
 
-  component "Mosquitto\nMQTT / WebSocket :9001" as Mosquitto
+  package "MQTT ingress" as MqttBox {
+    component "Mosquitto cluster A\nMQTT / WebSocket :9001" as MosquittoA
+    component "Mosquitto cluster B\noptional isolated broker set" as MosquittoB
+    component "Mosquitto cluster N\nper tenant/site/load domain" as MosquittoN
+  }
+
   queue "Kafka\nmqtt.events :9092" as Kafka
   database "PostgreSQL\ncore data :5433->5432" as PostgreSQL
   database "ClickHouse\npackets :8123/:9000" as ClickHouse
@@ -81,9 +88,16 @@ Core --> Telescope : observability
 Core --> MercureClient : realtime events
 MercureClient --> Mercure : publish\nMERCURE_INTERNAL_URL
 
-Devices --> Mosquitto : MQTT publish
-Mosquitto --> Bus : topic subscriptions
-Bus --> Kafka : publish events
+Devices --> MosquittoA : MQTT publish
+Devices --> MosquittoB : MQTT publish
+Devices --> MosquittoN : MQTT publish
+MosquittoA --> BusA : topic subscription
+MosquittoA --> BusB : topic subscription
+MosquittoB --> BusN : dedicated bus
+MosquittoN --> BusN : dedicated bus
+BusA --> Kafka : publish events\nkey=mqtt topic\nvalue=payload
+BusB --> Kafka : publish events\nsame Kafka contract
+BusN --> Kafka : publish events\nsame Kafka contract
 BusHttp --> Nginx : health/ready
 CoreConsumer --> Kafka : consume mqtt.events
 CoreConsumer --> Interpreter : parse topic/payload
@@ -91,13 +105,25 @@ CoreConsumer --> ClickHouse : JSONEachRow inserts
 CoreConsumer --> MercureClient : packet notifications
 
 Workspace --> Core : artisan/composer
-Workspace --> Bus : composer/worker commands
+Workspace --> BusA : composer/worker commands
+Workspace --> BusB : optional worker clone
+Workspace --> BusN : optional worker clone
 Workspace --> Frontend : npm install/build
 
 GitLabCI --> Core : composer validate/analyse/test
-GitLabCI --> Bus : composer validate/analyse
+GitLabCI --> BusA : composer validate/analyse/test
 GitHubCI --> Core : composer validate/analyse/test
-GitHubCI --> Bus : composer validate/analyse
+GitHubCI --> BusA : composer validate/analyse/test
+
+note right of BusBox
+There may be multiple bus instances.
+They can be split by MQTT topic filter,
+tenant, site, load domain, or Mosquitto cluster.
+
+All buses publish the same Kafka contract:
+key = MQTT topic
+value = MQTT payload
+end note
 
 note right of PostgreSQL
 Host connection for IDE:
