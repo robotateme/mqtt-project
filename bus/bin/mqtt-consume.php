@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Bus\Support\KafkaPublisher;
+use Bus\Support\OutboxPublisher;
+use Bus\Support\RedisOutboxStore;
 use Bus\Support\RuntimeStatus;
 use PhpMqtt\Client\ConnectionSettings;
 use PhpMqtt\Client\MqttClient;
@@ -20,9 +22,26 @@ $publisher = KafkaPublisher::connect(
     $config['kafka']['backpressure_timeout_ms'],
     $config['kafka']['message_timeout_ms'],
 );
+$outbox = RedisOutboxStore::connect(
+    $config['redis']['host'],
+    $config['redis']['port'],
+    $config['redis']['password'],
+    $config['redis']['database'],
+    $config['redis']['timeout'],
+    $config['outbox']['stream'],
+    $config['outbox']['group'],
+    $config['outbox']['consumer'],
+    $config['outbox']['bus_id'],
+    $config['outbox']['max_length'],
+    $config['outbox']['dedupe_ttl_seconds'],
+    $config['outbox']['block_ms'],
+);
+$outboxPublisher = new OutboxPublisher($outbox, $publisher, $config['outbox']['batch_size']);
 $status = new RuntimeStatus($config['runtime']['status_file'], $config['runtime']['status_interval_ms']);
 $startedAt = gmdate('c');
 $receivedMessages = 0;
+$enqueuedMessages = 0;
+$publishedFromOutbox = 0;
 $mqtt = new MqttClient(
     $config['mqtt']['host'],
     $config['mqtt']['port'],
@@ -34,13 +53,15 @@ $settings = (new ConnectionSettings())
     ->setPassword($config['mqtt']['password'])
     ->setKeepAliveInterval(60);
 
-$shutdown = static function () use ($publisher, $status, &$receivedMessages, $startedAt): void {
-    $publisher->flush();
+$shutdown = static function () use ($outboxPublisher, $status, &$receivedMessages, &$enqueuedMessages, &$publishedFromOutbox, $startedAt): void {
+    $outboxPublisher->flush();
     $status->write([
         'status' => 'stopped',
         'started_at' => $startedAt,
         'received_messages' => $receivedMessages,
-        'kafka' => $publisher->stats(),
+        'enqueued_messages' => $enqueuedMessages,
+        'published_from_outbox' => $publishedFromOutbox,
+        'outbox' => $outboxPublisher->stats(),
     ], true);
 };
 
@@ -57,18 +78,30 @@ $status->write([
     'status' => 'running',
     'started_at' => $startedAt,
     'received_messages' => $receivedMessages,
-    'kafka' => $publisher->stats(),
+    'enqueued_messages' => $enqueuedMessages,
+    'published_from_outbox' => $publishedFromOutbox,
+    'outbox' => $outboxPublisher->stats(),
 ], true);
 
-$mqtt->subscribe($config['mqtt']['topic'], function (string $topic, string $message) use ($publisher, $status, &$receivedMessages, $startedAt): void {
+$publishedFromOutbox += $outboxPublisher->drain();
+
+$mqtt->subscribe($config['mqtt']['topic'], function (string $topic, string $message) use ($outbox, $outboxPublisher, $status, &$receivedMessages, &$enqueuedMessages, &$publishedFromOutbox, $startedAt): void {
     $receivedMessages++;
-    $publisher->publish($topic, $message);
+    $enqueued = $outbox->enqueue($topic, $message);
+
+    if ($enqueued !== null) {
+        $enqueuedMessages++;
+    }
+
+    $publishedFromOutbox += $outboxPublisher->drain();
 
     $status->write([
         'status' => 'running',
         'started_at' => $startedAt,
         'received_messages' => $receivedMessages,
-        'kafka' => $publisher->stats(),
+        'enqueued_messages' => $enqueuedMessages,
+        'published_from_outbox' => $publishedFromOutbox,
+        'outbox' => $outboxPublisher->stats(),
     ]);
 }, $config['mqtt']['qos']);
 

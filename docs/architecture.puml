@@ -41,6 +41,7 @@ package "Integration buses\nhorizontal scale" as BusBox {
   component "bus A\nMQTT worker\nMQTT_TOPIC=devices/+/telemetry" as BusA
   component "bus B\nMQTT worker\nMQTT_TOPIC=devices/+/state" as BusB
   component "bus N\nMQTT worker\nper topic group or broker cluster" as BusN
+  component "Redis outbox publisher\nXREADGROUP -> Kafka -> XACK" as OutboxPublisher
   component "Runtime status HTTP\nper bus instance" as BusHttp
 }
 
@@ -54,6 +55,7 @@ queue "Kafka\nmqtt.events" as Kafka
 database "PostgreSQL\ncore data" as PostgreSQL
 database "ClickHouse\npackets" as ClickHouse
 database "Redis\nqueues/cache" as Redis
+queue "Redis Streams outbox\nmqtt:outbox\nSET NX dedupe" as RedisOutbox
 component "Mercure Hub" as Mercure
 
 User --> Browser : открывает frontend
@@ -79,9 +81,12 @@ MosquittoA --> BusA : topic subscription
 MosquittoA --> BusB : topic subscription
 MosquittoB --> BusN : dedicated bus
 MosquittoN --> BusN : dedicated bus
-BusA --> Kafka : publish events\nkey=mqtt topic\nvalue=payload
-BusB --> Kafka : publish events\nsame Kafka contract
-BusN --> Kafka : publish events\nsame Kafka contract
+BusA --> RedisOutbox : XADD packet
+BusB --> RedisOutbox : XADD packet
+BusN --> RedisOutbox : XADD packet
+RedisOutbox --> OutboxPublisher : XREADGROUP
+OutboxPublisher --> Kafka : publish events\nkey=mqtt topic\nvalue=payload
+OutboxPublisher --> RedisOutbox : XACK after Kafka flush
 BusHttp --> Nginx : health/ready
 CoreConsumer --> Kafka : consume mqtt.events
 CoreConsumer --> Interpreter : parse topic/payload
@@ -93,7 +98,10 @@ There may be multiple bus instances.
 They can be split by MQTT topic filter,
 tenant, site, load domain, or Mosquitto cluster.
 
-All buses publish the same Kafka contract:
+All buses write to Redis Streams first.
+Redis SET NX EX is used for short-term dedupe.
+
+The publisher sends the same Kafka contract:
 key = MQTT topic
 value = MQTT payload
 end note

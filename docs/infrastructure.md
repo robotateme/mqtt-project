@@ -19,6 +19,10 @@
 или отдельному MQTT-кластеру. Все такие worker-ы публикуют события в Kafka по
 одному контракту, поэтому `core` consumer остается общим downstream-слоем.
 
+Redis используется не только для Laravel queues/cache, но и как outbox для
+`bus`. Для стенда нужно включить Redis persistence, чтобы Redis Streams outbox
+не терял MQTT-пакеты при перезапуске Redis.
+
 Порты на хосте:
 
 | Сервис | Порт |

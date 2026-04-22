@@ -32,6 +32,23 @@ return [
         'backpressure_timeout_ms' => (int) $env('KAFKA_BACKPRESSURE_TIMEOUT_MS', '5000'),
         'message_timeout_ms' => (int) $env('KAFKA_MESSAGE_TIMEOUT_MS', '30000'),
     ],
+    'redis' => [
+        'host' => $env('REDIS_HOST', 'redis'),
+        'port' => (int) $env('REDIS_PORT', '6379'),
+        'password' => $env('REDIS_PASSWORD') === '' ? null : $env('REDIS_PASSWORD'),
+        'database' => (int) $env('REDIS_DB', '0'),
+        'timeout' => (float) $env('REDIS_TIMEOUT', '2.5'),
+    ],
+    'outbox' => [
+        'stream' => $env('OUTBOX_STREAM', 'mqtt:outbox'),
+        'group' => $env('OUTBOX_GROUP', 'bus-publishers'),
+        'consumer' => $env('OUTBOX_CONSUMER', $env('MQTT_CLIENT_ID', 'bus-mqtt-kafka')),
+        'bus_id' => $env('OUTBOX_BUS_ID', $env('MQTT_CLIENT_ID', 'bus-mqtt-kafka')),
+        'batch_size' => (int) $env('OUTBOX_BATCH_SIZE', '100'),
+        'max_length' => (int) $env('OUTBOX_MAX_LENGTH', '100000'),
+        'dedupe_ttl_seconds' => (int) $env('OUTBOX_DEDUPE_TTL_SECONDS', '86400'),
+        'block_ms' => (int) $env('OUTBOX_BLOCK_MS', '1'),
+    ],
     'runtime' => [
         'status_file' => $env('BUS_STATUS_FILE', dirname(__DIR__) . '/storage/runtime/status.json'),
         'status_interval_ms' => (int) $env('BUS_STATUS_INTERVAL_MS', '1000'),

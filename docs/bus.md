@@ -21,6 +21,30 @@ make bus-consume
 Базовый контракт для `core` одинаковый для всех экземпляров: Kafka message key
 содержит MQTT topic, Kafka message value содержит MQTT payload.
 
+## Redis outbox
+
+`bus` не отправляет MQTT-пакет напрямую в Kafka. Сначала пакет попадает в Redis
+Streams outbox:
+
+```text
+MQTT -> bus listener -> Redis Stream -> bus outbox publisher -> Kafka
+```
+
+Минимальная защита от повторов делается через Redis `SET ... NX EX`: перед
+`XADD` worker создает dedupe-key по `bus_id`, MQTT topic и payload. Если такой
+ключ уже есть, пакет считается дублем и не добавляется в stream.
+
+Publisher читает stream через consumer group: сначала pending записи текущего
+consumer-а с offset `0`, затем новые записи с offset `>`. После отправки в
+Kafka он делает `XACK` только после успешного Kafka `flush`. Это дает
+at-least-once доставку без SQL: при падении worker-а неподтвержденные сообщения
+остаются в Redis pending/outbox и дочитываются следующим запуском с тем же
+`OUTBOX_CONSUMER`.
+
+Для стенда Redis должен быть настроен с persistence, например AOF. Без
+persistence Redis outbox защищает от временной недоступности Kafka, но не от
+потери самого Redis.
+
 Локальный запуск внутри `bus`:
 
 ```bash
@@ -53,6 +77,16 @@ message key, payload передается как Kafka message value, batch flus
 | `KAFKA_LINGER_MS` | Задержка для группировки сообщений |
 | `KAFKA_MAX_OUTSTANDING` | Лимит очереди producer |
 | `KAFKA_BACKPRESSURE_TIMEOUT_MS` | Максимальное ожидание емкости Kafka |
+| `REDIS_HOST`, `REDIS_PORT` | Redis для outbox и dedupe |
+| `REDIS_DB` | Redis database для outbox |
+| `OUTBOX_STREAM` | Redis Stream с MQTT-пакетами |
+| `OUTBOX_GROUP` | Consumer group publisher-ов |
+| `OUTBOX_CONSUMER` | Имя consumer-а в Redis group |
+| `OUTBOX_BUS_ID` | Идентификатор bus-инстанса для dedupe/event id |
+| `OUTBOX_BATCH_SIZE` | Размер чтения из Redis Stream |
+| `OUTBOX_MAX_LENGTH` | Мягкий лимит длины stream |
+| `OUTBOX_DEDUPE_TTL_SECONDS` | TTL dedupe-key |
+| `OUTBOX_BLOCK_MS` | BLOCK timeout для `XREADGROUP` |
 | `BUS_STATUS_FILE` | Runtime status для `/ready` |
 
 ## HTTP endpoints

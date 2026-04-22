@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d91879aace2974f1b476b2001ae5940d",
+    "content-hash": "b0bbf14363bc2dcd991ae09d90f389dc",
     "packages": [
         {
             "name": "myclabs/php-enum",
@@ -5060,7 +5060,8 @@
     "prefer-lowest": false,
     "platform": {
         "php": "^8.4 || ^8.5",
-        "ext-rdkafka": "*"
+        "ext-rdkafka": "*",
+        "ext-redis": "*"
     },
     "platform-dev": {},
     "plugin-api-version": "2.6.0"
