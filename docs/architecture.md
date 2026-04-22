@@ -1,4 +1,4 @@
-# Архитектура
+# Архитектура стенда
 
 ![Полная архитектура MQTT Project](assets/architecture.png)
 
@@ -23,6 +23,10 @@ Devices -> Mosquitto cluster(s) -> bus instance(s) -> Kafka -> core -> ClickHous
 - `laradock` - локальная Docker-инфраструктура проекта.
 - `Mercure` - realtime hub для публикации событий из API и подписок frontend.
 - `Redis` - cache и queue backend для Laravel/Horizon.
+
+Диаграмма описывает стендовую runtime-архитектуру. Docker/Laradock, PhpStorm,
+workspace-команды и CI-связи намеренно не показаны, потому что они относятся к
+локальной разработке или delivery pipeline, а не к работе стенда.
 
 Текущая PHP-среда работает на PHP 8.5. Phalcon не используется: `bus` является
 CLI worker-сервисом, а не веб-приложением.

@@ -53,3 +53,7 @@ curl -H 'Host: frontend.localhost' http://localhost/
 127.0.0.1 api.mqtt.local
 127.0.0.1 mqtt.local
 ```
+
+Стендовая архитектурная диаграмма не включает Docker/Laradock и IDE-клиенты:
+они остаются локальными инструментами разработки и не являются runtime-слоем
+стенда.

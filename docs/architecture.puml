@@ -22,60 +22,44 @@ skinparam queue {
 actor "Устройства MQTT" as Devices
 actor "Пользователь / оператор" as User
 
-node "Локальная машина разработчика" as Host {
-  component "Browser\nmqtt.local" as Browser
-  component "PhpStorm\nDB client" as PhpStorm
+component "Browser\nmqtt.local" as Browser
+component "nginx / ingress\nHTTP(S)" as Nginx
+component "frontend\nVue 3 + Bootstrap 5" as Frontend
+component "php-fpm\nAPI runtime" as PhpFpm
+
+package "API core" as CoreBox {
+  component "core Laravel API\napi.mqtt.local" as Core
+  component "JWT Auth\nAdmin API" as Auth
+  component "Packet interpreter" as Interpreter
+  component "Kafka consumer\nphp artisan kafka:consume-packets" as CoreConsumer
+  component "Horizon\n/horizon" as Horizon
+  component "Telescope\n/telescope" as Telescope
+  component "Mercure publisher client" as MercureClient
 }
 
-node "Laradock / Docker Compose" as Docker {
-  component "nginx\n:80 / :443" as Nginx
-  component "php-fpm" as PhpFpm
-  component "workspace\nCLI tools" as Workspace
-
-  package "Frontend" as FrontendBox {
-    component "frontend\nVue 3 + Bootstrap 5\n/var/www/frontend/dist" as Frontend
-  }
-
-  package "API core" as CoreBox {
-    component "core Laravel API\napi.mqtt.local" as Core
-    component "JWT Auth\nAdmin API" as Auth
-    component "Packet interpreter" as Interpreter
-    component "Kafka consumer\nphp artisan kafka:consume-packets" as CoreConsumer
-    component "Horizon\n/horizon" as Horizon
-    component "Telescope\n/telescope" as Telescope
-    component "Mercure publisher client" as MercureClient
-  }
-
-  package "Integration buses\nhorizontal scale" as BusBox {
-    component "bus A\nMQTT worker\nMQTT_TOPIC=devices/+/telemetry" as BusA
-    component "bus B\nMQTT worker\nMQTT_TOPIC=devices/+/state" as BusB
-    component "bus N\nMQTT worker\nper topic group or broker cluster" as BusN
-    component "Runtime status HTTP\nbus.localhost\nper bus instance" as BusHttp
-  }
-
-  package "MQTT ingress" as MqttBox {
-    component "Mosquitto cluster A\nMQTT / WebSocket :9001" as MosquittoA
-    component "Mosquitto cluster B\noptional isolated broker set" as MosquittoB
-    component "Mosquitto cluster N\nper tenant/site/load domain" as MosquittoN
-  }
-
-  queue "Kafka\nmqtt.events :9092" as Kafka
-  database "PostgreSQL\ncore data :5433->5432" as PostgreSQL
-  database "ClickHouse\npackets :8123/:9000" as ClickHouse
-  database "Redis\nqueues/cache :6379" as Redis
-  component "Mercure Hub\n:1337 / :1338" as Mercure
+package "Integration buses\nhorizontal scale" as BusBox {
+  component "bus A\nMQTT worker\nMQTT_TOPIC=devices/+/telemetry" as BusA
+  component "bus B\nMQTT worker\nMQTT_TOPIC=devices/+/state" as BusB
+  component "bus N\nMQTT worker\nper topic group or broker cluster" as BusN
+  component "Runtime status HTTP\nper bus instance" as BusHttp
 }
 
-cloud "External CI" as CI {
-  component "GitLab CI" as GitLabCI
-  component "GitHub Actions" as GitHubCI
+package "MQTT ingress" as MqttBox {
+  component "Mosquitto cluster A\nMQTT / WebSocket" as MosquittoA
+  component "Mosquitto cluster B\noptional isolated broker set" as MosquittoB
+  component "Mosquitto cluster N\nper tenant/site/load domain" as MosquittoN
 }
+
+queue "Kafka\nmqtt.events" as Kafka
+database "PostgreSQL\ncore data" as PostgreSQL
+database "ClickHouse\npackets" as ClickHouse
+database "Redis\nqueues/cache" as Redis
+component "Mercure Hub" as Mercure
 
 User --> Browser : открывает frontend
 Browser --> Nginx : http://mqtt.local
 Browser --> Nginx : http://api.mqtt.local/api/*
 Browser --> Mercure : EventSource subscribe\nMERCURE_PUBLIC_URL
-PhpStorm --> PostgreSQL : JDBC\n127.0.0.1:5433
 
 Nginx --> Frontend : static files
 Nginx --> PhpFpm : FastCGI
@@ -104,17 +88,6 @@ CoreConsumer --> Interpreter : parse topic/payload
 CoreConsumer --> ClickHouse : JSONEachRow inserts
 CoreConsumer --> MercureClient : packet notifications
 
-Workspace --> Core : artisan/composer
-Workspace --> BusA : composer/worker commands
-Workspace --> BusB : optional worker clone
-Workspace --> BusN : optional worker clone
-Workspace --> Frontend : npm install/build
-
-GitLabCI --> Core : composer validate/analyse/test
-GitLabCI --> BusA : composer validate/analyse/test
-GitHubCI --> Core : composer validate/analyse/test
-GitHubCI --> BusA : composer validate/analyse/test
-
 note right of BusBox
 There may be multiple bus instances.
 They can be split by MQTT topic filter,
@@ -125,19 +98,12 @@ key = MQTT topic
 value = MQTT payload
 end note
 
-note right of PostgreSQL
-Host connection for IDE:
-127.0.0.1:5433
-database=core
-user=default
-end note
-
 note bottom of Mercure
 Public URL:
-http://localhost:1337/.well-known/mercure
+MERCURE_PUBLIC_URL
 
 Internal URL:
-http://mercure/.well-known/mercure
+MERCURE_INTERNAL_URL
 end note
 
 @enduml
