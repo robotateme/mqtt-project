@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Core\Application\Devices;
 
 use App\Models\Device;

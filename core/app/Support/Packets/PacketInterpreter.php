@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Support\Packets;
 
-final class PacketInterpreter
+final readonly class PacketInterpreter
 {
     public function __construct(private string $deviceTopicRegex)
     {

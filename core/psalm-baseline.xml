@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="6.16.1@f1f5de594dc76faf8784e02d3dc4716c91c6f6ac">
   <file src="app/Console/Commands/ConsumeKafkaPackets.php">
-    <ClassMustBeFinal>
-      <code><![CDATA[ConsumeKafkaPackets]]></code>
-    </ClassMustBeFinal>
     <MixedArgument>
       <code><![CDATA[$message]]></code>
       <code><![CDATA[$timeoutMs]]></code>
@@ -42,9 +39,6 @@
     </UnusedClass>
   </file>
   <file src="app/Console/Commands/MigrateClickHouse.php">
-    <ClassMustBeFinal>
-      <code><![CDATA[MigrateClickHouse]]></code>
-    </ClassMustBeFinal>
     <MixedArgument>
       <code><![CDATA[$database]]></code>
       <code><![CDATA[$table]]></code>
@@ -173,9 +167,6 @@
     </PossiblyUnusedMethod>
   </file>
   <file src="app/Providers/AppServiceProvider.php">
-    <ClassMustBeFinal>
-      <code><![CDATA[AppServiceProvider]]></code>
-    </ClassMustBeFinal>
     <MissingOverrideAttribute>
       <code><![CDATA[public function register(): void]]></code>
     </MissingOverrideAttribute>
@@ -232,9 +223,6 @@
     </MixedOperand>
   </file>
   <file src="database/factories/UserFactory.php">
-    <ClassMustBeFinal>
-      <code><![CDATA[UserFactory]]></code>
-    </ClassMustBeFinal>
     <MissingOverrideAttribute>
       <code><![CDATA[public function definition(): array]]></code>
     </MissingOverrideAttribute>
@@ -306,9 +294,6 @@
     </UndefinedMagicMethod>
   </file>
   <file src="database/seeders/DatabaseSeeder.php">
-    <ClassMustBeFinal>
-      <code><![CDATA[DatabaseSeeder]]></code>
-    </ClassMustBeFinal>
     <UnusedClass>
       <code><![CDATA[DatabaseSeeder]]></code>
     </UnusedClass>
@@ -432,9 +417,6 @@
     </MixedReturnTypeCoercion>
   </file>
   <file src="tests/Feature/AuthApiTest.php">
-    <ClassMustBeFinal>
-      <code><![CDATA[AuthApiTest]]></code>
-    </ClassMustBeFinal>
     <MixedArgument>
       <code><![CDATA[$login->json('token.access_token')]]></code>
       <code><![CDATA[$token]]></code>
@@ -454,9 +436,6 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="tests/Feature/ExampleTest.php">
-    <ClassMustBeFinal>
-      <code><![CDATA[ExampleTest]]></code>
-    </ClassMustBeFinal>
     <PropertyNotSetInConstructor>
       <code><![CDATA[ExampleTest]]></code>
       <code><![CDATA[ExampleTest]]></code>
@@ -467,9 +446,6 @@
     </UnusedClass>
   </file>
   <file src="tests/Unit/ExampleTest.php">
-    <ClassMustBeFinal>
-      <code><![CDATA[ExampleTest]]></code>
-    </ClassMustBeFinal>
     <UnusedClass>
       <code><![CDATA[ExampleTest]]></code>
     </UnusedClass>

@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Support\ClickHouse;
 
 use Illuminate\Http\Client\Factory as HttpFactory;
 use RuntimeException;
 
-final class ClickHouseClient
+final readonly class ClickHouseClient
 {
     public function __construct(
         private HttpFactory $http,

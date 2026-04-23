@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Support\ClickHouse\ClickHouseClient;
@@ -16,7 +18,7 @@ use Core\Infrastructure\PostgreSql\EloquentUserRepository;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+final class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.

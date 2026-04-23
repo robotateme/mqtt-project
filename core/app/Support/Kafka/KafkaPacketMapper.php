@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Support\Kafka;
 
 use App\Support\Packets\PacketInterpreter;
 
-final class KafkaPacketMapper
+final readonly class KafkaPacketMapper
 {
     public function __construct(private PacketInterpreter $interpreter)
     {

@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Core\Application\Auth\Handlers;
 
 use Core\Application\Auth\Commands\RefreshTokenCommand;
 use Core\Application\Auth\Data\AuthToken;
 use Core\Application\Auth\JwtTokenService;
 
-final class RefreshTokenHandler
+final readonly class RefreshTokenHandler
 {
     public function __construct(private JwtTokenService $tokens)
     {

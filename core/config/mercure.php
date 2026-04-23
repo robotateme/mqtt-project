@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'public_url' => (string) env('MERCURE_PUBLIC_URL', 'http://localhost:1337/.well-known/mercure'),
     'internal_url' => (string) env('MERCURE_INTERNAL_URL', 'http://mercure/.well-known/mercure'),

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Core\Infrastructure\Jwt;
 
 use App\Models\User;
@@ -13,7 +15,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Str;
 use UnexpectedValueException;
 
-final class FirebaseJwtTokenService implements JwtTokenService
+final readonly class FirebaseJwtTokenService implements JwtTokenService
 {
     public function __construct(
         private UserRepository $users,

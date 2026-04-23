@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'kafka' => [
         'brokers' => env('KAFKA_BROKERS', 'kafka:9092'),

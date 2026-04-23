@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Support\Mercure;
 
 use Firebase\JWT\JWT;
@@ -7,7 +9,7 @@ use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Http\Client\Response;
 use RuntimeException;
 
-final class MercureClient
+final readonly class MercureClient
 {
     public function __construct(
         private HttpFactory $http,

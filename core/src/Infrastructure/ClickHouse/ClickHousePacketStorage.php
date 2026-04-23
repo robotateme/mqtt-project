@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Core\Infrastructure\ClickHouse;
 
 use App\Support\ClickHouse\ClickHouseClient;
 use Core\Application\Packets\PacketStoragePort;
 
-final class ClickHousePacketStorage implements PacketStoragePort
+final readonly class ClickHousePacketStorage implements PacketStoragePort
 {
     public function __construct(
         private ClickHouseClient $client,

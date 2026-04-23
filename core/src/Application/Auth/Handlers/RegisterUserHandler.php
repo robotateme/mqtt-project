@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Core\Application\Auth\Handlers;
 
 use Core\Application\Auth\Commands\RegisterUserCommand;
@@ -9,7 +11,7 @@ use Core\Application\Users\UserRepository;
 use Core\Domain\Users\UserRole;
 use Illuminate\Support\Facades\Hash;
 
-final class RegisterUserHandler
+final readonly class RegisterUserHandler
 {
     public function __construct(
         private UserRepository $users,

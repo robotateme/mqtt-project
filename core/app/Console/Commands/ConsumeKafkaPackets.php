@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Support\Kafka\KafkaPacketMapper;
@@ -10,7 +12,7 @@ use RdKafka\KafkaConsumer;
 use RdKafka\Message;
 use RuntimeException;
 
-class ConsumeKafkaPackets extends Command
+final class ConsumeKafkaPackets extends Command
 {
     protected $signature = 'kafka:consume-packets
         {--once : Stop after one successful batch}

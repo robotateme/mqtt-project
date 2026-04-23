@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Support\ClickHouse\ClickHouseClient;
 use Illuminate\Console\Command;
 
-class MigrateClickHouse extends Command
+final class MigrateClickHouse extends Command
 {
     protected $signature = 'clickhouse:migrate';
 
