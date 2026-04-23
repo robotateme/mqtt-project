@@ -29,6 +29,7 @@ component "php-fpm\nAPI runtime" as PhpFpm
 
 package "API core" as CoreBox {
   component "core Laravel API\napi.mqtt.local" as Core
+  component "Application code\nstrict_types\nfinal/readonly services" as CoreCode
   component "JWT Auth\nAdmin API" as Auth
   component "Packet interpreter" as Interpreter
   component "Kafka consumer\nphp artisan kafka:consume-packets" as CoreConsumer
@@ -66,6 +67,7 @@ Browser --> Mercure : EventSource subscribe\nMERCURE_PUBLIC_URL
 Nginx --> Frontend : static files
 Nginx --> PhpFpm : FastCGI
 PhpFpm --> Core : Laravel request lifecycle
+Core --> CoreCode : typed application layer
 Core --> Auth : register/login/refresh/me
 Core --> PostgreSQL : users, devices,\nsessions, Telescope
 Core --> Redis : cache, queues
@@ -112,6 +114,14 @@ MERCURE_PUBLIC_URL
 
 Internal URL:
 MERCURE_INTERNAL_URL
+end note
+
+note right of CoreCode
+Project PHP files use declare(strict_types=1).
+Application services, handlers and tests are final
+where extension is not part of the contract.
+Immutable service objects use readonly constructors.
+Eloquent models stay non-final for Laravel extension points.
 end note
 
 @enduml

@@ -137,3 +137,7 @@ make restart
 - [Проверка и статический анализ](docs/validation.md)
 - [Замечания](docs/notes.md)
 - [Отчеты о проделанной работе](docs/work-reports.md)
+
+Диаграмма архитектуры хранится в PlantUML-исходнике
+`docs/architecture.puml`; PNG для просмотра лежит в
+`docs/assets/architecture.png`.

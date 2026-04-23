@@ -22,6 +22,9 @@ Devices -> Mosquitto cluster(s) -> bus instance(s) -> Kafka -> core -> ClickHous
   успешного `flush`.
 - `core` - Laravel-приложение: HTTP API, пользователи, устройства,
   интерпретация MQTT-пакетов и запись пакетных данных в ClickHouse.
+  PHP-код приложения приведен к `declare(strict_types=1)`, сервисы и handlers
+  закрыты через `final`/`readonly` там, где расширение не является контрактом.
+  Eloquent-модели остаются не `final`, потому что это точки расширения Laravel.
 - `frontend` - Vue 3 + Bootstrap 5 интерфейс, обслуживается nginx на
   `mqtt.local`.
 - `laradock` - локальная Docker-инфраструктура проекта.
@@ -34,3 +37,9 @@ workspace-команды и CI-связи намеренно не показан
 
 Текущая PHP-среда работает на PHP 8.5. Phalcon не используется: `bus` является
 CLI worker-сервисом, а не веб-приложением.
+
+PNG-версия диаграммы генерируется из PlantUML-исходника:
+
+```bash
+plantuml -tpng -o assets docs/architecture.puml
+```
