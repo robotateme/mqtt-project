@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Bus\Support\KafkaProducerPort;
-use Bus\Support\KafkaPublisher;
-use Bus\Support\OutboxMessage;
-use Bus\Support\OutboxPublisher;
-use Bus\Support\OutboxStorePort;
+use Bus\Contracts\KafkaProducerPort;
+use Bus\Kafka\KafkaPublisher;
+use Bus\Outbox\OutboxMessage;
+use Bus\Outbox\OutboxPublisher;
+use Bus\Contracts\OutboxStorePort;
 use PHPUnit\Framework\TestCase;
 
 final class OutboxPublisherTest extends TestCase

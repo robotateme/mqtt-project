@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Bus\Support\KafkaPublisher;
-use Bus\Support\OutboxPublisher;
-use Bus\Support\RedisOutboxStore;
-use Bus\Support\RuntimeStatus;
+use Bus\Kafka\KafkaPublisher;
+use Bus\Outbox\OutboxPublisher;
+use Bus\Outbox\RedisOutboxStore;
+use Bus\Runtime\RuntimeStatus;
 use PhpMqtt\Client\ConnectionSettings;
 use PhpMqtt\Client\MqttClient;
 

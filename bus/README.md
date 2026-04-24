@@ -19,6 +19,14 @@ php bin/mqtt-consume.php
 
 Runtime configuration is read from environment variables; see `.env.example`.
 
+## Code layout
+
+- `app/Contracts` - ports for Kafka, Redis and outbox abstractions.
+- `app/Kafka` - Kafka publisher and `rdkafka` adapter.
+- `app/Outbox` - Redis Streams outbox and outbox-to-Kafka publisher.
+- `app/Redis` - PHP Redis adapter.
+- `app/Runtime` - runtime status used by `/ready`.
+
 ## Flow Control
 
 The worker applies backpressure before accepting more MQTT messages into Kafka:

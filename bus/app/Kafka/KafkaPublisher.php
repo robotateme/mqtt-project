@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Bus\Support;
+namespace Bus\Kafka;
+
+use Bus\Contracts\KafkaProducerPort;
 
 final class KafkaPublisher
 {

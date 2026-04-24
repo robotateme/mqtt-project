@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Bus\Support\RedisConnectionPort;
-use Bus\Support\RedisOutboxStore;
+use Bus\Contracts\RedisConnectionPort;
+use Bus\Outbox\RedisOutboxStore;
 use PHPUnit\Framework\TestCase;
 
 final class RedisOutboxStoreTest extends TestCase

@@ -21,6 +21,18 @@ make bus-consume
 Базовый контракт для `core` одинаковый для всех экземпляров: Kafka message key
 содержит MQTT topic, Kafka message value содержит MQTT payload.
 
+## Структура кода
+
+Код `bus/app` разложен по ролям:
+
+- `Contracts` - порты для Kafka producer, Redis connection и outbox store.
+- `Kafka` - Kafka publisher и адаптер `rdkafka`.
+- `Outbox` - Redis Streams outbox, outbox message и publisher в Kafka.
+- `Redis` - адаптер PHP Redis extension.
+- `Runtime` - runtime status для `/ready`.
+
+Entrypoints остаются в `bin/mqtt-consume.php` и `public/index.php`.
+
 ## Redis outbox
 
 `bus` не отправляет MQTT-пакет напрямую в Kafka. Сначала пакет попадает в Redis

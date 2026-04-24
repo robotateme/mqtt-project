@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Bus\Support;
+namespace Bus\Outbox;
+
+use Bus\Contracts\OutboxStorePort;
+use Bus\Contracts\RedisConnectionPort;
+use Bus\Redis\PhpRedisConnection;
 
 final class RedisOutboxStore implements OutboxStorePort
 {

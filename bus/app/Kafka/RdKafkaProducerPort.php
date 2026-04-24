@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Bus\Support;
+namespace Bus\Kafka;
 
+use Bus\Contracts\KafkaProducerPort;
 use RdKafka\Conf;
 use RdKafka\Producer;
 

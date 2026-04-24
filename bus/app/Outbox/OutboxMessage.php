@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bus\Support;
+namespace Bus\Outbox;
 
 final readonly class OutboxMessage
 {

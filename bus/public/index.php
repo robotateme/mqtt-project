@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Bus\Support\RuntimeStatus;
+use Bus\Runtime\RuntimeStatus;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 

@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Bus\Support;
+namespace Bus\Redis;
 
+use Bus\Contracts\RedisConnectionPort;
 use Redis;
 
 final class PhpRedisConnection implements RedisConnectionPort

@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Bus\Support;
+namespace Bus\Contracts;
+
+use Bus\Outbox\OutboxMessage;
 
 interface OutboxStorePort
 {

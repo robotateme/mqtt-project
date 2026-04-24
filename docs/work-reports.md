@@ -54,3 +54,5 @@
   `final` и `readonly`, пересобрал PNG архитектуры.
 - Перевел note-блоки PlantUML-диаграммы на русский язык и пересобрал PNG
   архитектуры.
+- Разложил код `bus` по папкам `Contracts`, `Kafka`, `Outbox`, `Redis` и
+  `Runtime`, обновил namespace, entrypoints, тесты и документацию.

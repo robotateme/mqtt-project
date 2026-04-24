@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bus\Support;
+namespace Bus\Contracts;
 
 interface RedisConnectionPort
 {

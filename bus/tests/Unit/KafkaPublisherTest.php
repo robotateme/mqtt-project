@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Bus\Support\KafkaProducerPort;
-use Bus\Support\KafkaPublisher;
+use Bus\Contracts\KafkaProducerPort;
+use Bus\Kafka\KafkaPublisher;
 use PHPUnit\Framework\TestCase;
 
 final class KafkaPublisherTest extends TestCase

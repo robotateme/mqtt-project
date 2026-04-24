@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Bus\Support;
+namespace Bus\Outbox;
+
+use Bus\Contracts\OutboxStorePort;
+use Bus\Kafka\KafkaPublisher;
 
 final class OutboxPublisher
 {
