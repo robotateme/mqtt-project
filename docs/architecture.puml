@@ -96,32 +96,32 @@ CoreConsumer --> ClickHouse : JSONEachRow inserts
 CoreConsumer --> MercureClient : packet notifications
 
 note right of BusBox
-There may be multiple bus instances.
-They can be split by MQTT topic filter,
-tenant, site, load domain, or Mosquitto cluster.
+Экземпляров bus может быть несколько.
+Их можно разделять по MQTT topic filter,
+tenant, site, домену нагрузки или Mosquitto-кластеру.
 
-All buses write to Redis Streams first.
-Redis SET NX EX is used for short-term dedupe.
+Все bus сначала пишут в Redis Streams.
+Redis SET NX EX используется для краткосрочной дедупликации.
 
-The publisher sends the same Kafka contract:
+Publisher отправляет единый Kafka-контракт:
 key = MQTT topic
 value = MQTT payload
 end note
 
 note bottom of Mercure
-Public URL:
+Публичный URL:
 MERCURE_PUBLIC_URL
 
-Internal URL:
+Внутренний URL:
 MERCURE_INTERNAL_URL
 end note
 
 note right of CoreCode
-Project PHP files use declare(strict_types=1).
-Application services, handlers and tests are final
-where extension is not part of the contract.
-Immutable service objects use readonly constructors.
-Eloquent models stay non-final for Laravel extension points.
+PHP-файлы проекта используют declare(strict_types=1).
+Сервисы приложения, handlers и тесты помечаются final,
+если наследование не является частью контракта.
+Иммутабельные сервисные объекты используют readonly-конструкторы.
+Eloquent-модели остаются не final из-за точек расширения Laravel.
 end note
 
 @enduml
