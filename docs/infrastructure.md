@@ -14,14 +14,10 @@
 - `clickhouse`
 
 `mosquitto` и `bus` в локальном Laradock представлены одним экземпляром для
-разработки. В production-схеме допускается несколько Mosquitto-кластеров и
-несколько `bus` worker-ов: по topic filter, tenant/site, нагрузочному домену
-или отдельному MQTT-кластеру. Все такие worker-ы публикуют события в Kafka по
-одному контракту, поэтому `core` consumer остается общим downstream-слоем.
+разработки. Масштабирование стенда описано в RFC-разделе корневого README.
 
 Redis используется не только для Laravel queues/cache, но и как outbox для
-`bus`. Для стенда нужно включить Redis persistence, чтобы Redis Streams outbox
-не терял MQTT-пакеты при перезапуске Redis.
+`bus`.
 
 Порты на хосте:
 

@@ -98,6 +98,52 @@ make core-consume
 make core-horizon
 ```
 
+## RFC: сохранение архитектуры
+
+Статус: принято.
+
+### Контекст
+
+Проект принимает MQTT-пакеты от устройств, проводит их через интеграционную
+шину и сохраняет интерпретированные данные. Архитектура должна выдерживать
+несколько MQTT topic-групп, tenant/site-сегментацию и отдельные Mosquitto-
+кластеры без изменения downstream-контракта.
+
+### Решение
+
+Основной runtime-поток остается таким:
+
+```text
+Devices -> Mosquitto cluster(s) -> bus instance(s) -> Redis Streams outbox
+        -> Kafka mqtt.events -> core consumer -> ClickHouse
+                                      |
+                                      -> Mercure events
+                                      -> PostgreSQL: users, devices, app data
+```
+
+Архитектурные инварианты:
+
+- `bus` остается PHP CLI worker-ом без SQL-хранилища.
+- Экземпляров `bus` может быть несколько; деление идет через env-настройки
+  `MQTT_TOPIC`, `MQTT_HOST`, `MQTT_CLIENT_ID`, `OUTBOX_BUS_ID`.
+- Перед Kafka используется Redis Streams outbox. Enqueue выполняется атомарным
+  Lua-скриптом через `SCRIPT LOAD`/`EVALSHA`; `XACK` делается только после
+  успешного Kafka `flush`.
+- Kafka-контракт между `bus` и `core` стабилен: key - исходный MQTT topic,
+  value - исходный MQTT payload.
+- `core` владеет HTTP API, пользователями, устройствами, интерпретацией
+  пакетов, записью в ClickHouse и realtime-публикацией в Mercure.
+- Laradock/Docker описывает локальную разработку и не является частью стендовой
+  runtime-архитектуры.
+- PHP-код ведется в `strict_types`; классы закрываются через `final`, а
+  неизменяемые adapter/value/service объекты через `readonly`, когда это не
+  конфликтует с framework extension points.
+- В PHP-коде глобальные классы импортируются через `use`, без leading slash в
+  теле класса.
+
+Изменения, которые нарушают эти инварианты, оформляются отдельным RFC-разделом
+в README перед реализацией.
+
 ## Проверки и CI
 
 Локальные проверки:

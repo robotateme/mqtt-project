@@ -11,18 +11,6 @@ Kafka consumer преобразует сообщения через `KafkaPacket
 формирует ClickHouse row с Kafka metadata, `device_identifier`, типом payload и
 JSON-представлением headers.
 
-## Кодовые соглашения
-
-PHP-файлы приложения работают в строгом режиме через
-`declare(strict_types=1)`. Классы application/support-слоя, handlers,
-middleware, artisan-команды и тесты закрываются через `final`, если они не
-предназначены для наследования. Сервисные объекты с зависимостями только через
-constructor promotion помечаются `readonly`, чтобы контейнер Laravel создавал
-иммутабельные экземпляры.
-
-Eloquent-модели остаются не `final`: Laravel использует их как extension point
-для factories, relationships, scopes и framework-интеграций.
-
 Миграции PostgreSQL:
 
 ```bash
