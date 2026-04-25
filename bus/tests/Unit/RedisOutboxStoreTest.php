@@ -36,11 +36,11 @@ final class RedisOutboxStoreTest extends TestCase
             'acked_messages' => 0,
         ], $outbox->stats());
         self::assertSame('XGROUP', $redis->commands[0][0]);
-        self::assertSame('SET', $redis->commands[1][0]);
-        self::assertSame('XADD', $redis->commands[2][0]);
+        self::assertSame('EVAL', $redis->commands[1][0]);
+        self::assertSame(2, $redis->commands[1][2]);
     }
 
-    public function test_skips_duplicate_packet_before_stream_write(): void
+    public function test_skips_duplicate_packet_atomically_before_stream_write(): void
     {
         $redis = new FakeRedisConnection();
         $redis->dedupeInserted = false;
@@ -54,7 +54,8 @@ final class RedisOutboxStoreTest extends TestCase
             'duplicate_messages' => 1,
             'acked_messages' => 0,
         ], $outbox->stats());
-        self::assertSame(['XGROUP', 'SET'], array_column($redis->commands, 0));
+        self::assertSame(['XGROUP', 'EVAL'], array_column($redis->commands, 0));
+        self::assertSame([], $redis->streamEntries());
     }
 
     public function test_reads_and_acks_stream_messages(): void
@@ -98,15 +99,26 @@ final class FakeRedisConnection implements RedisConnectionPort
             return 'OK';
         }
 
-        if ($command === 'SET') {
-            return $this->dedupeInserted ? 'OK' : null;
-        }
+        if ($command === 'EVAL') {
+            if (!$this->dedupeInserted) {
+                return false;
+            }
 
-        if ($command === 'XADD') {
             $id = '1700000000000-' . count($this->stream);
             $this->stream[] = [
                 'id' => $id,
-                'fields' => array_slice($arguments, 5),
+                'fields' => [
+                    'event_id',
+                    (string) $arguments[6],
+                    'mqtt_topic',
+                    (string) $arguments[7],
+                    'payload',
+                    (string) $arguments[8],
+                    'received_at',
+                    (string) $arguments[9],
+                    'bus_id',
+                    (string) $arguments[10],
+                ],
             ];
 
             return $id;
@@ -127,5 +139,13 @@ final class FakeRedisConnection implements RedisConnectionPort
         }
 
         return null;
+    }
+
+    /**
+     * @return list<array{id: string, fields: list<string>}>
+     */
+    public function streamEntries(): array
+    {
+        return $this->stream;
     }
 }

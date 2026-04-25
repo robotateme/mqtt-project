@@ -10,6 +10,33 @@ use Bus\Redis\PhpRedisConnection;
 
 final class RedisOutboxStore implements OutboxStorePort
 {
+    private const ENQUEUE_SCRIPT = <<<'LUA'
+local inserted = redis.call('SET', KEYS[1], '1', 'EX', ARGV[1], 'NX')
+
+if not inserted then
+    return false
+end
+
+return redis.call(
+    'XADD',
+    KEYS[2],
+    'MAXLEN',
+    '~',
+    ARGV[2],
+    '*',
+    'event_id',
+    ARGV[3],
+    'mqtt_topic',
+    ARGV[4],
+    'payload',
+    ARGV[5],
+    'received_at',
+    ARGV[6],
+    'bus_id',
+    ARGV[7]
+)
+LUA;
+
     private int $enqueuedMessages = 0;
     private int $duplicateMessages = 0;
     private int $ackedMessages = 0;
@@ -58,32 +85,26 @@ final class RedisOutboxStore implements OutboxStorePort
     {
         $eventId = $this->eventId($mqttTopic, $payload);
         $dedupeKey = 'mqtt:dedupe:' . $eventId;
-        $inserted = $this->redis->command('SET', $dedupeKey, '1', 'EX', $this->dedupeTtlSeconds, 'NX');
+        $receivedAt = gmdate('c');
+        $id = $this->redis->command(
+            'EVAL',
+            self::ENQUEUE_SCRIPT,
+            2,
+            $dedupeKey,
+            $this->stream,
+            $this->dedupeTtlSeconds,
+            $this->maxLength,
+            $eventId,
+            $mqttTopic,
+            $payload,
+            $receivedAt,
+            $this->busId,
+        );
 
-        if ($inserted !== 'OK') {
+        if ($id === false || $id === null || $id === 0) {
             $this->duplicateMessages++;
             return null;
         }
-
-        $receivedAt = gmdate('c');
-        $id = $this->redis->command(
-            'XADD',
-            $this->stream,
-            'MAXLEN',
-            '~',
-            $this->maxLength,
-            '*',
-            'event_id',
-            $eventId,
-            'mqtt_topic',
-            $mqttTopic,
-            'payload',
-            $payload,
-            'received_at',
-            $receivedAt,
-            'bus_id',
-            $this->busId,
-        );
 
         if (!is_string($id)) {
             throw new \RuntimeException('Unable to add MQTT packet to Redis outbox.');

@@ -42,9 +42,12 @@ Streams outbox:
 MQTT -> bus listener -> Redis Stream -> bus outbox publisher -> Kafka
 ```
 
-Минимальная защита от повторов делается через Redis `SET ... NX EX`: перед
-`XADD` worker создает dedupe-key по `bus_id`, MQTT topic и payload. Если такой
-ключ уже есть, пакет считается дублем и не добавляется в stream.
+Минимальная защита от повторов делается атомарным Lua-скриптом Redis:
+dedupe-key создается через `SET ... NX EX`, и в том же `EVAL` выполняется
+`XADD` в Redis Stream. Ключ строится по `bus_id`, MQTT topic и payload. Если
+такой ключ уже есть, пакет считается дублем и не добавляется в stream. Это
+убирает окно между dedupe-записью и добавлением сообщения в outbox под
+нагрузкой.
 
 Publisher читает stream через consumer group: сначала pending записи текущего
 consumer-а с offset `0`, затем новые записи с offset `>`. После отправки в

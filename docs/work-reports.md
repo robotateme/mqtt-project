@@ -56,3 +56,5 @@
   архитектуры.
 - Разложил код `bus` по папкам `Contracts`, `Kafka`, `Outbox`, `Redis` и
   `Runtime`, обновил namespace, entrypoints, тесты и документацию.
+- Сделал enqueue Redis outbox в `bus` атомарным через Lua `EVAL`, совместив
+  dedupe `SET NX EX` и `XADD`, обновил тесты и документацию.

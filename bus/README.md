@@ -38,3 +38,9 @@ The worker applies backpressure before accepting more MQTT messages into Kafka:
 - `KAFKA_MAX_OUTSTANDING` limits the producer queue.
 - `KAFKA_BACKPRESSURE_TIMEOUT_MS` caps how long the worker waits for Kafka capacity.
 - `BUS_STATUS_FILE` stores runtime counters used by `GET /ready`.
+
+## Redis outbox atomicity
+
+Outbox enqueue uses one Redis Lua `EVAL` script for `SET ... NX EX` dedupe and
+`XADD`. This keeps dedupe and stream append atomic under load; `XREADGROUP` and
+`XACK` stay as single Redis commands.
