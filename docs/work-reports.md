@@ -58,3 +58,5 @@
   `Runtime`, обновил namespace, entrypoints, тесты и документацию.
 - Сделал enqueue Redis outbox в `bus` атомарным через Lua `EVAL`, совместив
   dedupe `SET NX EX` и `XADD`, обновил тесты и документацию.
+- Вынес Lua outbox-скрипт в `bus/resources/redis`, добавил resolver с
+  `SCRIPT LOAD`/`EVALSHA` и повторной загрузкой при `NOSCRIPT`.

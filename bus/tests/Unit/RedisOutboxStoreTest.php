@@ -36,8 +36,11 @@ final class RedisOutboxStoreTest extends TestCase
             'acked_messages' => 0,
         ], $outbox->stats());
         self::assertSame('XGROUP', $redis->commands[0][0]);
-        self::assertSame('EVAL', $redis->commands[1][0]);
-        self::assertSame(2, $redis->commands[1][2]);
+        self::assertSame('SCRIPT', $redis->commands[1][0]);
+        self::assertSame('LOAD', $redis->commands[1][1]);
+        self::assertSame('EVALSHA', $redis->commands[2][0]);
+        self::assertSame($redis->scriptSha, $redis->commands[2][1]);
+        self::assertSame(2, $redis->commands[2][2]);
     }
 
     public function test_skips_duplicate_packet_atomically_before_stream_write(): void
@@ -54,8 +57,21 @@ final class RedisOutboxStoreTest extends TestCase
             'duplicate_messages' => 1,
             'acked_messages' => 0,
         ], $outbox->stats());
-        self::assertSame(['XGROUP', 'EVAL'], array_column($redis->commands, 0));
+        self::assertSame(['XGROUP', 'SCRIPT', 'EVALSHA'], array_column($redis->commands, 0));
         self::assertSame([], $redis->streamEntries());
+    }
+
+    public function test_reloads_lua_script_when_redis_script_cache_is_flushed(): void
+    {
+        $redis = new FakeRedisConnection();
+        $redis->throwNoScriptOnce = true;
+        $outbox = new RedisOutboxStore($redis, 'mqtt:outbox', 'bus-publishers', 'bus-1', 'bus-1', 100000, 86400, 1);
+
+        $message = $outbox->enqueue('devices/device-42/telemetry', '{"temperature":21.5}');
+
+        self::assertNotNull($message);
+        self::assertSame(['XGROUP', 'SCRIPT', 'EVALSHA', 'SCRIPT', 'EVALSHA'], array_column($redis->commands, 0));
+        self::assertSame(2, $redis->scriptLoads);
     }
 
     public function test_reads_and_acks_stream_messages(): void
@@ -85,6 +101,9 @@ final class FakeRedisConnection implements RedisConnectionPort
     public array $commands = [];
 
     public bool $dedupeInserted = true;
+    public bool $throwNoScriptOnce = false;
+    public int $scriptLoads = 0;
+    public string $scriptSha = 'test-script-sha';
 
     /**
      * @var list<array{id: string, fields: list<string>}>
@@ -99,7 +118,19 @@ final class FakeRedisConnection implements RedisConnectionPort
             return 'OK';
         }
 
-        if ($command === 'EVAL') {
+        if ($command === 'SCRIPT') {
+            $this->scriptLoads++;
+
+            return $this->scriptSha;
+        }
+
+        if ($command === 'EVALSHA') {
+            if ($this->throwNoScriptOnce) {
+                $this->throwNoScriptOnce = false;
+
+                throw new \RedisException('NOSCRIPT No matching script. Please use EVAL.');
+            }
+
             if (!$this->dedupeInserted) {
                 return false;
             }

@@ -28,10 +28,11 @@ make bus-consume
 - `Contracts` - порты для Kafka producer, Redis connection и outbox store.
 - `Kafka` - Kafka publisher и адаптер `rdkafka`.
 - `Outbox` - Redis Streams outbox, outbox message и publisher в Kafka.
-- `Redis` - адаптер PHP Redis extension.
+- `Redis` - адаптер PHP Redis extension и resolver Lua-скриптов.
 - `Runtime` - runtime status для `/ready`.
 
 Entrypoints остаются в `bin/mqtt-consume.php` и `public/index.php`.
+Lua-скрипты Redis лежат в `bus/resources/redis`.
 
 ## Redis outbox
 
@@ -42,12 +43,18 @@ Streams outbox:
 MQTT -> bus listener -> Redis Stream -> bus outbox publisher -> Kafka
 ```
 
-Минимальная защита от повторов делается атомарным Lua-скриптом Redis:
-dedupe-key создается через `SET ... NX EX`, и в том же `EVAL` выполняется
-`XADD` в Redis Stream. Ключ строится по `bus_id`, MQTT topic и payload. Если
-такой ключ уже есть, пакет считается дублем и не добавляется в stream. Это
-убирает окно между dedupe-записью и добавлением сообщения в outbox под
-нагрузкой.
+Минимальная защита от повторов делается атомарным Lua-скриптом Redis
+`enqueue_outbox.lua`: dedupe-key создается через `SET ... NX EX`, и в том же
+скрипте выполняется `XADD` в Redis Stream. Ключ строится по `bus_id`, MQTT
+topic и payload. Если такой ключ уже есть, пакет считается дублем и не
+добавляется в stream. Это убирает окно между dedupe-записью и добавлением
+сообщения в outbox под нагрузкой.
+
+Скрипты выполняются через `LuaScriptResolver`: он читает файл из
+`bus/resources/redis`, загружает его в Redis через `SCRIPT LOAD`, кеширует SHA
+в памяти процесса и вызывает `EVALSHA`. Если Redis отвечает `NOSCRIPT`,
+resolver сбрасывает локальный SHA, повторно загружает скрипт и выполняет
+операцию еще раз.
 
 Publisher читает stream через consumer group: сначала pending записи текущего
 consumer-а с offset `0`, затем новые записи с offset `>`. После отправки в

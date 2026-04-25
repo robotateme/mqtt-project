@@ -41,6 +41,8 @@ The worker applies backpressure before accepting more MQTT messages into Kafka:
 
 ## Redis outbox atomicity
 
-Outbox enqueue uses one Redis Lua `EVAL` script for `SET ... NX EX` dedupe and
-`XADD`. This keeps dedupe and stream append atomic under load; `XREADGROUP` and
-`XACK` stay as single Redis commands.
+Outbox enqueue uses `resources/redis/enqueue_outbox.lua` for `SET ... NX EX`
+dedupe and `XADD`. `LuaScriptResolver` loads scripts with `SCRIPT LOAD`, caches
+their SHA in process memory, executes them with `EVALSHA`, and reloads on
+`NOSCRIPT`. This keeps dedupe and stream append atomic under load; `XREADGROUP`
+and `XACK` stay as single Redis commands.

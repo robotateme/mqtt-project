@@ -6,40 +6,15 @@ namespace Bus\Outbox;
 
 use Bus\Contracts\OutboxStorePort;
 use Bus\Contracts\RedisConnectionPort;
+use Bus\Redis\LuaScriptResolver;
 use Bus\Redis\PhpRedisConnection;
 
 final class RedisOutboxStore implements OutboxStorePort
 {
-    private const ENQUEUE_SCRIPT = <<<'LUA'
-local inserted = redis.call('SET', KEYS[1], '1', 'EX', ARGV[1], 'NX')
-
-if not inserted then
-    return false
-end
-
-return redis.call(
-    'XADD',
-    KEYS[2],
-    'MAXLEN',
-    '~',
-    ARGV[2],
-    '*',
-    'event_id',
-    ARGV[3],
-    'mqtt_topic',
-    ARGV[4],
-    'payload',
-    ARGV[5],
-    'received_at',
-    ARGV[6],
-    'bus_id',
-    ARGV[7]
-)
-LUA;
-
     private int $enqueuedMessages = 0;
     private int $duplicateMessages = 0;
     private int $ackedMessages = 0;
+    private LuaScriptResolver $scripts;
 
     public function __construct(
         private RedisConnectionPort $redis,
@@ -50,7 +25,9 @@ LUA;
         private int $maxLength,
         private int $dedupeTtlSeconds,
         private int $blockMs,
+        ?LuaScriptResolver $scripts = null,
     ) {
+        $this->scripts = $scripts ?? LuaScriptResolver::default($redis);
         $this->createGroup();
     }
 
@@ -86,9 +63,8 @@ LUA;
         $eventId = $this->eventId($mqttTopic, $payload);
         $dedupeKey = 'mqtt:dedupe:' . $eventId;
         $receivedAt = gmdate('c');
-        $id = $this->redis->command(
-            'EVAL',
-            self::ENQUEUE_SCRIPT,
+        $id = $this->scripts->eval(
+            'enqueue_outbox',
             2,
             $dedupeKey,
             $this->stream,
