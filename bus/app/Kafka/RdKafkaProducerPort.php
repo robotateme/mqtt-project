@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Bus\Kafka;
 
 use Bus\Contracts\KafkaProducerPort;
+use Override;
 use RdKafka\Conf;
 use RdKafka\Producer;
+use RdKafka\ProducerTopic;
 
-final class RdKafkaProducerPort implements KafkaProducerPort
+final readonly class RdKafkaProducerPort implements KafkaProducerPort
 {
     private Producer $producer;
-    private \RdKafka\ProducerTopic $topic;
+    private ProducerTopic $topic;
 
     public function __construct(
         string $brokers,
@@ -32,25 +34,25 @@ final class RdKafkaProducerPort implements KafkaProducerPort
         $this->topic = $this->producer->newTopic($topic);
     }
 
-    #[\Override]
+    #[Override]
     public function produce(string $key, string $payload): void
     {
         $this->topic->produce(RD_KAFKA_PARTITION_UA, 0, $payload, $key);
     }
 
-    #[\Override]
+    #[Override]
     public function poll(int $timeoutMs): void
     {
         $this->producer->poll($timeoutMs);
     }
 
-    #[\Override]
+    #[Override]
     public function flush(int $timeoutMs): int
     {
         return $this->producer->flush($timeoutMs);
     }
 
-    #[\Override]
+    #[Override]
     public function outQLen(): int
     {
         return $this->producer->getOutQLen();

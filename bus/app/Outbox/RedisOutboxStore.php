@@ -8,6 +8,9 @@ use Bus\Contracts\OutboxStorePort;
 use Bus\Contracts\RedisConnectionPort;
 use Bus\Redis\LuaScriptResolver;
 use Bus\Redis\PhpRedisConnection;
+use Override;
+use RedisException;
+use RuntimeException;
 
 final class RedisOutboxStore implements OutboxStorePort
 {
@@ -57,7 +60,7 @@ final class RedisOutboxStore implements OutboxStorePort
         );
     }
 
-    #[\Override]
+    #[Override]
     public function enqueue(string $mqttTopic, string $payload): ?OutboxMessage
     {
         $eventId = $this->eventId($mqttTopic, $payload);
@@ -83,7 +86,7 @@ final class RedisOutboxStore implements OutboxStorePort
         }
 
         if (!is_string($id)) {
-            throw new \RuntimeException('Unable to add MQTT packet to Redis outbox.');
+            throw new RuntimeException('Unable to add MQTT packet to Redis outbox.');
         }
 
         $this->enqueuedMessages++;
@@ -91,7 +94,7 @@ final class RedisOutboxStore implements OutboxStorePort
         return new OutboxMessage($id, $eventId, $mqttTopic, $payload, $receivedAt, $this->busId);
     }
 
-    #[\Override]
+    #[Override]
     public function read(int $count): array
     {
         $pending = $this->readFromStream($count, '0');
@@ -126,14 +129,14 @@ final class RedisOutboxStore implements OutboxStorePort
         return $this->messagesFromResponse($response);
     }
 
-    #[\Override]
+    #[Override]
     public function ack(OutboxMessage $message): void
     {
         $this->redis->command('XACK', $this->stream, $this->group, $message->id);
         $this->ackedMessages++;
     }
 
-    #[\Override]
+    #[Override]
     public function stats(): array
     {
         return [
@@ -148,7 +151,7 @@ final class RedisOutboxStore implements OutboxStorePort
         try {
             /** @psalm-suppress MixedAssignment */
             $result = $this->redis->command('XGROUP', 'CREATE', $this->stream, $this->group, '0', 'MKSTREAM');
-        } catch (\RedisException $exception) {
+        } catch (RedisException $exception) {
             if (str_contains($exception->getMessage(), 'BUSYGROUP')) {
                 return;
             }
@@ -160,7 +163,7 @@ final class RedisOutboxStore implements OutboxStorePort
             $message = is_string($result) ? $result : '';
 
             if (!str_contains($message, 'BUSYGROUP')) {
-                throw new \RuntimeException('Unable to create Redis outbox consumer group.');
+                throw new RuntimeException('Unable to create Redis outbox consumer group.');
             }
         }
     }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Bus\Runtime;
 
+use RuntimeException;
+
 final class RuntimeStatus
 {
     private int $lastWriteMs = 0;
@@ -28,7 +30,7 @@ final class RuntimeStatus
         $directory = dirname($this->path);
 
         if (!is_dir($directory) && !mkdir($directory, 0775, true) && !is_dir($directory)) {
-            throw new \RuntimeException(sprintf('Unable to create runtime directory: %s', $directory));
+            throw new RuntimeException(sprintf('Unable to create runtime directory: %s', $directory));
         }
 
         $payload = json_encode(

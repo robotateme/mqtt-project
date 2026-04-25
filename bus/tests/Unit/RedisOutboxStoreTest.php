@@ -7,6 +7,7 @@ namespace Tests\Unit;
 use Bus\Contracts\RedisConnectionPort;
 use Bus\Outbox\RedisOutboxStore;
 use PHPUnit\Framework\TestCase;
+use RedisException;
 
 final class RedisOutboxStoreTest extends TestCase
 {
@@ -128,7 +129,7 @@ final class FakeRedisConnection implements RedisConnectionPort
             if ($this->throwNoScriptOnce) {
                 $this->throwNoScriptOnce = false;
 
-                throw new \RedisException('NOSCRIPT No matching script. Please use EVAL.');
+                throw new RedisException('NOSCRIPT No matching script. Please use EVAL.');
             }
 
             if (!$this->dedupeInserted) {

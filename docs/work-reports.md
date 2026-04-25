@@ -60,3 +60,5 @@
   dedupe `SET NX EX` и `XADD`, обновил тесты и документацию.
 - Вынес Lua outbox-скрипт в `bus/resources/redis`, добавил resolver с
   `SCRIPT LOAD`/`EVALSHA` и повторной загрузкой при `NOSCRIPT`.
+- Добавил `readonly` для безопасных Redis/Kafka adapter-ов `bus`, очистил PHP
+  imports от ведущих слэшей и обновил правило в документации.

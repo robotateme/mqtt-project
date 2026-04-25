@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bus\Kafka;
 
 use Bus\Contracts\KafkaProducerPort;
+use RuntimeException;
 
 final class KafkaPublisher
 {
@@ -73,7 +74,7 @@ final class KafkaPublisher
             }
         }
 
-        throw new \RuntimeException('Unable to flush Kafka producer queue.');
+        throw new RuntimeException('Unable to flush Kafka producer queue.');
     }
 
     /**
@@ -98,7 +99,7 @@ final class KafkaPublisher
             $this->producer->poll(100);
 
             if (microtime(true) >= $deadline) {
-                throw new \RuntimeException('Kafka producer queue is full.');
+                throw new RuntimeException('Kafka producer queue is full.');
             }
         }
     }

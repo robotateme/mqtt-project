@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Bus\Redis;
 
 use Bus\Contracts\RedisConnectionPort;
+use InvalidArgumentException;
+use RedisException;
+use RuntimeException;
 
 final class LuaScriptResolver
 {
@@ -28,7 +31,7 @@ final class LuaScriptResolver
     {
         try {
             return $this->evalSha($name, $keyCount, ...$arguments);
-        } catch (\RedisException $exception) {
+        } catch (RedisException $exception) {
             if (!str_contains($exception->getMessage(), 'NOSCRIPT')) {
                 throw $exception;
             }
@@ -53,13 +56,13 @@ final class LuaScriptResolver
         $script = file_get_contents($this->scriptPath($name));
 
         if ($script === false) {
-            throw new \RuntimeException(sprintf('Unable to read Redis Lua script: %s', $name));
+            throw new RuntimeException(sprintf('Unable to read Redis Lua script: %s', $name));
         }
 
         $sha = $this->redis->command('SCRIPT', 'LOAD', $script);
 
         if (!is_string($sha) || $sha === '') {
-            throw new \RuntimeException(sprintf('Unable to load Redis Lua script: %s', $name));
+            throw new RuntimeException(sprintf('Unable to load Redis Lua script: %s', $name));
         }
 
         return $this->shaByName[$name] = $sha;
@@ -68,7 +71,7 @@ final class LuaScriptResolver
     private function scriptPath(string $name): string
     {
         if (!preg_match('/^[a-z0-9_\\-]+$/', $name)) {
-            throw new \InvalidArgumentException(sprintf('Invalid Redis Lua script name: %s', $name));
+            throw new InvalidArgumentException(sprintf('Invalid Redis Lua script name: %s', $name));
         }
 
         return $this->scriptDirectory . '/' . $name . '.lua';

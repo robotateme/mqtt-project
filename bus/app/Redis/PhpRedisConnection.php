@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Bus\Redis;
 
 use Bus\Contracts\RedisConnectionPort;
+use Override;
 use Redis;
 
-final class PhpRedisConnection implements RedisConnectionPort
+final readonly class PhpRedisConnection implements RedisConnectionPort
 {
     private Redis $redis;
 
@@ -25,7 +26,7 @@ final class PhpRedisConnection implements RedisConnectionPort
         }
     }
 
-    #[\Override]
+    #[Override]
     public function command(string $command, string|int ...$arguments): mixed
     {
         return $this->redis->rawCommand($command, ...$arguments);
