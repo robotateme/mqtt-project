@@ -34,7 +34,7 @@ final class MqttWorkerTest extends TestCase
                 new KafkaPublisher($producer, batchSize: 10, maxOutstanding: 100, backpressureTimeoutMs: 100),
                 batchSize: 10,
             ),
-            status: new RuntimeStatus($statusFile, intervalMs: 0),
+            status: new RuntimeStatus($statusFile, intervalMs: 0, busId: 'bus-test'),
         );
 
         $worker->consume('devices/device-42/telemetry', '{"temperature":21.5}');
@@ -50,6 +50,7 @@ final class MqttWorkerTest extends TestCase
         $status = RuntimeStatus::read($statusFile);
         self::assertIsArray($status);
         self::assertSame('running', $status['status']);
+        self::assertSame('bus-test', $status['bus_id']);
         self::assertSame(1, $status['received_messages']);
         self::assertSame(1, $status['enqueued_messages']);
         self::assertSame(1, $status['published_from_outbox']);

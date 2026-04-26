@@ -52,7 +52,7 @@ final readonly class MqttWorkerFactory
             $config->mqtt->qos,
             $outbox,
             new OutboxPublisher($outbox, $publisher, $config->outbox->batchSize),
-            new RuntimeStatus($config->runtime->statusFile, $config->runtime->statusIntervalMs),
+            new RuntimeStatus($config->runtime->statusFile, $config->runtime->statusIntervalMs, $config->app->busId),
         );
     }
 }

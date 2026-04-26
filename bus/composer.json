@@ -8,7 +8,9 @@
         "ext-rdkafka": "*",
         "ext-redis": "*",
         "php-mqtt/client": "^2.3",
-        "vlucas/phpdotenv": "^5.6"
+        "vlucas/phpdotenv": "^5.6",
+        "symfony/console": "^8.0",
+        "symfony/dependency-injection": "^8.0"
     },
     "autoload": {
         "psr-4": {
@@ -21,6 +23,7 @@
         }
     },
     "scripts": {
+        "bus": "php bin/bus",
         "mqtt:consume": "php bin/mqtt-consume.php",
         "test": "phpunit --colors=always",
         "phpstan": "phpstan analyse --configuration=phpstan.neon --memory-limit=1G --no-progress",

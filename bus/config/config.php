@@ -18,6 +18,7 @@ return [
     'app' => [
         'env' => $env('APP_ENV', 'local'),
         'debug' => filter_var($env('APP_DEBUG', 'false'), FILTER_VALIDATE_BOOL),
+        'bus_id' => $env('BUS_ID', $env('MQTT_CLIENT_ID', 'bus-mqtt-kafka')),
     ],
     'mqtt' => [
         'host' => $env('MQTT_HOST', 'mosquitto'),
@@ -48,8 +49,8 @@ return [
     'outbox' => [
         'stream' => $env('OUTBOX_STREAM', 'mqtt:outbox'),
         'group' => $env('OUTBOX_GROUP', 'bus-publishers'),
-        'consumer' => $env('OUTBOX_CONSUMER', $env('MQTT_CLIENT_ID', 'bus-mqtt-kafka')),
-        'bus_id' => $env('OUTBOX_BUS_ID', $env('MQTT_CLIENT_ID', 'bus-mqtt-kafka')),
+        'consumer' => $env('OUTBOX_CONSUMER', $env('BUS_ID', $env('MQTT_CLIENT_ID', 'bus-mqtt-kafka'))),
+        'bus_id' => $env('OUTBOX_BUS_ID', $env('BUS_ID', $env('MQTT_CLIENT_ID', 'bus-mqtt-kafka'))),
         'batch_size' => (int) $env('OUTBOX_BATCH_SIZE', '100'),
         'max_length' => (int) $env('OUTBOX_MAX_LENGTH', '100000'),
         'dedupe_ttl_seconds' => (int) $env('OUTBOX_DEDUPE_TTL_SECONDS', '86400'),

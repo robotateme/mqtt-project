@@ -3,7 +3,8 @@
 Integration bus for MQTT ingress and Kafka publishing.
 
 The service is a PHP worker. It does not require Phalcon; the HTTP side is only
-used for health checks.
+used for health checks. The worker runtime is built on Symfony Console and a
+Symfony DependencyInjection container.
 
 ## HTTP
 
@@ -14,18 +15,25 @@ used for health checks.
 
 ```bash
 composer install
-php bin/mqtt-consume.php
+php bin/bus mqtt:consume
 ```
 
 Runtime configuration is loaded through `vlucas/phpdotenv` before
 `config/config.php` is read. Real environment variables keep priority over
 values from `.env`; see `.env.example`.
 
+Every running bus instance must have a unique `BUS_ID`. It is used in runtime
+status, Redis outbox metadata and the default Redis Stream consumer name. Keep
+`OUTBOX_BUS_ID` and `OUTBOX_CONSUMER` empty unless a legacy deployment needs to
+override them explicitly.
+
 ## Code layout
 
 - `app/Config/Loader` - dotenv loading and `config/config.php` reader.
 - `app/Config/Value` - typed runtime config objects.
 - `app/Contracts` - ports for MQTT, Kafka, Redis and outbox abstractions.
+- `app/Console` - Symfony Console commands.
+- `app/Framework` - Symfony application and DI container bootstrap.
 - `app/Kafka` - Kafka publisher and `rdkafka` adapter.
 - `app/Mqtt` - MQTT client adapter, worker factory and worker loop.
 - `app/Outbox` - Redis Streams outbox and outbox-to-Kafka publisher.

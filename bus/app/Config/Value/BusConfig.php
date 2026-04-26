@@ -9,6 +9,7 @@ use InvalidArgumentException;
 final readonly class BusConfig
 {
     public function __construct(
+        public AppConfig $app,
         public MqttConfig $mqtt,
         public KafkaConfig $kafka,
         public RedisConfig $redis,
@@ -22,6 +23,7 @@ final readonly class BusConfig
      */
     public static function fromArray(array $config): self
     {
+        $app = self::group($config, 'app');
         $mqtt = self::group($config, 'mqtt');
         $kafka = self::group($config, 'kafka');
         $redis = self::group($config, 'redis');
@@ -29,6 +31,9 @@ final readonly class BusConfig
         $runtime = self::group($config, 'runtime');
 
         return new self(
+            new AppConfig(
+                self::string($app, 'bus_id'),
+            ),
             new MqttConfig(
                 self::string($mqtt, 'host'),
                 self::int($mqtt, 'port'),

@@ -25,7 +25,19 @@ final class ConfigLoaderTest extends TestCase
 
     protected function tearDown(): void
     {
-        unset($_ENV['MQTT_HOST'], $_SERVER['MQTT_HOST']);
+        unset(
+            $_ENV['BUS_ID'],
+            $_ENV['MQTT_CLIENT_ID'],
+            $_ENV['MQTT_HOST'],
+            $_ENV['OUTBOX_BUS_ID'],
+            $_ENV['OUTBOX_CONSUMER'],
+            $_SERVER['BUS_ID'],
+            $_SERVER['MQTT_CLIENT_ID'],
+            $_SERVER['MQTT_HOST'],
+            $_SERVER['OUTBOX_BUS_ID'],
+            $_SERVER['OUTBOX_CONSUMER'],
+        );
+
         $this->removeDirectory($this->basePath);
     }
 
@@ -36,7 +48,36 @@ final class ConfigLoaderTest extends TestCase
 
         $config = ConfigLoader::load($this->basePath);
 
+        self::assertSame('bus-test', $config->app->busId);
         self::assertSame('dotenv-mosquitto', $config->mqtt->host);
+    }
+
+    public function test_uses_bus_id_for_outbox_identity_by_default(): void
+    {
+        file_put_contents($this->basePath . '/.env', "BUS_ID=bus-alpha\nMQTT_CLIENT_ID=mqtt-shared\n");
+        copy(dirname(__DIR__, 2) . '/config/config.php', $this->basePath . '/config/config.php');
+
+        $config = ConfigLoader::load($this->basePath);
+
+        self::assertSame('bus-alpha', $config->app->busId);
+        self::assertSame('mqtt-shared', $config->mqtt->clientId);
+        self::assertSame('bus-alpha', $config->outbox->consumer);
+        self::assertSame('bus-alpha', $config->outbox->busId);
+    }
+
+    public function test_allows_legacy_outbox_identity_override(): void
+    {
+        file_put_contents(
+            $this->basePath . '/.env',
+            "BUS_ID=bus-alpha\nOUTBOX_CONSUMER=legacy-consumer\nOUTBOX_BUS_ID=legacy-bus\n"
+        );
+        copy(dirname(__DIR__, 2) . '/config/config.php', $this->basePath . '/config/config.php');
+
+        $config = ConfigLoader::load($this->basePath);
+
+        self::assertSame('bus-alpha', $config->app->busId);
+        self::assertSame('legacy-consumer', $config->outbox->consumer);
+        self::assertSame('legacy-bus', $config->outbox->busId);
     }
 
     private function configPhp(): string
@@ -47,6 +88,11 @@ final class ConfigLoaderTest extends TestCase
 declare(strict_types=1);
 
 return [
+    'app' => [
+        'env' => 'test',
+        'debug' => true,
+        'bus_id' => 'bus-test',
+    ],
     'mqtt' => [
         'host' => $_ENV['MQTT_HOST'] ?? 'mosquitto',
         'port' => 1883,

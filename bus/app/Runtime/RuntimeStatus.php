@@ -13,6 +13,7 @@ final class RuntimeStatus
     public function __construct(
         private string $path,
         private int $intervalMs,
+        private string $busId,
     ) {
     }
 
@@ -34,7 +35,7 @@ final class RuntimeStatus
         }
 
         $payload = json_encode(
-            $status + ['updated_at' => gmdate('c')],
+            $status + ['bus_id' => $this->busId, 'updated_at' => gmdate('c')],
             JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES
         );
 

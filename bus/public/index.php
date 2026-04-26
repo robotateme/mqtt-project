@@ -17,6 +17,7 @@ if ($path === '/health') {
         'status' => 'ok',
         'service' => 'bus',
         'env' => $config['app']['env'],
+        'bus_id' => $config['app']['bus_id'],
     ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
     return;
 }
@@ -31,6 +32,7 @@ if ($path === '/ready') {
         'status' => $isFresh ? 'ready' : 'not_ready',
         'mqtt' => $config['mqtt']['host'] . ':' . $config['mqtt']['port'],
         'kafka' => $config['kafka']['brokers'],
+        'bus_id' => $config['app']['bus_id'],
         'worker' => $status,
     ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
     return;
