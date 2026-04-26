@@ -1,4 +1,5 @@
 .idea/
+AGENTS.md
 
 bus/vendor/
 bus/.env
