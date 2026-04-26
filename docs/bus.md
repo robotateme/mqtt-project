@@ -1,7 +1,9 @@
 # Bus
 
-`bus` читает настройки из переменных окружения. Пример доступных параметров
-находится в `bus/.env.example`.
+`bus` читает настройки из переменных окружения и автоматически подхватывает
+`bus/.env` через `vlucas/phpdotenv` до загрузки `bus/config/config.php`.
+Настоящие переменные окружения имеют приоритет над значениями из `.env`.
+Пример доступных параметров находится в `bus/.env.example`.
 
 Основной процесс:
 
@@ -25,13 +27,19 @@ make bus-consume
 
 Код `bus/app` разложен по ролям:
 
-- `Contracts` - порты для Kafka producer, Redis connection и outbox store.
+- `Config` - загрузка `.env`, чтение `config/config.php` и типизированные
+  объекты конфигурации.
+- `Contracts` - порты для MQTT client, Kafka producer, Redis connection и
+  outbox store.
 - `Kafka` - Kafka publisher и адаптер `rdkafka`.
+- `Mqtt` - адаптер `php-mqtt/client`, фабрика worker-а и основной worker loop.
 - `Outbox` - Redis Streams outbox, outbox message и publisher в Kafka.
 - `Redis` - адаптер PHP Redis extension и resolver Lua-скриптов.
 - `Runtime` - runtime status для `/ready`.
 
-Entrypoints остаются в `bin/mqtt-consume.php` и `public/index.php`.
+`bin/mqtt-consume.php` остается тонким entrypoint: он загружает Composer
+autoload, читает конфигурацию и запускает `MqttWorker`. `public/index.php`
+отвечает только за HTTP health/ready endpoints.
 Lua-скрипты Redis лежат в `bus/resources/redis`.
 
 ## Redis outbox
@@ -71,6 +79,7 @@ persistence Redis outbox защищает от временной недосту
 
 ```bash
 composer install
+cp .env.example .env
 php bin/mqtt-consume.php
 ```
 
@@ -80,9 +89,10 @@ php bin/mqtt-consume.php
 composer test
 ```
 
-Тесты проверяют контракт публикации в Kafka: MQTT topic передается как Kafka
-message key, payload передается как Kafka message value, batch flush происходит
-при достижении `KAFKA_BATCH_SIZE`.
+Тесты проверяют загрузку `.env`, worker loop на уровне MQTT -> outbox -> Kafka
+и контракт публикации в Kafka: MQTT topic передается как Kafka message key,
+payload передается как Kafka message value, batch flush происходит при
+достижении `KAFKA_BATCH_SIZE`.
 
 ## Ключевые параметры
 

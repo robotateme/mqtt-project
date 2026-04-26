@@ -3,6 +3,12 @@
 declare(strict_types=1);
 
 $env = static function (string $key, string $default = ''): string {
+    $value = $_ENV[$key] ?? $_SERVER[$key] ?? null;
+
+    if (is_scalar($value) && $value !== '') {
+        return (string) $value;
+    }
+
     $value = getenv($key);
 
     return $value === false || $value === '' ? $default : $value;

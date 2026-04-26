@@ -17,12 +17,16 @@ composer install
 php bin/mqtt-consume.php
 ```
 
-Runtime configuration is read from environment variables; see `.env.example`.
+Runtime configuration is loaded through `vlucas/phpdotenv` before
+`config/config.php` is read. Real environment variables keep priority over
+values from `.env`; see `.env.example`.
 
 ## Code layout
 
-- `app/Contracts` - ports for Kafka, Redis and outbox abstractions.
+- `app/Config` - dotenv loading and typed runtime config objects.
+- `app/Contracts` - ports for MQTT, Kafka, Redis and outbox abstractions.
 - `app/Kafka` - Kafka publisher and `rdkafka` adapter.
+- `app/Mqtt` - MQTT client adapter, worker factory and worker loop.
 - `app/Outbox` - Redis Streams outbox and outbox-to-Kafka publisher.
 - `app/Redis` - PHP Redis adapter.
 - `app/Runtime` - runtime status used by `/ready`.

@@ -124,6 +124,8 @@ Devices -> Mosquitto cluster(s) -> bus instance(s) -> Redis Streams outbox
 Архитектурные инварианты:
 
 - `bus` остается PHP CLI worker-ом без SQL-хранилища.
+- `bus` загружает локальный `.env` перед `config/config.php`; реальные
+  переменные окружения имеют приоритет над локальным файлом.
 - Экземпляров `bus` может быть несколько; деление идет через env-настройки
   `MQTT_TOPIC`, `MQTT_HOST`, `MQTT_CLIENT_ID`, `OUTBOX_BUS_ID`.
 - Перед Kafka используется Redis Streams outbox. Enqueue выполняется атомарным
