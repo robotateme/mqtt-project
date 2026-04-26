@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Bus\Config;
+namespace Bus\Config\Loader;
 
+use Bus\Config\Value\BusConfig;
 use RuntimeException;
 
 final readonly class ConfigLoader

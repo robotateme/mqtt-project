@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bus\Config;
+namespace Bus\Config\Value;
 
 final readonly class KafkaConfig
 {

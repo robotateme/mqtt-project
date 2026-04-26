@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Bus\Config\ConfigLoader;
+use Bus\Config\Loader\ConfigLoader;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 

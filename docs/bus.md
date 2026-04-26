@@ -27,8 +27,8 @@ make bus-consume
 
 Код `bus/app` разложен по ролям:
 
-- `Config` - загрузка `.env`, чтение `config/config.php` и типизированные
-  объекты конфигурации.
+- `Config/Loader` - загрузка `.env` и чтение `config/config.php`.
+- `Config/Value` - типизированные объекты конфигурации.
 - `Contracts` - порты для MQTT client, Kafka producer, Redis connection и
   outbox store.
 - `Kafka` - Kafka publisher и адаптер `rdkafka`.

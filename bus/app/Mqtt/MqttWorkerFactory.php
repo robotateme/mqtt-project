@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Bus\Mqtt;
 
-use Bus\Config\BusConfig;
+use Bus\Config\Value\BusConfig;
 use Bus\Kafka\KafkaPublisher;
 use Bus\Outbox\OutboxPublisher;
 use Bus\Outbox\RedisOutboxStore;

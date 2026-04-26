@@ -23,7 +23,8 @@ values from `.env`; see `.env.example`.
 
 ## Code layout
 
-- `app/Config` - dotenv loading and typed runtime config objects.
+- `app/Config/Loader` - dotenv loading and `config/config.php` reader.
+- `app/Config/Value` - typed runtime config objects.
 - `app/Contracts` - ports for MQTT, Kafka, Redis and outbox abstractions.
 - `app/Kafka` - Kafka publisher and `rdkafka` adapter.
 - `app/Mqtt` - MQTT client adapter, worker factory and worker loop.
