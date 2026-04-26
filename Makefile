@@ -147,7 +147,7 @@ bus-ready:
 	@printf '\n'
 
 frontend-install:
-	$(DC) exec -T workspace bash -lc '$(SAFE_GIT); cd $(FRONTEND) && npm install'
+	$(DC) exec -T workspace bash -lc '$(SAFE_GIT); cd $(FRONTEND) && npm ci'
 
 frontend-build:
 	$(DC) exec -T workspace bash -lc '$(SAFE_GIT); cd $(FRONTEND) && npm run build'
