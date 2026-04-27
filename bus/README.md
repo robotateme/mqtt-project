@@ -10,6 +10,7 @@ Symfony DependencyInjection container.
 
 - `GET /health`
 - `GET /ready`
+- `GET /metrics`
 
 ## Worker
 
@@ -27,6 +28,24 @@ status, Redis outbox metadata and the default Redis Stream consumer name. Keep
 `OUTBOX_BUS_ID` and `OUTBOX_CONSUMER` empty unless a legacy deployment needs to
 override them explicitly.
 
+## Prometheus
+
+The bus exposes Prometheus metrics at `GET /metrics`. Metrics are stored in
+Redis by default so the CLI worker and HTTP endpoint can share counters across
+processes.
+
+Useful metric families:
+
+- `bus_mqtt_messages_total`
+- `bus_outbox_enqueues_total`
+- `bus_outbox_published_total`
+- `bus_kafka_published_total`
+- `bus_kafka_backpressure_total`
+- `bus_kafka_out_queue`
+- `bus_outbox_pending`
+- `bus_worker_up`
+- `bus_mqtt_processing_seconds`
+
 ## Code layout
 
 - `app/Config/Loader` - dotenv loading and `config/config.php` reader.
@@ -35,6 +54,7 @@ override them explicitly.
 - `app/Console` - Symfony Console commands.
 - `app/Framework` - Symfony application and DI container bootstrap.
 - `app/Kafka` - Kafka publisher and `rdkafka` adapter.
+- `app/Metrics` - Prometheus registry, renderer and metric recorder.
 - `app/Mqtt` - MQTT client adapter, worker factory and worker loop.
 - `app/Outbox` - Redis Streams outbox and outbox-to-Kafka publisher.
 - `app/Redis` - PHP Redis adapter.

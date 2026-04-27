@@ -6,6 +6,7 @@ namespace Bus\Mqtt;
 
 use Bus\Config\Value\BusConfig;
 use Bus\Kafka\KafkaPublisher;
+use Bus\Metrics\MetricsFactory;
 use Bus\Outbox\OutboxPublisher;
 use Bus\Outbox\RedisOutboxStore;
 use Bus\Runtime\RuntimeStatus;
@@ -15,6 +16,7 @@ final readonly class MqttWorkerFactory
 {
     public static function fromConfig(BusConfig $config): MqttWorker
     {
+        $metrics = MetricsFactory::recorder($config);
         $publisher = KafkaPublisher::connect(
             $config->kafka->brokers,
             $config->kafka->topic,
@@ -23,6 +25,7 @@ final readonly class MqttWorkerFactory
             $config->kafka->maxOutstanding,
             $config->kafka->backpressureTimeoutMs,
             $config->kafka->messageTimeoutMs,
+            $metrics,
         );
         $outbox = RedisOutboxStore::connect(
             $config->redis->host,
@@ -51,8 +54,9 @@ final readonly class MqttWorkerFactory
             $config->mqtt->topic,
             $config->mqtt->qos,
             $outbox,
-            new OutboxPublisher($outbox, $publisher, $config->outbox->batchSize),
+            new OutboxPublisher($outbox, $publisher, $config->outbox->batchSize, $metrics),
             new RuntimeStatus($config->runtime->statusFile, $config->runtime->statusIntervalMs, $config->app->busId),
+            $metrics,
         );
     }
 }

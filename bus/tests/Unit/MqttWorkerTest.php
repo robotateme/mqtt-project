@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Bus\Contracts\KafkaProducerPort;
+use Bus\Contracts\MetricsRecorder;
 use Bus\Contracts\MqttClientPort;
 use Bus\Contracts\OutboxStorePort;
 use Bus\Kafka\KafkaPublisher;
@@ -22,6 +23,7 @@ final class MqttWorkerTest extends TestCase
     {
         $outbox = new WorkerFakeOutboxStore();
         $producer = new WorkerFakeKafkaProducer();
+        $metrics = new WorkerFakeMetricsRecorder();
         $statusFile = sys_get_temp_dir() . '/bus-worker-status-' . bin2hex(random_bytes(6)) . '.json';
         $worker = new MqttWorker(
             new WorkerFakeMqttClient(),
@@ -32,10 +34,12 @@ final class MqttWorkerTest extends TestCase
             outbox: $outbox,
             outboxPublisher: new OutboxPublisher(
                 $outbox,
-                new KafkaPublisher($producer, batchSize: 10, maxOutstanding: 100, backpressureTimeoutMs: 100),
+                new KafkaPublisher($producer, batchSize: 10, maxOutstanding: 100, backpressureTimeoutMs: 100, metrics: $metrics),
                 batchSize: 10,
+                metrics: $metrics,
             ),
             status: new RuntimeStatus($statusFile, intervalMs: 0, busId: 'bus-test'),
+            metrics: $metrics,
         );
 
         $worker->consume('devices/device-42/telemetry', '{"temperature":21.5}');
@@ -55,6 +59,10 @@ final class MqttWorkerTest extends TestCase
         self::assertSame(1, $status['received_messages']);
         self::assertSame(1, $status['enqueued_messages']);
         self::assertSame(1, $status['published_from_outbox']);
+        self::assertSame(1, $metrics->mqttMessages);
+        self::assertSame(1, $metrics->outboxEnqueues);
+        self::assertSame(1, $metrics->outboxPublishes);
+        self::assertSame(1, $metrics->kafkaPublishes);
 
         unlink($statusFile);
     }
@@ -67,6 +75,7 @@ final class MqttWorkerTest extends TestCase
         ]);
         $outbox = new WorkerFakeOutboxStore();
         $producer = new WorkerFakeKafkaProducer();
+        $metrics = new WorkerFakeMetricsRecorder();
         $statusFile = sys_get_temp_dir() . '/bus-worker-status-' . bin2hex(random_bytes(6)) . '.json';
         $worker = new MqttWorker(
             $mqtt,
@@ -77,10 +86,12 @@ final class MqttWorkerTest extends TestCase
             outbox: $outbox,
             outboxPublisher: new OutboxPublisher(
                 $outbox,
-                new KafkaPublisher($producer, batchSize: 10, maxOutstanding: 100, backpressureTimeoutMs: 100),
+                new KafkaPublisher($producer, batchSize: 10, maxOutstanding: 100, backpressureTimeoutMs: 100, metrics: $metrics),
                 batchSize: 10,
+                metrics: $metrics,
             ),
             status: new RuntimeStatus($statusFile, intervalMs: 0, busId: 'bus-test'),
+            metrics: $metrics,
         );
 
         $worker->run();
@@ -104,8 +115,12 @@ final class MqttWorkerTest extends TestCase
         self::assertIsArray($status);
         self::assertSame(2, $status['received_messages']);
         self::assertSame(2, $status['published_from_outbox']);
+        self::assertSame(2, $metrics->mqttMessages);
+        self::assertSame(2, $metrics->outboxPublishes);
+        self::assertSame([true], $metrics->workerUpValues);
 
         $worker->stop();
+        self::assertSame([true, false], $metrics->workerUpValues);
         unlink($statusFile);
     }
 }
@@ -210,5 +225,55 @@ final class WorkerFakeKafkaProducer implements KafkaProducerPort
     public function outQLen(): int
     {
         return 0;
+    }
+}
+
+final class WorkerFakeMetricsRecorder implements MetricsRecorder
+{
+    public int $mqttMessages = 0;
+    public int $outboxEnqueues = 0;
+    public int $outboxPublishes = 0;
+    public int $kafkaPublishes = 0;
+
+    /**
+     * @var list<bool>
+     */
+    public array $workerUpValues = [];
+
+    public function recordMqttMessage(float $durationSeconds): void
+    {
+        $this->mqttMessages++;
+    }
+
+    public function recordOutboxEnqueue(bool $stored): void
+    {
+        $this->outboxEnqueues++;
+    }
+
+    public function recordOutboxPublish(): void
+    {
+        $this->outboxPublishes++;
+    }
+
+    public function recordKafkaPublish(): void
+    {
+        $this->kafkaPublishes++;
+    }
+
+    public function recordKafkaBackpressure(): void
+    {
+    }
+
+    public function setKafkaOutQueue(int $length): void
+    {
+    }
+
+    public function setOutboxPending(int $messages): void
+    {
+    }
+
+    public function setWorkerUp(bool $up): void
+    {
+        $this->workerUpValues[] = $up;
     }
 }

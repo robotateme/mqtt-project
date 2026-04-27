@@ -15,6 +15,7 @@ final readonly class BusConfig
         public RedisConfig $redis,
         public OutboxConfig $outbox,
         public RuntimeConfig $runtime,
+        public MetricsConfig $metrics,
     ) {
     }
 
@@ -29,6 +30,7 @@ final readonly class BusConfig
         $redis = self::group($config, 'redis');
         $outbox = self::group($config, 'outbox');
         $runtime = self::group($config, 'runtime');
+        $metrics = self::group($config, 'metrics');
 
         return new self(
             new AppConfig(
@@ -73,6 +75,12 @@ final readonly class BusConfig
             new RuntimeConfig(
                 self::string($runtime, 'status_file'),
                 self::int($runtime, 'status_interval_ms'),
+            ),
+            new MetricsConfig(
+                self::bool($metrics, 'enabled'),
+                self::string($metrics, 'storage'),
+                self::string($metrics, 'namespace'),
+                self::string($metrics, 'redis_prefix'),
             ),
         );
     }

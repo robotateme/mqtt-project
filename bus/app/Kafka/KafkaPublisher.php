@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Bus\Kafka;
 
 use Bus\Contracts\KafkaProducerPort;
+use Bus\Contracts\MetricsRecorder;
+use Bus\Metrics\NoopMetricsRecorder;
 use RuntimeException;
 
 final class KafkaPublisher
@@ -21,6 +23,7 @@ final class KafkaPublisher
         int $batchSize,
         int $maxOutstanding,
         int $backpressureTimeoutMs,
+        private MetricsRecorder $metrics = new NoopMetricsRecorder(),
     ) {
         $this->batchSize = $batchSize;
         $this->maxOutstanding = $maxOutstanding;
@@ -35,6 +38,7 @@ final class KafkaPublisher
         int $maxOutstanding,
         int $backpressureTimeoutMs,
         int $messageTimeoutMs,
+        MetricsRecorder $metrics = new NoopMetricsRecorder(),
     ): self {
         return new self(
             new RdKafkaProducerPort(
@@ -48,6 +52,7 @@ final class KafkaPublisher
             $batchSize,
             $maxOutstanding,
             $backpressureTimeoutMs,
+            $metrics,
         );
     }
 
@@ -56,9 +61,11 @@ final class KafkaPublisher
         $this->waitForCapacity();
 
         $this->producer->produce($mqttTopic, $payload);
+        $this->metrics->recordKafkaPublish();
         $this->pendingMessages++;
         $this->publishedMessages++;
         $this->producer->poll(0);
+        $this->metrics->setKafkaOutQueue($this->producer->outQLen());
 
         if ($this->pendingMessages >= $this->batchSize) {
             $this->flush(1000);
@@ -70,6 +77,7 @@ final class KafkaPublisher
         for ($retries = 0; $retries < 10; $retries++) {
             if ($this->producer->flush($timeoutMs) === 0) {
                 $this->pendingMessages = 0;
+                $this->metrics->setKafkaOutQueue($this->producer->outQLen());
                 return;
             }
         }
@@ -96,7 +104,9 @@ final class KafkaPublisher
 
         while ($this->producer->outQLen() >= $this->maxOutstanding) {
             $this->backpressureEvents++;
+            $this->metrics->recordKafkaBackpressure();
             $this->producer->poll(100);
+            $this->metrics->setKafkaOutQueue($this->producer->outQLen());
 
             if (microtime(true) >= $deadline) {
                 throw new RuntimeException('Kafka producer queue is full.');

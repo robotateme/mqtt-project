@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Bus\Mqtt;
 
+use Bus\Contracts\MetricsRecorder;
 use Bus\Contracts\MqttClientPort;
 use Bus\Contracts\OutboxStorePort;
+use Bus\Metrics\NoopMetricsRecorder;
 use Bus\Outbox\OutboxPublisher;
 use Bus\Runtime\RuntimeStatus;
 use PhpMqtt\Client\ConnectionSettings;
@@ -27,6 +29,7 @@ final class MqttWorker
         private OutboxStorePort $outbox,
         private OutboxPublisher $outboxPublisher,
         private RuntimeStatus $status,
+        private MetricsRecorder $metrics = new NoopMetricsRecorder(),
     ) {
         $this->startedAt = gmdate('c');
     }
@@ -37,6 +40,7 @@ final class MqttWorker
         $this->registerSignalHandlers();
 
         $this->mqtt->connect($this->settings, $this->cleanSession);
+        $this->metrics->setWorkerUp(true);
         $this->writeStatus('running', true);
 
         $this->publishedFromOutbox += $this->outboxPublisher->drain();
@@ -47,13 +51,18 @@ final class MqttWorker
 
     public function consume(string $topic, string $message): void
     {
+        $startedAt = microtime(true);
         $this->receivedMessages++;
 
-        if ($this->outbox->enqueue($topic, $message) !== null) {
+        $stored = $this->outbox->enqueue($topic, $message) !== null;
+        $this->metrics->recordOutboxEnqueue($stored);
+
+        if ($stored) {
             $this->enqueuedMessages++;
         }
 
         $this->publishedFromOutbox += $this->outboxPublisher->drain();
+        $this->metrics->recordMqttMessage(microtime(true) - $startedAt);
         $this->writeStatus('running');
     }
 
@@ -75,6 +84,7 @@ final class MqttWorker
 
         $this->stopped = true;
         $this->outboxPublisher->flush();
+        $this->metrics->setWorkerUp(false);
         $this->writeStatus('stopped', true);
     }
 
@@ -104,5 +114,6 @@ final class MqttWorker
             'published_from_outbox' => $this->publishedFromOutbox,
             'outbox' => $this->outboxPublisher->stats(),
         ], $force);
+        $this->metrics->setOutboxPending(max(0, $this->enqueuedMessages - $this->publishedFromOutbox));
     }
 }

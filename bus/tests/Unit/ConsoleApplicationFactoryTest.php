@@ -7,6 +7,7 @@ namespace Tests\Unit;
 use Bus\Config\Value\AppConfig;
 use Bus\Config\Value\BusConfig;
 use Bus\Config\Value\KafkaConfig;
+use Bus\Config\Value\MetricsConfig;
 use Bus\Config\Value\MqttConfig;
 use Bus\Config\Value\OutboxConfig;
 use Bus\Config\Value\RedisConfig;
@@ -34,6 +35,7 @@ final class ConsoleApplicationFactoryTest extends TestCase
             new RedisConfig('redis', 6379, null, 0, 2.5),
             new OutboxConfig('mqtt:outbox', 'bus-publishers', 'bus-test', 'bus-test', 100, 100000, 86400, 1),
             new RuntimeConfig('/tmp/bus-test-status.json', 1000),
+            new MetricsConfig(false, 'memory', 'bus', 'bus:prometheus:'),
         );
     }
 }

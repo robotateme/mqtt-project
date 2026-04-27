@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Bus\Outbox;
 
+use Bus\Contracts\MetricsRecorder;
 use Bus\Contracts\OutboxStorePort;
 use Bus\Kafka\KafkaPublisher;
+use Bus\Metrics\NoopMetricsRecorder;
 
 final class OutboxPublisher
 {
@@ -18,6 +20,7 @@ final class OutboxPublisher
         private OutboxStorePort $outbox,
         private KafkaPublisher $publisher,
         private int $batchSize,
+        private MetricsRecorder $metrics = new NoopMetricsRecorder(),
     ) {
     }
 
@@ -32,6 +35,7 @@ final class OutboxPublisher
                 $this->publisher->publish($message->mqttTopic, $message->payload);
                 $this->publisher->flush();
                 $this->outbox->ack($message);
+                $this->metrics->recordOutboxPublish();
                 $this->lastEventId = $message->eventId;
                 $this->lastReceivedAt = $message->receivedAt;
                 $this->lastBusId = $message->busId;

@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
+use Bus\Config\Loader\ConfigLoader;
+use Bus\Metrics\MetricsFactory;
 use Bus\Runtime\RuntimeStatus;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
+$typedConfig = ConfigLoader::load(dirname(__DIR__));
 $config = require dirname(__DIR__) . '/config/config.php';
 $requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $path = is_string($requestPath) && $requestPath !== '' ? $requestPath : '/';
@@ -35,6 +38,12 @@ if ($path === '/ready') {
         'bus_id' => $config['app']['bus_id'],
         'worker' => $status,
     ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+    return;
+}
+
+if ($path === '/metrics') {
+    header('Content-Type: ' . MetricsFactory::contentType());
+    echo MetricsFactory::render($typedConfig);
     return;
 }
 

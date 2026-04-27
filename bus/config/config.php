@@ -60,4 +60,10 @@ return [
         'status_file' => $env('BUS_STATUS_FILE', dirname(__DIR__) . '/storage/runtime/status.json'),
         'status_interval_ms' => (int) $env('BUS_STATUS_INTERVAL_MS', '1000'),
     ],
+    'metrics' => [
+        'enabled' => filter_var($env('METRICS_ENABLED', 'true'), FILTER_VALIDATE_BOOL),
+        'storage' => $env('METRICS_STORAGE', 'redis'),
+        'namespace' => $env('METRICS_NAMESPACE', 'bus'),
+        'redis_prefix' => $env('METRICS_REDIS_PREFIX', 'bus:prometheus:'),
+    ],
 ];

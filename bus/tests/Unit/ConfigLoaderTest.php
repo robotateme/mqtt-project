@@ -29,11 +29,13 @@ final class ConfigLoaderTest extends TestCase
             $_ENV['BUS_ID'],
             $_ENV['MQTT_CLIENT_ID'],
             $_ENV['MQTT_HOST'],
+            $_ENV['METRICS_STORAGE'],
             $_ENV['OUTBOX_BUS_ID'],
             $_ENV['OUTBOX_CONSUMER'],
             $_SERVER['BUS_ID'],
             $_SERVER['MQTT_CLIENT_ID'],
             $_SERVER['MQTT_HOST'],
+            $_SERVER['METRICS_STORAGE'],
             $_SERVER['OUTBOX_BUS_ID'],
             $_SERVER['OUTBOX_CONSUMER'],
         );
@@ -54,7 +56,7 @@ final class ConfigLoaderTest extends TestCase
 
     public function test_uses_bus_id_for_outbox_identity_by_default(): void
     {
-        file_put_contents($this->basePath . '/.env', "BUS_ID=bus-alpha\nMQTT_CLIENT_ID=mqtt-shared\n");
+        file_put_contents($this->basePath . '/.env', "BUS_ID=bus-alpha\nMQTT_CLIENT_ID=mqtt-shared\nMETRICS_STORAGE=memory\n");
         copy(dirname(__DIR__, 2) . '/config/config.php', $this->basePath . '/config/config.php');
 
         $config = ConfigLoader::load($this->basePath);
@@ -63,6 +65,7 @@ final class ConfigLoaderTest extends TestCase
         self::assertSame('mqtt-shared', $config->mqtt->clientId);
         self::assertSame('bus-alpha', $config->outbox->consumer);
         self::assertSame('bus-alpha', $config->outbox->busId);
+        self::assertSame('memory', $config->metrics->storage);
     }
 
     public function test_allows_legacy_outbox_identity_override(): void
@@ -132,6 +135,12 @@ return [
     'runtime' => [
         'status_file' => __DIR__ . '/../storage/runtime/status.json',
         'status_interval_ms' => 1000,
+    ],
+    'metrics' => [
+        'enabled' => true,
+        'storage' => 'memory',
+        'namespace' => 'bus',
+        'redis_prefix' => 'bus:prometheus:',
     ],
 ];
 PHP;
