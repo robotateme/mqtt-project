@@ -9,6 +9,7 @@
         "php": "^8.3",
         "ext-pdo_pgsql": "*",
         "ext-rdkafka": "*",
+        "darkaonline/l5-swagger": "^11.0",
         "firebase/php-jwt": "^7.0",
         "laravel/framework": "^13.0",
         "laravel/horizon": "^5.46",
@@ -58,6 +59,7 @@
         ],
         "phpstan": "phpstan analyse --configuration=phpstan.neon --memory-limit=1G --no-progress",
         "psalm": "psalm --config=psalm.xml --no-cache --no-progress",
+        "swagger": "TELESCOPE_ENABLED=false php artisan l5-swagger:generate",
         "analyse": [
             "@phpstan",
             "@psalm"

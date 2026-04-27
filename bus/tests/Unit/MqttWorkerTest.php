@@ -12,6 +12,7 @@ use Bus\Mqtt\MqttWorker;
 use Bus\Outbox\OutboxMessage;
 use Bus\Outbox\OutboxPublisher;
 use Bus\Runtime\RuntimeStatus;
+use Closure;
 use PhpMqtt\Client\ConnectionSettings;
 use PHPUnit\Framework\TestCase;
 
@@ -57,20 +58,89 @@ final class MqttWorkerTest extends TestCase
 
         unlink($statusFile);
     }
+
+    public function test_subscribed_mqtt_packets_are_published_to_kafka(): void
+    {
+        $mqtt = new WorkerFakeMqttClient([
+            ['devices/device-42/telemetry', '{"temperature":21.5}'],
+            ['devices/device-43/telemetry', '{"temperature":22.0}'],
+        ]);
+        $outbox = new WorkerFakeOutboxStore();
+        $producer = new WorkerFakeKafkaProducer();
+        $statusFile = sys_get_temp_dir() . '/bus-worker-status-' . bin2hex(random_bytes(6)) . '.json';
+        $worker = new MqttWorker(
+            $mqtt,
+            new ConnectionSettings(),
+            cleanSession: false,
+            topic: 'devices/+/telemetry',
+            qualityOfService: 1,
+            outbox: $outbox,
+            outboxPublisher: new OutboxPublisher(
+                $outbox,
+                new KafkaPublisher($producer, batchSize: 10, maxOutstanding: 100, backpressureTimeoutMs: 100),
+                batchSize: 10,
+            ),
+            status: new RuntimeStatus($statusFile, intervalMs: 0, busId: 'bus-test'),
+        );
+
+        $worker->run();
+
+        self::assertTrue($mqtt->connected);
+        self::assertSame('devices/+/telemetry', $mqtt->subscribedTopic);
+        self::assertSame(1, $mqtt->subscribedQualityOfService);
+        self::assertSame([
+            [
+                'key' => 'devices/device-42/telemetry',
+                'payload' => '{"temperature":21.5}',
+            ],
+            [
+                'key' => 'devices/device-43/telemetry',
+                'payload' => '{"temperature":22.0}',
+            ],
+        ], $producer->messages);
+        self::assertSame(2, $outbox->stats()['acked_messages']);
+
+        $status = RuntimeStatus::read($statusFile);
+        self::assertIsArray($status);
+        self::assertSame(2, $status['received_messages']);
+        self::assertSame(2, $status['published_from_outbox']);
+
+        $worker->stop();
+        unlink($statusFile);
+    }
 }
 
 final class WorkerFakeMqttClient implements MqttClientPort
 {
+    public bool $connected = false;
+    public ?string $subscribedTopic = null;
+    public ?int $subscribedQualityOfService = null;
+    private ?Closure $handler = null;
+
+    /**
+     * @param list<array{0: string, 1: string}> $packets
+     */
+    public function __construct(private array $packets = [])
+    {
+    }
+
     public function connect(ConnectionSettings $settings, bool $cleanSession): void
     {
+        $this->connected = true;
     }
 
     public function subscribe(string $topic, callable $handler, int $qualityOfService): void
     {
+        $this->subscribedTopic = $topic;
+        $this->subscribedQualityOfService = $qualityOfService;
+        $this->handler = Closure::fromCallable($handler);
     }
 
     public function loop(bool $allowSleep): void
     {
+        foreach ($this->packets as [$topic, $payload]) {
+            ($this->handler)($topic, $payload, false, []);
+        }
     }
 }
 

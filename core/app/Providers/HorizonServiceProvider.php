@@ -8,6 +8,7 @@ use App\Models\User;
 use Core\Domain\Users\UserRole;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
+use Override;
 
 /**
  * @psalm-suppress UnusedClass Registered in bootstrap/providers.php.
@@ -17,7 +18,7 @@ final class HorizonServiceProvider extends HorizonApplicationServiceProvider
     /**
      * Bootstrap any application services.
      */
-    #[\Override]
+    #[Override]
     public function boot(): void
     {
         parent::boot();
@@ -32,7 +33,7 @@ final class HorizonServiceProvider extends HorizonApplicationServiceProvider
      *
      * This gate determines who can access Horizon in non-local environments.
      */
-    #[\Override]
+    #[Override]
     protected function gate(): void
     {
         Gate::define('viewHorizon', function (?User $user = null): bool {

@@ -11,11 +11,41 @@ use Core\Application\Auth\Handlers\LoginHandler;
 use Core\Application\Users\UserRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
 final class LoginController extends Controller
 {
     use RespondsWithUser;
 
+    #[OA\Post(
+        path: '/auth/login',
+        summary: 'Authenticate user',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email', 'password'],
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'admin@example.com'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password'),
+                ],
+                type: 'object',
+            ),
+        ),
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Authenticated user and JWT token.',
+                content: new OA\JsonContent(ref: '#/components/schemas/AuthResponse'),
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation error.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ValidationError'),
+            ),
+        ],
+        security: [],
+    )]
     public function __invoke(Request $request, LoginHandler $handler, UserRepository $users): JsonResponse
     {
         $data = $request->validate([

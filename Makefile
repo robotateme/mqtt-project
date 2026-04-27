@@ -16,50 +16,45 @@ SAFE_GIT := git config --global --add safe.directory /var/www >/dev/null 2>&1 ||
 	frontend-install frontend-build frontend-health analyse check
 
 help:
-	@printf '%s\n' \
-		'Usage: make <target>' \
-		'' \
-		'Infrastructure:' \
-		'  build              Build Laradock services' \
-		'  up                 Start project services' \
-		'  down               Stop project services' \
-		'  restart            Restart project services' \
-		'  status | ps        Show service status' \
-		'  logs service=nginx Follow logs for one service' \
-		'  shell              Open workspace shell' \
-		'' \
-		'Core:' \
-		'  core-install       Composer install for Laravel core' \
-		'  core-migrate       Run PostgreSQL migrations' \
-		'  core-clickhouse    Create ClickHouse schema' \
-		'  core-consume       Consume Kafka packets into ClickHouse' \
-		'  core-horizon       Run Horizon queue worker' \
-		'  core-horizon-status Show Horizon status' \
-		'  core-telescope-prune Prune Telescope entries' \
-		'  core-test          Run Laravel tests' \
-		'  core-phpstan       Run PHPStan level 8 for core' \
-		'  core-psalm         Run Psalm strict analysis for core' \
-		'  core-analyse       Run core static analysis' \
-		'  core-health        Check core HTTP health endpoints' \
-		'' \
-		'Bus:' \
-		'  bus-install        Composer install for bus worker' \
-		'  bus-consume        Run MQTT -> Kafka worker' \
-		'  bus-test           Run bus PHPUnit tests' \
-		'  bus-phpstan        Run PHPStan level 8 for bus' \
-		'  bus-psalm          Run Psalm strict analysis for bus' \
-		'  bus-analyse        Run bus static analysis' \
-		'  bus-health         Check bus liveness endpoint' \
-		'  bus-ready          Check bus worker readiness endpoint' \
-		'' \
-		'Frontend:' \
-		'  frontend-install   NPM install for Vue frontend' \
-		'  frontend-build     Build Vue frontend assets' \
-		'  frontend-health    Check frontend HTTP entrypoint' \
-		'' \
-		'Validation:' \
-		'  analyse            Run static analysis for core and bus' \
-		'  check              Run syntax/tests/health checks'
+	@printf '\033[1;36m%s\033[0m\n\n' 'MQTT Project'
+	@printf '  \033[1m%s\033[0m \033[33m%s\033[0m\n\n' 'Usage:' 'make <target>'
+	@printf '\033[1;35m%s\033[0m\n' 'Infrastructure'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'build' 'Build Laradock services'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'up' 'Start project services'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'down' 'Stop project services'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'restart' 'Restart project services'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'status | ps' 'Show service status'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'logs service=nginx' 'Follow logs for one service'
+	@printf '  \033[32m%-22s\033[0m %s\n\n' 'shell' 'Open workspace shell'
+	@printf '\033[1;35m%s\033[0m\n' 'Core'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'core-install' 'Composer install for Laravel core'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'core-migrate' 'Run PostgreSQL migrations'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'core-clickhouse' 'Create ClickHouse schema'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'core-consume' 'Consume Kafka packets into ClickHouse'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'core-horizon' 'Run Horizon queue worker'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'core-horizon-status' 'Show Horizon status'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'core-telescope-prune' 'Prune Telescope entries'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'core-test' 'Run Laravel tests'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'core-phpstan' 'Run PHPStan level 8 for core'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'core-psalm' 'Run Psalm strict analysis for core'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'core-analyse' 'Run core static analysis'
+	@printf '  \033[32m%-22s\033[0m %s\n\n' 'core-health' 'Check core HTTP health endpoints'
+	@printf '\033[1;35m%s\033[0m\n' 'Bus'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'bus-install' 'Composer install for bus worker'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'bus-consume' 'Run MQTT -> Kafka worker'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'bus-test' 'Run bus PHPUnit tests'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'bus-phpstan' 'Run PHPStan level 8 for bus'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'bus-psalm' 'Run Psalm strict analysis for bus'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'bus-analyse' 'Run bus static analysis'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'bus-health' 'Check bus liveness endpoint'
+	@printf '  \033[32m%-22s\033[0m %s\n\n' 'bus-ready' 'Check bus worker readiness endpoint'
+	@printf '\033[1;35m%s\033[0m\n' 'Frontend'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'frontend-install' 'NPM clean install for Vue frontend'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'frontend-build' 'Build Vue frontend assets'
+	@printf '  \033[32m%-22s\033[0m %s\n\n' 'frontend-health' 'Check frontend HTTP entrypoint'
+	@printf '\033[1;35m%s\033[0m\n' 'Validation'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'analyse' 'Run static analysis for core and bus'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'check' 'Run syntax, tests and health checks'
 
 build:
 	$(DC) build $(SERVICES)

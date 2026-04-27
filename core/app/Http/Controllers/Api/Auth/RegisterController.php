@@ -11,11 +11,42 @@ use Core\Application\Auth\Handlers\RegisterUserHandler;
 use Core\Application\Users\UserRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
 final class RegisterController extends Controller
 {
     use RespondsWithUser;
 
+    #[OA\Post(
+        path: '/auth/register',
+        summary: 'Register user',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['name', 'email', 'password'],
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', example: 'Admin'),
+                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'admin@example.com'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password', minLength: 8, example: 'password'),
+                ],
+                type: 'object',
+            ),
+        ),
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Registered user and JWT token.',
+                content: new OA\JsonContent(ref: '#/components/schemas/AuthResponse'),
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation error.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ValidationError'),
+            ),
+        ],
+        security: [],
+    )]
     public function __invoke(Request $request, RegisterUserHandler $handler, UserRepository $users): JsonResponse
     {
         $data = $request->validate([
