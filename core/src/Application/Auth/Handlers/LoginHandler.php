@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Hash;
 
 final readonly class LoginHandler
 {
+    /**
+     * @param UserRepository $users
+     * @param JwtTokenService $tokens
+     */
     public function __construct(
         private UserRepository $users,
         private JwtTokenService $tokens,

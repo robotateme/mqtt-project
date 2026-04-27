@@ -401,6 +401,18 @@ RUN if [ ${INSTALL_REDIS} = true ]; then \
   ;fi
 
 ###########################################################################
+# PHP RDKAFKA:
+###########################################################################
+
+ARG INSTALL_RDKAFKA=false
+RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
+    apk add --update --no-cache librdkafka-dev && \
+    pecl install https://pecl.php.net/get/rdkafka-6.0.5.tgz && \
+    docker-php-ext-enable rdkafka && \
+    php -m | grep -q 'rdkafka' \
+;fi
+
+###########################################################################
 # Swoole EXTENSION
 ###########################################################################
 

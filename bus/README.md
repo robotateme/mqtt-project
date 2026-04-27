@@ -19,6 +19,11 @@ composer install
 php bin/bus mqtt:consume
 ```
 
+In Docker the worker is managed by `supervisord` inside the Laradock
+`php-worker` service. The program config is stored at
+`laradock/php-worker/supervisord.d/bus-worker.conf`; rebuild `php-worker` after
+changing PHP extensions or supervisor programs.
+
 Runtime configuration is loaded through `vlucas/phpdotenv` before
 `config/config.php` is read. Real environment variables keep priority over
 values from `.env`; see `.env.example`.

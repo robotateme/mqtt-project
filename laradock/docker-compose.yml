@@ -375,6 +375,7 @@ services:
           - INSTALL_FFMPEG=${PHP_WORKER_INSTALL_FFMPEG}
           - INSTALL_AUDIOWAVEFORM=${PHP_WORKER_INSTALL_AUDIOWAVEFORM}
           - INSTALL_REDIS=${PHP_WORKER_INSTALL_REDIS}
+          - INSTALL_RDKAFKA=${PHP_WORKER_INSTALL_RDKAFKA}
           - INSTALL_IMAP=${PHP_WORKER_INSTALL_IMAP}
           - INSTALL_XMLRPC=${PHP_WORKER_INSTALL_XMLRPC}
           - INSTALL_SSDB=${PHP_WORKER_INSTALL_SSDB}
@@ -394,6 +395,9 @@ services:
         - ./php-worker/supervisord.d:/etc/supervisord.d
       depends_on:
         - workspace
+        - redis
+        - kafka
+        - mosquitto
       environment:
           - TZ=${WORKSPACE_TIMEZONE}
       extra_hosts:
