@@ -22,7 +22,11 @@ pages=(
 )
 
 if [ ! -d "$WIKI_DIR/.git" ]; then
-  git clone "$GITHUB_WIKI_URL" "$WIKI_DIR"
+  if ! git clone "$GITHUB_WIKI_URL" "$WIKI_DIR"; then
+    rm -rf "$WIKI_DIR"
+    echo "GitHub wiki is not available, cloning GitLab wiki instead." >&2
+    git clone "$GITLAB_WIKI_URL" "$WIKI_DIR"
+  fi
 fi
 
 if git -C "$WIKI_DIR" remote get-url origin >/dev/null 2>&1; then
@@ -73,6 +77,7 @@ fi
 git -C "$WIKI_DIR" commit -m "Синхронизировал wiki с документацией"
 
 if [ "$PUSH" = "1" ]; then
-  git -C "$WIKI_DIR" push origin HEAD:master
+  git -C "$WIKI_DIR" push origin HEAD:master || \
+    echo "Unable to push GitHub wiki. Check that GitHub wiki is enabled." >&2
   git -C "$WIKI_DIR" push gitlab HEAD:master
 fi
