@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Core\Application\Users;
 
 use App\Models\User;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 interface UserRepository
 {

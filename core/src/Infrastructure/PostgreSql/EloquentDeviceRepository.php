@@ -7,7 +7,7 @@ namespace Core\Infrastructure\PostgreSql;
 use App\Models\Device;
 use App\Models\User;
 use Core\Application\Devices\DeviceRepository;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 final class EloquentDeviceRepository implements DeviceRepository

@@ -7,12 +7,21 @@ namespace Database\Factories;
 use App\Models\Device;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Override;
 
 /**
  * @extends Factory<Device>
+ *
+ * @psalm-suppress UnusedClass
  */
 final class DeviceFactory extends Factory
 {
+    protected $model = Device::class;
+
+    /**
+     * @return array<string, mixed>
+     */
+    #[Override]
     public function definition(): array
     {
         return [

@@ -6,7 +6,7 @@ namespace Core\Application\Devices;
 
 use App\Models\Device;
 use App\Models\User;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 interface DeviceRepository

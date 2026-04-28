@@ -11,32 +11,38 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
+/**
+ * @psalm-suppress PropertyNotSetInConstructor
+ * @psalm-suppress PossiblyUnusedMethod PHPUnit discovers test methods dynamically.
+ */
 final class AdminCatalogApiTest extends TestCase
 {
     use RefreshDatabase;
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function test_admin_can_list_users(): void
     {
         $admin = $this->createUser(UserRole::Admin);
         $user = $this->createUser(UserRole::User, 'user@example.test');
-        Device::factory()->count(2)->create(['user_id' => $user->id]);
+        Device::factory()->count(2)->create(['user_id' => $user->getKey()]);
 
         $this->withToken($this->accessTokenFor($admin))
             ->getJson('/api/v1/admin/users')
             ->assertOk()
-            ->assertJsonPath('data.0.email', $user->email)
+            ->assertJsonPath('data.0.email', $user->getAttribute('email'))
             ->assertJsonPath('data.0.devices_count', 2)
-            ->assertJsonPath('data.1.email', $admin->email)
+            ->assertJsonPath('data.1.email', $admin->getAttribute('email'))
             ->assertJsonPath('meta.total', 2);
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function test_admin_can_list_devices_with_users(): void
     {
         $admin = $this->createUser(UserRole::Admin);
         $owner = $this->createUser(UserRole::User, 'owner@example.test');
 
         Device::factory()->create([
-            'user_id' => $owner->id,
+            'user_id' => $owner->getKey(),
             'external_id' => 'sensor-alpha',
             'name' => 'Sensor Alpha',
             'metadata' => ['status' => 'online'],
@@ -51,6 +57,7 @@ final class AdminCatalogApiTest extends TestCase
             ->assertJsonPath('meta.total', 1);
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function test_regular_user_cannot_list_admin_catalogs(): void
     {
         $user = $this->createUser(UserRole::User);
@@ -77,7 +84,7 @@ final class AdminCatalogApiTest extends TestCase
     private function accessTokenFor(User $user): string
     {
         $response = $this->postJson('/api/v1/auth/login', [
-            'email' => $user->email,
+            'email' => $user->getAttribute('email'),
             'password' => 'password123',
         ]);
 

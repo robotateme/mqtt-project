@@ -6,10 +6,12 @@ namespace App\Http\Controllers\Api\Admin\Devices;
 
 use App\Http\Controllers\Controller;
 use App\Models\Device;
+use App\Models\User;
 use Core\Application\Devices\Handlers\ListDevicesHandler;
 use Core\Application\Devices\Queries\ListDevicesQuery;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use OpenApi\Attributes as OA;
 
 final class IndexController extends Controller
@@ -45,11 +47,14 @@ final class IndexController extends Controller
         ]);
 
         $devices = $handler->handle(new ListDevicesQuery((int) ($data['per_page'] ?? 50)));
+        $payload = [];
+
+        foreach ($devices->items() as $device) {
+            $payload[] = $this->devicePayload($device);
+        }
 
         return response()->json([
-            'data' => $devices->getCollection()
-                ->map(fn (Device $device): array => $this->devicePayload($device))
-                ->values(),
+            'data' => $payload,
             'meta' => [
                 'current_page' => $devices->currentPage(),
                 'last_page' => $devices->lastPage(),
@@ -61,21 +66,27 @@ final class IndexController extends Controller
 
     /**
      * @return array<string, mixed>
+     *
+     * @psalm-suppress MixedAssignment
      */
     private function devicePayload(Device $device): array
     {
+        $user = $device->getRelation('user');
+        $createdAt = $device->getAttribute('created_at');
+        $updatedAt = $device->getAttribute('updated_at');
+
         return [
-            'id' => $device->id,
-            'external_id' => $device->external_id,
-            'name' => $device->name,
-            'metadata' => $device->metadata,
-            'created_at' => $device->created_at?->toISOString(),
-            'updated_at' => $device->updated_at?->toISOString(),
-            'user' => $device->user === null ? null : [
-                'id' => $device->user->id,
-                'name' => $device->user->name,
-                'email' => $device->user->email,
-            ],
+            'id' => $device->getKey(),
+            'external_id' => $device->getAttribute('external_id'),
+            'name' => $device->getAttribute('name'),
+            'metadata' => $device->getAttribute('metadata'),
+            'created_at' => $createdAt instanceof Carbon ? $createdAt->toISOString() : null,
+            'updated_at' => $updatedAt instanceof Carbon ? $updatedAt->toISOString() : null,
+            'user' => $user instanceof User ? [
+                'id' => $user->getKey(),
+                'name' => $user->getAttribute('name'),
+                'email' => $user->getAttribute('email'),
+            ] : null,
         ];
     }
 }

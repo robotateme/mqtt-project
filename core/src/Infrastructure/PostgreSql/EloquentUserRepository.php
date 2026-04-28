@@ -6,7 +6,7 @@ namespace Core\Infrastructure\PostgreSql;
 
 use App\Models\User;
 use Core\Application\Users\UserRepository;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 final class EloquentUserRepository implements UserRepository
 {
@@ -46,6 +46,7 @@ final class EloquentUserRepository implements UserRepository
         $user->delete();
     }
 
+    /** @psalm-suppress MixedReturnTypeCoercion Eloquent keeps the User model type after withCount(). */
     public function paginateForAdmin(int $perPage = 50): LengthAwarePaginator
     {
         return User::query()

@@ -47,8 +47,8 @@ final class DatabaseSeeder extends Seeder
                 Device::query()->updateOrCreate(
                     ['external_id' => sprintf('seed-user-%d-device-%d', $index + 1, $deviceNumber)],
                     [
-                        'user_id' => $user->id,
-                        'name' => sprintf('%s device %d', $user->name, $deviceNumber),
+                        'user_id' => $user->getKey(),
+                        'name' => sprintf('%s device %d', (string) $user->getAttribute('name'), $deviceNumber),
                         'metadata' => [
                             'firmware' => sprintf('2026.%d.%d', $index + 1, $deviceNumber),
                             'location' => ['north-hub', 'south-hub', 'lab', 'field'][$index] ?? 'field',

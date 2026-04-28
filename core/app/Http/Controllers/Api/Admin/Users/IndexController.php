@@ -48,11 +48,14 @@ final class IndexController extends Controller
         ]);
 
         $users = $handler->handle(new ListUsersQuery((int) ($data['per_page'] ?? 50)));
+        $payload = [];
+
+        foreach ($users->items() as $user) {
+            $payload[] = $this->userPayload($user);
+        }
 
         return response()->json([
-            'data' => $users->getCollection()
-                ->map(fn (User $user): array => $this->userPayload($user))
-                ->values(),
+            'data' => $payload,
             'meta' => [
                 'current_page' => $users->currentPage(),
                 'last_page' => $users->lastPage(),

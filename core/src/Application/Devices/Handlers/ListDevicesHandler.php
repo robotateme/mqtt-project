@@ -7,10 +7,11 @@ namespace Core\Application\Devices\Handlers;
 use App\Models\Device;
 use Core\Application\Devices\DeviceRepository;
 use Core\Application\Devices\Queries\ListDevicesQuery;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 final readonly class ListDevicesHandler
 {
+    /** @psalm-suppress PossiblyUnusedMethod Laravel resolves the handler through the container. */
     public function __construct(private DeviceRepository $devices)
     {
     }
