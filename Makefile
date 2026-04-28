@@ -10,7 +10,8 @@ SAFE_GIT := git config --global --add safe.directory /var/www >/dev/null 2>&1 ||
 .DEFAULT_GOAL := help
 
 .PHONY: help build up down restart status ps logs shell \
-	core-install core-migrate core-clickhouse core-consume core-test core-phpstan core-psalm core-analyse core-health \
+	core-install core-migrate core-seed core-fresh-seed core-clickhouse core-consume core-swagger \
+	core-test core-phpstan core-psalm core-analyse core-health \
 	core-horizon core-horizon-status core-telescope-prune \
 	bus-install bus-consume bus-test bus-phpstan bus-psalm bus-analyse bus-health bus-ready \
 	frontend-install frontend-build frontend-health analyse check
@@ -29,8 +30,11 @@ help:
 	@printf '\033[1;35m%s\033[0m\n' 'Core'
 	@printf '  \033[32m%-22s\033[0m %s\n' 'core-install' 'Composer install for Laravel core'
 	@printf '  \033[32m%-22s\033[0m %s\n' 'core-migrate' 'Run PostgreSQL migrations'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'core-seed' 'Seed demo users and devices'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'core-fresh-seed' 'Rebuild PostgreSQL schema with demo data'
 	@printf '  \033[32m%-22s\033[0m %s\n' 'core-clickhouse' 'Create ClickHouse schema'
 	@printf '  \033[32m%-22s\033[0m %s\n' 'core-consume' 'Consume Kafka packets into ClickHouse'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'core-swagger' 'Generate OpenAPI documentation'
 	@printf '  \033[32m%-22s\033[0m %s\n' 'core-horizon' 'Run Horizon queue worker'
 	@printf '  \033[32m%-22s\033[0m %s\n' 'core-horizon-status' 'Show Horizon status'
 	@printf '  \033[32m%-22s\033[0m %s\n' 'core-telescope-prune' 'Prune Telescope entries'
@@ -82,11 +86,20 @@ core-install:
 core-migrate:
 	$(DC) exec -T workspace bash -lc 'cd $(CORE) && php artisan migrate --force'
 
+core-seed:
+	$(DC) exec -T workspace bash -lc 'cd $(CORE) && php artisan db:seed --force'
+
+core-fresh-seed:
+	$(DC) exec -T workspace bash -lc 'cd $(CORE) && php artisan migrate:fresh --seed --force'
+
 core-clickhouse:
 	$(DC) exec -T workspace bash -lc 'cd $(CORE) && php artisan clickhouse:migrate'
 
 core-consume:
 	$(DC) exec workspace bash -lc 'cd $(CORE) && php artisan kafka:consume-packets'
+
+core-swagger:
+	$(DC) exec -T workspace bash -lc 'cd $(CORE) && TELESCOPE_ENABLED=false php artisan l5-swagger:generate'
 
 core-horizon:
 	$(DC) exec workspace bash -lc 'cd $(CORE) && php artisan horizon'

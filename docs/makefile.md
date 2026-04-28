@@ -19,8 +19,11 @@ make shell
 ```bash
 make core-install
 make core-migrate
+make core-seed
+make core-fresh-seed
 make core-clickhouse
 make core-consume
+make core-swagger
 make core-horizon
 make core-horizon-status
 make core-telescope-prune
@@ -30,6 +33,10 @@ make core-psalm
 make core-analyse
 make core-health
 ```
+
+`core-seed` загружает демо-пользователей и устройства. `core-fresh-seed`
+пересоздает PostgreSQL-схему и сразу запускает seeders. `core-swagger`
+перегенерирует OpenAPI-документацию через `l5-swagger`.
 
 ## Bus
 

@@ -49,6 +49,7 @@ final class EloquentUserRepository implements UserRepository
     public function paginateForAdmin(int $perPage = 50): LengthAwarePaginator
     {
         return User::query()
+            ->withCount('devices')
             ->latest('id')
             ->paginate($perPage);
     }

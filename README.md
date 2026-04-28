@@ -41,6 +41,7 @@ make bus-install
 make frontend-install
 make frontend-build
 make core-migrate
+make core-seed
 make core-clickhouse
 make check
 ```
@@ -65,6 +66,9 @@ curl http://api.mqtt.local/ready
 
 Frontend собирается в `frontend/dist` и обслуживается nginx из
 `laradock/nginx/sites/00-frontend.conf`.
+
+Демо-администратор после `make core-seed`: `admin@example.com` / `password123`.
+После входа frontend показывает admin-таблицы пользователей и устройств.
 
 ## Локальная разработка frontend
 

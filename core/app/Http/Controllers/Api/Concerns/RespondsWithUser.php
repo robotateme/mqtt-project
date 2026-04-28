@@ -15,6 +15,7 @@ trait RespondsWithUser
             'name' => $user->name,
             'email' => $user->email,
             'role' => $user->role,
+            'devices_count' => $user->getAttribute('devices_count'),
             'email_verified_at' => $user->email_verified_at?->toISOString(),
             'created_at' => $user->created_at?->toISOString(),
             'updated_at' => $user->updated_at?->toISOString(),

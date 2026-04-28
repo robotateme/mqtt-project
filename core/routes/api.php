@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\Admin\MeController as AdminMeController;
+use App\Http\Controllers\Api\Admin\Devices\IndexController as AdminDeviceIndexController;
+use App\Http\Controllers\Api\Admin\Users\IndexController as AdminUserIndexController;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\MeController;
@@ -28,5 +30,7 @@ Route::prefix('v1')->group(function (): void {
         ->middleware([AuthenticateJwt::class, EnsureAdmin::class])
         ->group(function (): void {
             Route::get('me', AdminMeController::class);
+            Route::get('users', AdminUserIndexController::class);
+            Route::get('devices', AdminDeviceIndexController::class);
         });
 });

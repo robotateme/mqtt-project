@@ -6,14 +6,26 @@ import InfoPanel from './components/InfoPanel.vue';
 
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://api.mqtt.local').replace(/\/$/, '');
 const storageKey = 'mqtt-project.auth';
+const themeStorageKey = 'mqtt-project.theme';
+const themes = [
+  { id: 'default', label: 'Default' },
+  { id: 'empire-night', label: 'StarWars (empire-night)' },
+  { id: 'republic-day', label: 'StarWars (republic-day)' },
+  { id: 'tron-neon-night', label: 'Tron (tron-neon-night)' },
+];
 
 const mode = ref('login');
+const theme = ref('default');
 const loading = ref(false);
 const checkingSession = ref(true);
 const error = ref('');
 const notice = ref('');
 const user = ref(null);
 const token = ref(null);
+const adminUsers = ref([]);
+const adminDevices = ref([]);
+const catalogLoading = ref(false);
+const catalogError = ref('');
 
 const loginForm = reactive({
   email: '',
@@ -27,7 +39,20 @@ const registerForm = reactive({
 });
 
 const isAuthenticated = computed(() => Boolean(user.value && token.value?.access_token));
+const isAdmin = computed(() => user.value?.role === 'admin');
 const authHeader = computed(() => `${token.value?.token_type || 'Bearer'} ${token.value?.access_token || ''}`);
+
+function applyTheme(nextTheme) {
+  const normalizedTheme = themes.some((item) => item.id === nextTheme) ? nextTheme : 'default';
+  theme.value = normalizedTheme;
+  document.documentElement.dataset.theme = normalizedTheme;
+  document.documentElement.dataset.bsTheme = normalizedTheme.includes('night') ? 'dark' : 'light';
+  localStorage.setItem(themeStorageKey, normalizedTheme);
+}
+
+function restoreTheme() {
+  applyTheme(localStorage.getItem(themeStorageKey) || 'default');
+}
 
 function apiUrl(path) {
   return `${apiBaseUrl}/api/v1${path}`;
@@ -42,6 +67,10 @@ function saveSession(nextUser, nextToken) {
 function clearSession() {
   user.value = null;
   token.value = null;
+  adminUsers.value = [];
+  adminDevices.value = [];
+  catalogLoading.value = false;
+  catalogError.value = '';
   localStorage.removeItem(storageKey);
 }
 
@@ -85,6 +114,40 @@ async function request(path, options = {}) {
   return data;
 }
 
+async function loadAdminCatalog() {
+  if (!isAdmin.value || !token.value?.access_token) {
+    adminUsers.value = [];
+    adminDevices.value = [];
+    catalogError.value = '';
+    return;
+  }
+
+  catalogLoading.value = true;
+  catalogError.value = '';
+
+  try {
+    const [users, devices] = await Promise.all([
+      request('/admin/users', {
+        headers: {
+          Authorization: authHeader.value,
+        },
+      }),
+      request('/admin/devices', {
+        headers: {
+          Authorization: authHeader.value,
+        },
+      }),
+    ]);
+
+    adminUsers.value = users.data || [];
+    adminDevices.value = devices.data || [];
+  } catch (exception) {
+    catalogError.value = exception.message;
+  } finally {
+    catalogLoading.value = false;
+  }
+}
+
 async function submitLogin() {
   loading.value = true;
   error.value = '';
@@ -97,6 +160,7 @@ async function submitLogin() {
     });
 
     saveSession(data.user, data.token);
+    await loadAdminCatalog();
     notice.value = 'Сессия открыта.';
   } catch (exception) {
     error.value = exception.message;
@@ -165,6 +229,7 @@ async function loadProfile() {
 
     user.value = data.user;
     saveSession(data.user, token.value);
+    await loadAdminCatalog();
   } catch {
     clearSession();
   } finally {
@@ -195,6 +260,7 @@ async function logout() {
 }
 
 onMounted(() => {
+  restoreTheme();
   restoreSession();
   loadProfile();
 });
@@ -202,7 +268,14 @@ onMounted(() => {
 
 <template>
   <main class="app-shell">
-    <AppTopbar :authenticated="isAuthenticated" :loading="loading" @logout="logout" />
+    <AppTopbar
+      :authenticated="isAuthenticated"
+      :loading="loading"
+      :themes="themes"
+      :theme="theme"
+      @update:theme="applyTheme"
+      @logout="logout"
+    />
 
     <section class="workspace">
       <AuthPanel
@@ -215,12 +288,17 @@ onMounted(() => {
         :register-form="registerForm"
         :user="user"
         :token="token"
+        :admin-users="adminUsers"
+        :admin-devices="adminDevices"
+        :catalog-loading="catalogLoading"
+        :catalog-error="catalogError"
         :error="error"
         :notice="notice"
         @login="submitLogin"
         @register="submitRegister"
         @refresh-profile="loadProfile"
         @refresh-token="refreshToken"
+        @refresh-catalog="loadAdminCatalog"
       />
       <InfoPanel :api-base-url="apiBaseUrl" />
     </section>

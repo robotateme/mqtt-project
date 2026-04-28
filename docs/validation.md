@@ -59,6 +59,17 @@ make bus-health
 make bus-ready
 ```
 
+OpenAPI-аннотации `core` можно проверить генерацией документации:
+
+```bash
+make core-swagger
+```
+
+В локальном запуске вне Docker команда `php artisan l5-swagger:generate` требует
+права на запись в `core/storage/api-docs`. Если `storage` принадлежит другому
+UID, проверяйте аннотации напрямую через `./vendor/bin/openapi app -o /tmp/mqtt-core-openapi.json`
+или исправьте права storage в контейнере.
+
 ## CI
 
 Pipeline описан в `.gitlab-ci.yml`, GitHub Actions workflow - в

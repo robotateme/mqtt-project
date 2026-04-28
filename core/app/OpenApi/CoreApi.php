@@ -46,9 +46,69 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'name', type: 'string', example: 'Admin'),
         new OA\Property(property: 'email', type: 'string', format: 'email', example: 'admin@example.com'),
         new OA\Property(property: 'role', type: 'string', example: 'admin'),
+        new OA\Property(property: 'devices_count', type: 'integer', nullable: true, example: 2),
         new OA\Property(property: 'email_verified_at', type: 'string', format: 'date-time', nullable: true),
         new OA\Property(property: 'created_at', type: 'string', format: 'date-time', nullable: true),
         new OA\Property(property: 'updated_at', type: 'string', format: 'date-time', nullable: true),
+    ],
+    type: 'object',
+)]
+#[OA\Schema(
+    schema: 'DeviceOwner',
+    required: ['id', 'name', 'email'],
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 1),
+        new OA\Property(property: 'name', type: 'string', example: 'Admin User'),
+        new OA\Property(property: 'email', type: 'string', format: 'email', example: 'admin@example.com'),
+    ],
+    type: 'object',
+)]
+#[OA\Schema(
+    schema: 'Device',
+    required: ['id', 'external_id'],
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 1),
+        new OA\Property(property: 'external_id', type: 'string', example: 'seed-user-1-device-1'),
+        new OA\Property(property: 'name', type: 'string', nullable: true, example: 'Admin User device 1'),
+        new OA\Property(
+            property: 'metadata',
+            type: 'object',
+            nullable: true,
+            additionalProperties: new OA\AdditionalProperties(),
+            example: ['firmware' => '2026.1.1', 'location' => 'north-hub', 'status' => 'online'],
+        ),
+        new OA\Property(property: 'created_at', type: 'string', format: 'date-time', nullable: true),
+        new OA\Property(property: 'updated_at', type: 'string', format: 'date-time', nullable: true),
+        new OA\Property(property: 'user', ref: '#/components/schemas/DeviceOwner', nullable: true),
+    ],
+    type: 'object',
+)]
+#[OA\Schema(
+    schema: 'PaginationMeta',
+    required: ['current_page', 'last_page', 'per_page', 'total'],
+    properties: [
+        new OA\Property(property: 'current_page', type: 'integer', example: 1),
+        new OA\Property(property: 'last_page', type: 'integer', example: 1),
+        new OA\Property(property: 'per_page', type: 'integer', example: 50),
+        new OA\Property(property: 'total', type: 'integer', example: 8),
+    ],
+    type: 'object',
+)]
+#[OA\Schema(
+    schema: 'UserListResponse',
+    required: ['data', 'meta'],
+    properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/User')),
+        new OA\Property(property: 'meta', ref: '#/components/schemas/PaginationMeta'),
+    ],
+    type: 'object',
+)]
+#[OA\Schema(
+    schema: 'DeviceListResponse',
+    required: ['data', 'meta'],
+    properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/Device')),
+        new OA\Property(property: 'meta', ref: '#/components/schemas/PaginationMeta'),
     ],
     type: 'object',
 )]

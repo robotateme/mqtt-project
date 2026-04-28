@@ -40,6 +40,22 @@ defineProps({
     type: Object,
     default: null,
   },
+  adminUsers: {
+    type: Array,
+    required: true,
+  },
+  adminDevices: {
+    type: Array,
+    required: true,
+  },
+  catalogLoading: {
+    type: Boolean,
+    required: true,
+  },
+  catalogError: {
+    type: String,
+    required: true,
+  },
   error: {
     type: String,
     required: true,
@@ -50,7 +66,7 @@ defineProps({
   },
 });
 
-defineEmits(['update:mode', 'login', 'register', 'refresh-profile', 'refresh-token']);
+defineEmits(['update:mode', 'login', 'register', 'refresh-profile', 'refresh-token', 'refresh-catalog']);
 </script>
 
 <template>
@@ -63,8 +79,13 @@ defineEmits(['update:mode', 'login', 'register', 'refresh-profile', 'refresh-tok
       :loading="loading"
       :user="user"
       :token="token"
+      :admin-users="adminUsers"
+      :admin-devices="adminDevices"
+      :catalog-loading="catalogLoading"
+      :catalog-error="catalogError"
       @refresh-profile="$emit('refresh-profile')"
       @refresh-token="$emit('refresh-token')"
+      @refresh-catalog="$emit('refresh-catalog')"
     />
 
     <AuthForm

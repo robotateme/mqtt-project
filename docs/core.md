@@ -17,6 +17,30 @@ JSON-представлением headers.
 make core-migrate
 ```
 
+Заполнение демо-пользователями и устройствами:
+
+```bash
+make core-seed
+```
+
+Полная пересборка PostgreSQL-схемы с демо-данными:
+
+```bash
+make core-fresh-seed
+```
+
+Seeder создает пользователей с паролем `password123`:
+
+| Email | Роль | Назначение |
+| --- | --- | --- |
+| `admin@example.com` | `admin` | Доступ к admin API и frontend-таблицам |
+| `demo@example.com` | `user` | Обычный пользователь |
+| `operator@example.com` | `user` | Операторский пользователь |
+| `viewer@example.com` | `user` | Пользователь просмотра |
+
+Для каждого пользователя создается по два устройства с уникальными
+`external_id` и metadata `firmware`, `location`, `status`.
+
 Создание схемы ClickHouse:
 
 ```bash
@@ -47,6 +71,12 @@ make core-horizon
 ```bash
 make core-test
 php artisan test --filter=KafkaPacketMapperTest
+```
+
+Генерация OpenAPI/Swagger:
+
+```bash
+make core-swagger
 ```
 
 Панели API:
@@ -101,5 +131,8 @@ php artisan test --filter=KafkaPacketMapperTest
 | `GET` | `/api/v1/auth/me` | Текущий пользователь |
 | `POST` | `/api/v1/auth/logout` | Logout текущего токена |
 | `GET` | `/api/v1/admin/me` | Проверка admin-доступа |
+| `GET` | `/api/v1/admin/users` | Таблица пользователей для администратора |
+| `GET` | `/api/v1/admin/devices` | Таблица устройств с владельцами |
 
 Для защищенных endpoints используется `Authorization: Bearer <token>`.
+Admin endpoints дополнительно требуют роль `admin`.

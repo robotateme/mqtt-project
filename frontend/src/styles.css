@@ -1,13 +1,274 @@
 :root {
   color-scheme: light;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --app-bg: #eef2f7;
+  --app-text: #172033;
+  --topbar-bg: #132238;
+  --topbar-text: #fff;
+  --topbar-border: #1b8a6b;
+  --panel-bg: #fff;
+  --panel-border: #d7dfeb;
+  --panel-shadow: 0 16px 34px rgb(19 34 56 / 8%);
+  --muted-text: #6c7788;
+  --chip-bg: #e9f7f2;
+  --chip-text: #14614e;
+  --switch-bg: #edf2f7;
+  --switch-active-bg: #fff;
+  --switch-text: #536174;
+  --switch-active-text: #132238;
+  --input-bg: #fff;
+  --input-border: #ced4da;
+  --input-text: #172033;
+  --card-bg: #f8fafc;
+  --card-border: #e2e8f0;
+  --code-text: #28466d;
+  --token-bg: #142033;
+  --token-text: #dbe7f5;
+  --token-label: #8fb6df;
+  --primary: #0d6efd;
+  --primary-hover: #0b5ed7;
+  --secondary: #6c757d;
+  --outline-text: #212529;
+  --outline-border: #212529;
+  --outline-hover-bg: #212529;
+  --outline-hover-text: #fff;
+  --danger-bg: #f8d7da;
+  --danger-border: #f1aeb5;
+  --danger-text: #58151c;
+  --success-bg: #d1e7dd;
+  --success-border: #a3cfbb;
+  --success-text: #0a3622;
+}
+
+:root[data-theme="empire-night"] {
+  color-scheme: dark;
+  --app-bg: #07080d;
+  --app-text: #f4f7fb;
+  --topbar-bg: #0a0a0d;
+  --topbar-text: #f8f8f8;
+  --topbar-border: #c1121f;
+  --panel-bg: #11131a;
+  --panel-border: #3a1d24;
+  --panel-shadow: 0 18px 38px rgb(0 0 0 / 42%);
+  --muted-text: #a8b0bd;
+  --chip-bg: #2a1116;
+  --chip-text: #ff6b76;
+  --switch-bg: #1b1d27;
+  --switch-active-bg: #2a1016;
+  --switch-text: #b9c1cf;
+  --switch-active-text: #fff5f6;
+  --input-bg: #080a10;
+  --input-border: #56313b;
+  --input-text: #f5f7fb;
+  --card-bg: #171a23;
+  --card-border: #39222b;
+  --code-text: #ffb3b9;
+  --token-bg: #050507;
+  --token-text: #f6f1f1;
+  --token-label: #ff7b84;
+  --primary: #d71920;
+  --primary-hover: #f02f38;
+  --secondary: #a2a8b3;
+  --outline-text: #f6d8dc;
+  --outline-border: #a73542;
+  --outline-hover-bg: #d71920;
+  --outline-hover-text: #fff;
+  --danger-bg: #341016;
+  --danger-border: #8f2430;
+  --danger-text: #ffb7be;
+  --success-bg: #10271f;
+  --success-border: #2e7b60;
+  --success-text: #9ff0d0;
+}
+
+:root[data-theme="republic-day"] {
+  color-scheme: light;
+  --app-bg: #f4f7fb;
+  --app-text: #17213a;
+  --topbar-bg: #f7f9fd;
+  --topbar-text: #17213a;
+  --topbar-border: #1f5fbf;
+  --panel-bg: #ffffff;
+  --panel-border: #cdd9ea;
+  --panel-shadow: 0 16px 30px rgb(31 95 191 / 12%);
+  --muted-text: #63708a;
+  --chip-bg: #e7f0ff;
+  --chip-text: #1f5fbf;
+  --switch-bg: #e8eef8;
+  --switch-active-bg: #ffffff;
+  --switch-text: #52627f;
+  --switch-active-text: #153c84;
+  --input-bg: #ffffff;
+  --input-border: #bccbe1;
+  --input-text: #17213a;
+  --card-bg: #f7faff;
+  --card-border: #d7e2f2;
+  --code-text: #1f5fbf;
+  --token-bg: #18345f;
+  --token-text: #eef5ff;
+  --token-label: #b9d3ff;
+  --brand-accent: #d4a017;
+  --primary: #1f5fbf;
+  --primary-hover: #174fa4;
+  --secondary: #5f6f8a;
+  --outline-text: #173d7c;
+  --outline-border: #a9bfdf;
+  --outline-hover-bg: #1f5fbf;
+  --outline-hover-text: #fff;
+}
+
+:root[data-theme="tron-neon-night"] {
+  color-scheme: dark;
+  --app-bg: #02070d;
+  --app-text: #e8fbff;
+  --topbar-bg: #02040a;
+  --topbar-text: #e8fbff;
+  --topbar-border: #00e5ff;
+  --panel-bg: #07111c;
+  --panel-border: #00b8d4;
+  --panel-shadow: 0 0 28px rgb(0 229 255 / 18%);
+  --muted-text: #8ccbd6;
+  --chip-bg: #03222a;
+  --chip-text: #00e5ff;
+  --switch-bg: #041924;
+  --switch-active-bg: #082d3a;
+  --switch-text: #95d5df;
+  --switch-active-text: #f1feff;
+  --input-bg: #020b12;
+  --input-border: #087c91;
+  --input-text: #e8fbff;
+  --card-bg: #061927;
+  --card-border: #0c6f85;
+  --code-text: #48f3ff;
+  --token-bg: #02040a;
+  --token-text: #dffcff;
+  --token-label: #00e5ff;
+  --brand-accent: #00e5ff;
+  --primary: #00bcd4;
+  --primary-hover: #22e7ff;
+  --secondary: #8bcad6;
+  --outline-text: #86f8ff;
+  --outline-border: #00e5ff;
+  --outline-hover-bg: #00e5ff;
+  --outline-hover-text: #041018;
+  --danger-bg: #2d0715;
+  --danger-border: #ff2f74;
+  --danger-text: #ffc1d8;
+  --success-bg: #06251f;
+  --success-border: #00d89a;
+  --success-text: #9dffe2;
 }
 
 body {
   margin: 0;
   min-width: 320px;
-  background: #eef2f7;
-  color: #172033;
+  background: var(--app-bg);
+  color: var(--app-text);
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+body::before,
+body::after {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+  opacity: 0;
+}
+
+:root[data-theme="empire-night"] body {
+  background:
+    radial-gradient(circle at 20% 10%, rgb(118 20 31 / 24%), transparent 30%),
+    linear-gradient(180deg, #05060a 0%, #0b0d14 48%, #050509 100%);
+}
+
+:root[data-theme="empire-night"] body::before {
+  opacity: 1;
+  background-image:
+    radial-gradient(circle at 11px 17px, rgb(255 255 255 / 88%) 0 1px, transparent 1.4px),
+    radial-gradient(circle at 73px 41px, rgb(255 255 255 / 72%) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 148px 91px, rgb(255 255 255 / 80%) 0 1.3px, transparent 1.8px),
+    radial-gradient(circle at 37px 126px, rgb(255 118 128 / 70%) 0 1.1px, transparent 1.6px),
+    radial-gradient(circle at 214px 23px, rgb(181 205 255 / 72%) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 276px 168px, rgb(255 255 255 / 58%) 0 1.4px, transparent 2px),
+    radial-gradient(circle at 132px 214px, rgb(255 80 96 / 52%) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 326px 77px, rgb(226 235 255 / 64%) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 391px 253px, rgb(255 255 255 / 76%) 0 1.2px, transparent 1.9px),
+    radial-gradient(circle at 462px 139px, rgb(255 149 157 / 56%) 0 1px, transparent 1.6px);
+  background-position: 0 0, 41px 83px, 97px 29px, 13px 151px, 188px 47px, 271px 109px, 59px 239px, 344px 68px, 419px 203px, 503px 137px;
+  background-size: 533px 389px, 419px 571px, 683px 461px, 367px 617px, 761px 337px, 557px 719px, 827px 503px, 641px 853px, 947px 587px, 743px 677px;
+  animation: empire-stars-drift 58s linear infinite;
+}
+
+:root[data-theme="empire-night"] body::after {
+  opacity: 1;
+  background:
+    linear-gradient(115deg, transparent 0 46%, rgb(255 255 255 / 12%) 49%, transparent 52%),
+    radial-gradient(circle at 76% 18%, rgb(218 20 38 / 18%), transparent 22%);
+  transform: translateX(-55%);
+  animation: empire-hyperspace 9s ease-in-out infinite;
+}
+
+:root[data-theme="republic-day"] body {
+  background:
+    radial-gradient(circle at 18% 24%, rgb(212 160 23 / 15%), transparent 20%),
+    radial-gradient(circle at 78% 18%, rgb(31 95 191 / 14%), transparent 30%),
+    radial-gradient(circle at 50% 104%, rgb(31 95 191 / 10%), transparent 34%),
+    linear-gradient(180deg, #fbfdff 0%, #eef4fb 100%);
+}
+
+:root[data-theme="republic-day"] body::before {
+  opacity: 0.68;
+  background-image:
+    linear-gradient(90deg, rgb(31 95 191 / 7%) 1px, transparent 1px),
+    linear-gradient(rgb(31 95 191 / 7%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(212 160 23 / 9%) 2px, transparent 2px),
+    linear-gradient(rgb(212 160 23 / 9%) 2px, transparent 2px);
+  background-position: 0 0, 0 0, 0 0, 0 0;
+  background-size: 96px 96px, 96px 96px, 384px 384px, 384px 384px;
+  animation: republic-grid-drift 22s linear infinite;
+}
+
+:root[data-theme="republic-day"] body::after {
+  opacity: 0.82;
+  background:
+    radial-gradient(circle at 16% 78%, transparent 0 42px, rgb(31 95 191 / 18%) 43px 44px, transparent 45px 78px, rgb(31 95 191 / 11%) 79px 80px, transparent 81px 120px, rgb(212 160 23 / 14%) 121px 122px, transparent 123px),
+    conic-gradient(from 22deg at 84% 21%, transparent 0 9deg, rgb(31 95 191 / 18%) 9deg 11deg, transparent 11deg 42deg, rgb(212 160 23 / 18%) 42deg 44deg, transparent 44deg 98deg, rgb(31 95 191 / 14%) 98deg 100deg, transparent 100deg),
+    radial-gradient(circle at 84% 21%, transparent 0 34px, rgb(31 95 191 / 16%) 35px 36px, transparent 37px 64px, rgb(31 95 191 / 10%) 65px 66px, transparent 67px),
+    conic-gradient(from -18deg at 50% 54%, rgb(31 95 191 / 0%) 0 12deg, rgb(31 95 191 / 9%) 12deg 13deg, transparent 13deg 58deg, rgb(212 160 23 / 12%) 58deg 59deg, transparent 59deg 124deg, rgb(31 95 191 / 9%) 124deg 125deg, transparent 125deg),
+    radial-gradient(circle at 50% 54%, transparent 0 130px, rgb(31 95 191 / 8%) 131px 132px, transparent 133px 190px, rgb(212 160 23 / 10%) 191px 192px, transparent 193px 258px, rgb(31 95 191 / 8%) 259px 260px, transparent 261px),
+    linear-gradient(115deg, transparent 0 47%, rgb(31 95 191 / 9%) 47.15% 47.45%, transparent 47.7%),
+    linear-gradient(64deg, transparent 0 63%, rgb(212 160 23 / 8%) 63.1% 63.4%, transparent 63.65%);
+  animation: republic-command-scan 18s ease-in-out infinite;
+}
+
+:root[data-theme="tron-neon-night"] body {
+  background:
+    radial-gradient(circle at 50% 100%, rgb(0 229 255 / 22%), transparent 38%),
+    linear-gradient(180deg, #01050a 0%, #03101a 52%, #02070d 100%);
+}
+
+:root[data-theme="tron-neon-night"] body::before {
+  opacity: 0.9;
+  background-image:
+    linear-gradient(rgb(0 229 255 / 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(0 229 255 / 0.2) 1px, transparent 1px),
+    linear-gradient(rgb(0 229 255 / 0.48) 2px, transparent 2px),
+    linear-gradient(90deg, rgb(0 229 255 / 0.42) 2px, transparent 2px);
+  background-position: 0 0;
+  background-size: 48px 48px, 48px 48px, 192px 192px, 192px 192px;
+  filter: drop-shadow(0 0 6px rgb(0 229 255 / 42%));
+  transform: perspective(680px) rotateX(62deg) translateY(20vh) scale(1.6);
+  transform-origin: 50% 100%;
+  animation: tron-grid-run 2.8s linear infinite;
+}
+
+:root[data-theme="tron-neon-night"] body::after {
+  opacity: 0.75;
+  background:
+    linear-gradient(180deg, rgb(2 7 13 / 0%) 0%, rgb(2 7 13 / 72%) 58%, rgb(2 7 13 / 92%) 100%),
+    radial-gradient(circle at 50% 92%, rgb(255 0 204 / 16%), transparent 28%);
 }
 
 button,
@@ -17,6 +278,8 @@ input {
 
 .app-shell {
   min-height: 100vh;
+  position: relative;
+  z-index: 0;
 }
 
 .topbar {
@@ -25,14 +288,32 @@ input {
   justify-content: space-between;
   min-height: 64px;
   padding: 0 28px;
-  background: #132238;
-  color: #fff;
-  border-bottom: 4px solid #1b8a6b;
+  background: var(--topbar-bg);
+  color: var(--topbar-text);
+  border-bottom: 4px solid var(--topbar-border);
 }
 
 .brand {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-size: 18px;
   font-weight: 700;
+}
+
+.brand::before {
+  display: none;
+  width: 10px;
+  height: 10px;
+  background: var(--brand-accent, var(--topbar-border));
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-accent, var(--topbar-border)) 18%, transparent);
+  content: "";
+}
+
+:root[data-theme="republic-day"] .brand::before {
+  display: inline-block;
 }
 
 .service-chip,
@@ -46,8 +327,40 @@ input {
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
-  background: #e9f7f2;
-  color: #14614e;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.theme-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--topbar-text);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.theme-select .form-select {
+  min-width: 230px;
+  color: var(--input-text);
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+}
+
+.topbar .btn-outline-light {
+  --bs-btn-color: var(--topbar-text);
+  --bs-btn-border-color: var(--topbar-border);
+  --bs-btn-hover-bg: var(--topbar-border);
+  --bs-btn-hover-border-color: var(--topbar-border);
+  --bs-btn-hover-color: var(--outline-hover-text);
 }
 
 .workspace {
@@ -61,10 +374,10 @@ input {
 
 .auth-panel,
 .info-panel {
-  background: #fff;
-  border: 1px solid #d7dfeb;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
   border-radius: 8px;
-  box-shadow: 0 16px 34px rgb(19 34 56 / 8%);
+  box-shadow: var(--panel-shadow);
 }
 
 .auth-panel {
@@ -91,7 +404,7 @@ input {
 }
 
 .info-panel code {
-  color: #28466d;
+  color: var(--code-text);
   white-space: normal;
   word-break: break-word;
 }
@@ -112,7 +425,7 @@ input {
 
 .eyebrow {
   margin: 0 0 6px;
-  color: #6c7788;
+  color: var(--muted-text);
   font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
@@ -124,7 +437,7 @@ input {
   gap: 4px;
   padding: 4px;
   margin-bottom: 24px;
-  background: #edf2f7;
+  background: var(--switch-bg);
   border-radius: 8px;
 }
 
@@ -133,13 +446,13 @@ input {
   border: 0;
   border-radius: 6px;
   background: transparent;
-  color: #536174;
+  color: var(--switch-text);
   font-weight: 700;
 }
 
 .mode-switch button.active {
-  background: #fff;
-  color: #132238;
+  background: var(--switch-active-bg);
+  color: var(--switch-active-text);
   box-shadow: 0 3px 12px rgb(19 34 56 / 10%);
 }
 
@@ -152,12 +465,15 @@ input {
 .auth-form label {
   display: grid;
   gap: 7px;
-  color: #39465a;
+  color: var(--app-text);
   font-weight: 700;
 }
 
 .form-control {
   min-height: 46px;
+  color: var(--input-text);
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
 }
 
 .state-block {
@@ -177,14 +493,14 @@ input {
 .profile-grid div {
   min-width: 0;
   padding: 16px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 8px;
 }
 
 .profile-grid dt {
   margin-bottom: 6px;
-  color: #6c7788;
+  color: var(--muted-text);
   font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
@@ -201,29 +517,135 @@ input {
   gap: 8px;
   padding: 16px;
   margin-bottom: 20px;
-  background: #142033;
-  color: #dbe7f5;
+  background: var(--token-bg);
+  color: var(--token-text);
   border-radius: 8px;
 }
 
 .token-box span {
-  color: #8fb6df;
+  color: var(--token-label);
   font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
 }
 
 .token-box code {
-  color: #fff;
+  color: var(--token-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--primary);
+  --bs-btn-border-color: var(--primary);
+  --bs-btn-hover-bg: var(--primary-hover);
+  --bs-btn-hover-border-color: var(--primary-hover);
+  --bs-btn-disabled-bg: var(--primary);
+  --bs-btn-disabled-border-color: var(--primary);
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: var(--secondary);
+  --bs-btn-border-color: var(--secondary);
+  --bs-btn-hover-bg: var(--secondary);
+  --bs-btn-hover-border-color: var(--secondary);
+}
+
+.btn-outline-dark {
+  --bs-btn-color: var(--outline-text);
+  --bs-btn-border-color: var(--outline-border);
+  --bs-btn-hover-bg: var(--outline-hover-bg);
+  --bs-btn-hover-border-color: var(--outline-hover-bg);
+  --bs-btn-hover-color: var(--outline-hover-text);
+}
+
+.alert-danger {
+  --bs-alert-color: var(--danger-text);
+  --bs-alert-bg: var(--danger-bg);
+  --bs-alert-border-color: var(--danger-border);
+}
+
+.alert-success {
+  --bs-alert-color: var(--success-text);
+  --bs-alert-bg: var(--success-bg);
+  --bs-alert-border-color: var(--success-border);
 }
 
 .actions-row {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+}
+
+.catalog-section {
+  display: grid;
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.catalog-header,
+.table-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.catalog-header h2,
+.table-title h3 {
+  margin: 0;
+}
+
+.catalog-header h2 {
+  font-size: 22px;
+}
+
+.table-title h3 {
+  font-size: 16px;
+}
+
+.table-block {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.catalog-table {
+  min-width: 680px;
+  margin: 0;
+  color: var(--app-text);
+  --bs-table-bg: var(--panel-bg);
+  --bs-table-color: var(--app-text);
+  --bs-table-border-color: var(--panel-border);
+  --bs-table-striped-bg: var(--card-bg);
+}
+
+.catalog-table th {
+  color: var(--muted-text);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.catalog-table code {
+  color: var(--code-text);
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.empty-cell {
+  color: var(--muted-text);
+  text-align: center;
 }
 
 @media (max-width: 900px) {
@@ -235,7 +657,9 @@ input {
 @media (max-width: 620px) {
   .topbar,
   .panel-header,
-  .actions-row {
+  .actions-row,
+  .topbar-actions,
+  .theme-select {
     align-items: stretch;
     flex-direction: column;
   }
@@ -251,11 +675,98 @@ input {
     margin: 8px 0 0;
   }
 
+  .theme-select .form-select {
+    min-width: 0;
+    width: 100%;
+  }
+
   .auth-panel {
     padding: 20px;
   }
 
   .profile-grid {
     grid-template-columns: 1fr;
+  }
+
+  .catalog-header,
+  .table-title {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@keyframes empire-stars-drift {
+  from {
+    background-position: 0 0, 41px 83px, 97px 29px, 13px 151px, 188px 47px, 271px 109px, 59px 239px, 344px 68px, 419px 203px, 503px 137px;
+  }
+
+  to {
+    background-position: 37px 521px, -121px 731px, 223px 641px, -91px 837px, 311px 487px, 103px 929px, 267px 743px, -64px 1091px, 173px 857px, 719px 947px;
+  }
+}
+
+@keyframes empire-hyperspace {
+  0%,
+  72%,
+  100% {
+    transform: translateX(-55%);
+    opacity: 0;
+  }
+
+  78% {
+    opacity: 0.9;
+  }
+
+  86% {
+    transform: translateX(55%);
+    opacity: 0;
+  }
+}
+
+@keyframes republic-grid-drift {
+  from {
+    background-position: 0 0, 0 0, 0 0, 0 0;
+  }
+
+  to {
+    background-position: 96px 48px, 48px 96px, 384px 192px, 192px 384px;
+  }
+}
+
+@keyframes republic-command-scan {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0.72;
+  }
+
+  45% {
+    transform: translate3d(14px, -10px, 0) rotate(0.45deg);
+    opacity: 0.88;
+  }
+
+  70% {
+    transform: translate3d(-8px, 8px, 0) rotate(-0.3deg);
+    opacity: 0.78;
+  }
+}
+
+@keyframes tron-grid-run {
+  from {
+    background-position: 0 0, 0 0, 0 0, 0 0;
+  }
+
+  to {
+    background-position: 0 48px, 48px 0, 0 192px, 192px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="empire-night"] body::before,
+  :root[data-theme="empire-night"] body::after,
+  :root[data-theme="republic-day"] body::before,
+  :root[data-theme="republic-day"] body::after,
+  :root[data-theme="tron-neon-night"] body::before {
+    animation: none;
   }
 }
