@@ -176,6 +176,15 @@ make restart
 
 ## Документация
 
+Полная документация хранится в `docs/` и синхронизируется в wiki:
+
+- GitHub Wiki: `https://github.com/robotateme/mqtt-project/wiki`
+- GitLab Wiki: `https://gitlab.com/robotateme/mqtt-project/-/wikis/home`
+
+`docs/` остается source of truth: изменения документации проходят через обычный
+Git review вместе с кодом. Для публикации в wiki используйте
+`scripts/sync-wiki.sh`.
+
 - [Архитектура](docs/architecture.md)
 - [Инфраструктура](docs/infrastructure.md)
 - [Makefile-команды](docs/makefile.md)
@@ -185,6 +194,7 @@ make restart
 - [Проверка и статический анализ](docs/validation.md)
 - [Замечания](docs/notes.md)
 - [Отчеты о проделанной работе](docs/work-reports.md)
+- [Скрипты синхронизации](scripts/README.md)
 
 Диаграмма архитектуры хранится в PlantUML-исходнике
 `docs/architecture.puml`; PNG для просмотра лежит в

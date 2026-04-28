@@ -454,19 +454,9 @@ RUN if [ ${INSTALL_XDEBUG} = false -a ${INSTALL_BLACKFIRE} = true ]; then \
 
 ARG INSTALL_WORKSPACE_SSH=false
 
-COPY insecure_id_rsa /tmp/id_rsa
-COPY insecure_id_rsa.pub /tmp/id_rsa.pub
-
 RUN if [ ${INSTALL_WORKSPACE_SSH} = true ]; then \
-    rm -f /etc/service/sshd/down && \
-    cat /tmp/id_rsa.pub >> /root/.ssh/authorized_keys \
-        && cat /tmp/id_rsa.pub >> /root/.ssh/id_rsa.pub \
-        && cat /tmp/id_rsa >> /root/.ssh/id_rsa \
-        && rm -f /tmp/id_rsa* \
-        && chmod 644 /root/.ssh/authorized_keys /root/.ssh/id_rsa.pub \
-    && chmod 400 /root/.ssh/id_rsa \
-    && cp -rf /root/.ssh /home/laradock \
-    && chown -R laradock:laradock /home/laradock/.ssh \
+    echo "WORKSPACE SSH keys are not bundled. Set WORKSPACE_INSTALL_WORKSPACE_SSH=false or provide a secure key provisioning flow." && \
+    exit 1 \
 ;fi
 
 ###########################################################################
@@ -587,8 +577,19 @@ RUN if [ ${INSTALL_GEARMAN} = true ]; then \
 ARG INSTALL_PHPREDIS=false
 
 RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
-    apt-get update \
-    && apt-get install -yqq php${LARADOCK_PHP_VERSION}-redis \
+    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
+      pecl install -o -f redis-4.3.0; \
+    elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && { [ $(php -r "echo PHP_MINOR_VERSION;") = "0" ] || [ $(php -r "echo PHP_MINOR_VERSION;") = "1" ] ;}; then \
+      pecl install -o -f redis-5.3.7; \
+    elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && { [ $(php -r "echo PHP_MINOR_VERSION;") = "2" ] || [ $(php -r "echo PHP_MINOR_VERSION;") = "3" ] ;}; then \
+      pecl install -o -f redis-6.0.2; \
+    else \
+      pecl install -o -f redis; \
+    fi \
+    && rm -rf /tmp/pear \
+    && echo "extension=redis.so" > /etc/php/${LARADOCK_PHP_VERSION}/mods-available/redis.ini \
+    && ln -sf /etc/php/${LARADOCK_PHP_VERSION}/mods-available/redis.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-redis.ini \
+    && php -m | grep -q 'redis' \
 ;fi
 
 ###########################################################################

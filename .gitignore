@@ -1,5 +1,6 @@
 .idea/
 AGENTS.md
+.wiki/
 
 bus/vendor/
 bus/.env
