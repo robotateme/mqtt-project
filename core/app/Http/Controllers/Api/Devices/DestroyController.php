@@ -34,7 +34,7 @@ final class DestroyController extends Controller
         $user = $request->user();
 
         if (!$user instanceof User) {
-            throw new AuthenticationException("");
+            throw new AuthenticationException("Unauthenticated!");
         }
 
         $handler->handle(new DeleteDeviceCommand($device, (int) $user->getKey()));
