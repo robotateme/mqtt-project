@@ -237,11 +237,18 @@
   --success-text: #b9ffe7;
 }
 
+html {
+  min-height: 100%;
+  background: var(--app-bg);
+}
+
 body {
   margin: 0;
   min-width: 320px;
+  min-height: 100vh;
   background: var(--app-bg);
   color: var(--app-text);
+  overflow-x: hidden;
   transition: background-color 180ms ease, color 180ms ease;
 }
 
@@ -358,24 +365,36 @@ body::after {
 }
 
 :root[data-theme="cellular-automata-day"] body::before {
-  opacity: 0.82;
+  inset: -12vmax;
+  opacity: 0.86;
   background-image:
-    linear-gradient(90deg, rgb(47 133 90 / 12%) 1px, transparent 1px),
-    linear-gradient(rgb(47 133 90 / 12%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(47 133 90 / 0%) 0 12px, rgb(47 133 90 / 18%) 12px 24px, rgb(47 133 90 / 0%) 24px 48px, rgb(47 133 90 / 14%) 48px 60px, rgb(47 133 90 / 0%) 60px 96px),
-    linear-gradient(90deg, rgb(180 217 117 / 0%) 0 24px, rgb(180 217 117 / 18%) 24px 36px, rgb(180 217 117 / 0%) 36px 72px, rgb(180 217 117 / 14%) 72px 84px, rgb(180 217 117 / 0%) 84px 120px);
-  background-position: 0 0, 0 0, 0 0, 36px 48px;
-  background-size: 24px 24px, 24px 24px, 96px 24px, 120px 24px;
-  animation: conway-generations 1.8s steps(6, end) infinite;
+    linear-gradient(90deg, rgb(47 133 90 / 13%) 1px, transparent 1px),
+    linear-gradient(rgb(47 133 90 / 13%) 1px, transparent 1px),
+    linear-gradient(90deg, transparent 0 18px, rgb(47 133 90 / 24%) 18px 36px, transparent 36px 72px, rgb(180 217 117 / 22%) 72px 90px, transparent 90px 144px),
+    linear-gradient(90deg, rgb(47 133 90 / 0%) 0 36px, rgb(47 133 90 / 20%) 36px 54px, rgb(47 133 90 / 0%) 54px 108px, rgb(180 217 117 / 18%) 108px 126px, transparent 126px 180px),
+    linear-gradient(90deg, transparent 0 54px, rgb(47 133 90 / 18%) 54px 72px, transparent 72px 126px, rgb(180 217 117 / 20%) 126px 144px, transparent 144px 216px),
+    radial-gradient(circle at 9px 9px, rgb(47 133 90 / 22%) 0 6px, transparent 6.5px);
+  background-position: 0 0, 0 0, 0 0, 36px 54px, 90px 108px, 0 0;
+  background-size: 18px 18px, 18px 18px, 144px 18px, 180px 18px, 216px 18px, 72px 72px;
+  animation:
+    conway-generations 2.1s steps(7, end) infinite,
+    cellular-field-drift 34s linear infinite;
 }
 
 :root[data-theme="cellular-automata-day"] body::after {
-  opacity: 0.44;
+  inset: -12vmax;
+  opacity: 0.58;
   background-image:
-    radial-gradient(circle at 12px 12px, rgb(47 133 90 / 24%) 0 5px, transparent 5.5px),
-    radial-gradient(circle at 36px 36px, rgb(180 217 117 / 24%) 0 5px, transparent 5.5px);
-  background-size: 96px 96px, 120px 120px;
-  animation: conway-gliders 14s linear infinite;
+    radial-gradient(circle at 9px 9px, rgb(47 133 90 / 34%) 0 5px, transparent 5.5px),
+    radial-gradient(circle at 27px 27px, rgb(180 217 117 / 28%) 0 5px, transparent 5.5px),
+    radial-gradient(circle at 45px 9px, rgb(47 133 90 / 22%) 0 5px, transparent 5.5px),
+    radial-gradient(circle at 9px 45px, rgb(37 114 77 / 24%) 0 5px, transparent 5.5px);
+  background-position: 0 0, 36px 54px, 108px 18px, 72px 126px;
+  background-size: 108px 108px, 144px 144px, 180px 180px, 216px 216px;
+  mix-blend-mode: multiply;
+  animation:
+    conway-gliders 11s steps(9, end) infinite,
+    cellular-pulse 3.6s steps(4, end) infinite;
 }
 
 :root[data-theme="cellular-automata-night"] body {
@@ -386,26 +405,35 @@ body::after {
 }
 
 :root[data-theme="cellular-automata-night"] body::before {
-  opacity: 0.92;
+  inset: -12vmax;
+  opacity: 0.94;
   background-image:
-    linear-gradient(90deg, rgb(110 231 183 / 11%) 1px, transparent 1px),
-    linear-gradient(rgb(110 231 183 / 11%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(110 231 183 / 12%) 1px, transparent 1px),
+    linear-gradient(rgb(110 231 183 / 12%) 1px, transparent 1px),
     linear-gradient(90deg, transparent 0 16px, rgb(110 231 183 / 48%) 16px 32px, transparent 32px 48px, rgb(16 185 129 / 34%) 48px 64px, transparent 64px 112px),
-    linear-gradient(90deg, rgb(16 185 129 / 42%) 0 16px, transparent 16px 48px, rgb(110 231 183 / 36%) 48px 64px, transparent 64px 96px, rgb(16 185 129 / 28%) 96px 112px, transparent 112px 128px),
-    linear-gradient(90deg, transparent 0 32px, rgb(110 231 183 / 44%) 32px 48px, transparent 48px 80px, rgb(16 185 129 / 36%) 80px 96px, transparent 96px 144px);
-  background-position: 0 0, 0 0, 0 0, 24px 32px, 48px 64px;
-  background-size: 32px 32px, 32px 32px, 128px 32px, 128px 32px, 160px 32px;
+    linear-gradient(90deg, rgb(16 185 129 / 42%) 0 16px, transparent 16px 48px, rgb(110 231 183 / 36%) 48px 64px, transparent 64px 96px, rgb(16 185 129 / 30%) 96px 112px, transparent 112px 128px),
+    linear-gradient(90deg, transparent 0 32px, rgb(110 231 183 / 44%) 32px 48px, transparent 48px 80px, rgb(16 185 129 / 36%) 80px 96px, transparent 96px 144px),
+    linear-gradient(90deg, rgb(110 231 183 / 34%) 0 16px, transparent 16px 32px, rgb(16 185 129 / 26%) 32px 48px, transparent 48px 96px, rgb(110 231 183 / 30%) 96px 112px, transparent 112px 160px);
+  background-position: 0 0, 0 0, 0 0, 24px 32px, 48px 64px, 80px 96px;
+  background-size: 16px 16px, 16px 16px, 128px 16px, 128px 16px, 160px 16px, 192px 16px;
   filter: drop-shadow(0 0 8px rgb(110 231 183 / 38%));
-  animation: rule28-rows 1.4s steps(7, end) infinite;
+  animation:
+    rule28-rows 1.25s steps(8, end) infinite,
+    cellular-field-drift 28s linear infinite reverse;
 }
 
 :root[data-theme="cellular-automata-night"] body::after {
-  opacity: 0.52;
+  inset: -12vmax;
+  opacity: 0.62;
   background:
     linear-gradient(180deg, rgb(2 6 5 / 0%) 0%, rgb(2 6 5 / 70%) 70%, rgb(2 6 5 / 90%) 100%),
     linear-gradient(115deg, transparent 0 48%, rgb(110 231 183 / 15%) 48.1% 48.35%, transparent 48.6%),
-    linear-gradient(65deg, transparent 0 62%, rgb(16 185 129 / 13%) 62.1% 62.35%, transparent 62.6%);
-  animation: rule28-scan 9s ease-in-out infinite;
+    linear-gradient(65deg, transparent 0 62%, rgb(16 185 129 / 13%) 62.1% 62.35%, transparent 62.6%),
+    radial-gradient(circle at 25% 20%, rgb(110 231 183 / 12%), transparent 18%),
+    radial-gradient(circle at 78% 72%, rgb(16 185 129 / 10%), transparent 22%);
+  animation:
+    rule28-scan 8s ease-in-out infinite,
+    cellular-pulse 2.8s steps(5, end) infinite;
 }
 
 button,
@@ -1027,39 +1055,67 @@ input {
 
 @keyframes conway-generations {
   0% {
-    background-position: 0 0, 0 0, 0 0, 36px 48px;
+    background-position: 0 0, 0 0, 0 0, 36px 54px, 90px 108px, 0 0;
   }
 
-  33% {
-    background-position: 0 0, 0 0, 24px 24px, 60px 72px;
+  20% {
+    background-position: 0 0, 0 0, 18px 18px, 72px 72px, 126px 90px, 18px 0;
   }
 
-  66% {
-    background-position: 0 0, 0 0, 48px 0, 12px 24px;
+  40% {
+    background-position: 0 0, 0 0, 54px 0, 108px 54px, 54px 126px, 18px 18px;
+  }
+
+  60% {
+    background-position: 0 0, 0 0, 72px 18px, 18px 90px, 144px 36px, 36px 18px;
+  }
+
+  80% {
+    background-position: 0 0, 0 0, 108px 0, 144px 108px, 18px 72px, 36px 36px;
   }
 
   100% {
-    background-position: 0 0, 0 0, 96px 24px, 156px 72px;
+    background-position: 0 0, 0 0, 144px 18px, 216px 126px, 234px 90px, 72px 72px;
   }
 }
 
 @keyframes conway-gliders {
-  from {
-    background-position: 0 0, 36px 48px;
+  0% {
+    background-position: 0 0, 36px 54px, 108px 18px, 72px 126px;
   }
 
-  to {
-    background-position: 192px 144px, -84px 192px;
+  33% {
+    background-position: 54px 54px, 108px 18px, 36px 90px, 144px 54px;
+  }
+
+  66% {
+    background-position: 108px 108px, 36px 162px, 180px 54px, 0 198px;
+  }
+
+  100% {
+    background-position: 216px 162px, -108px 216px, 360px 180px, 216px -108px;
   }
 }
 
 @keyframes rule28-rows {
-  from {
-    background-position: 0 0, 0 0, 0 0, 24px 32px, 48px 64px;
+  0% {
+    background-position: 0 0, 0 0, 0 0, 24px 32px, 48px 64px, 80px 96px;
   }
 
-  to {
-    background-position: 0 32px, 32px 0, 128px 32px, 152px 64px, 208px 96px;
+  25% {
+    background-position: 0 0, 0 0, 16px 16px, 56px 48px, 96px 80px, 128px 112px;
+  }
+
+  50% {
+    background-position: 0 0, 0 0, 64px 32px, 104px 64px, 144px 96px, 32px 128px;
+  }
+
+  75% {
+    background-position: 0 0, 0 0, 112px 48px, 24px 80px, 192px 112px, 176px 144px;
+  }
+
+  100% {
+    background-position: 0 0, 0 0, 128px 64px, 152px 96px, 208px 128px, 272px 160px;
   }
 }
 
@@ -1073,6 +1129,27 @@ input {
   50% {
     transform: translate3d(18px, -10px, 0);
     opacity: 0.62;
+  }
+}
+
+@keyframes cellular-field-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(8vmax, 6vmax, 0);
+  }
+}
+
+@keyframes cellular-pulse {
+  0%,
+  100% {
+    filter: saturate(0.92) brightness(1);
+  }
+
+  50% {
+    filter: saturate(1.22) brightness(1.05);
   }
 }
 
