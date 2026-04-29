@@ -39,6 +39,17 @@ make core-fresh-seed
 
 Admin-логин: `admin@example.com` / `password123`.
 
+## Устройства и live-пакеты
+
+Для любого авторизованного пользователя доступна вкладка устройств:
+
+- `Devices` - таблица своих устройств и CRUD-форма.
+- `Live packets` - sniffer-таблица пакетов выбранного устройства через Mercure
+  `EventSource`.
+
+Пока реальный поток не подключен, кнопка `Demo` запускает временную анимацию
+sniffer-лотка с синтетическими MQTT-пакетами.
+
 В верхней панели доступно переключение Bootstrap-тем: default,
 `empire-night`, `republic-day`, `tron-neon-night`.
 

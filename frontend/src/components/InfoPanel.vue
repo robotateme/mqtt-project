@@ -15,6 +15,9 @@ defineProps({
       <li><code>POST /api/v1/auth/register</code></li>
       <li><code>GET /api/v1/auth/me</code></li>
       <li><code>POST /api/v1/auth/refresh</code></li>
+      <li><code>GET /api/v1/devices</code></li>
+      <li><code>POST /api/v1/devices</code></li>
+      <li><code>GET /api/v1/devices/{id}/stream</code></li>
       <li><code>GET /api/v1/admin/users</code></li>
       <li><code>GET /api/v1/admin/devices</code></li>
     </ul>

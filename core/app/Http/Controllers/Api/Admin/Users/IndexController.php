@@ -6,7 +6,6 @@ namespace App\Http\Controllers\Api\Admin\Users;
 
 use App\Http\Controllers\Api\Concerns\RespondsWithUser;
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Core\Application\Users\Handlers\ListUsersHandler;
 use Core\Application\Users\Queries\ListUsersQuery;
 use Illuminate\Http\JsonResponse;

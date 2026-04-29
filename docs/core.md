@@ -10,6 +10,9 @@ Kafka consumer преобразует сообщения через `KafkaPacket
 считается исходным MQTT topic, Kafka payload - исходным MQTT payload. Mapper
 формирует ClickHouse row с Kafka metadata, `device_identifier`, типом payload и
 JSON-представлением headers.
+После записи batch в ClickHouse consumer публикует свежие пакеты в Mercure topic
+`/devices/{external_id}/packets`, чтобы frontend мог показывать live-поток
+выбранного устройства.
 
 Миграции PostgreSQL:
 
@@ -130,9 +133,16 @@ make core-swagger
 | `POST` | `/api/v1/auth/refresh` | Обновление JWT |
 | `GET` | `/api/v1/auth/me` | Текущий пользователь |
 | `POST` | `/api/v1/auth/logout` | Logout текущего токена |
+| `GET` | `/api/v1/devices` | Список устройств текущего пользователя |
+| `POST` | `/api/v1/devices` | Создание устройства текущего пользователя |
+| `PUT` | `/api/v1/devices/{device}` | Обновление своего устройства |
+| `DELETE` | `/api/v1/devices/{device}` | Удаление своего устройства |
+| `GET` | `/api/v1/devices/{device}/stream` | Mercure topic для live-пакетов устройства |
 | `GET` | `/api/v1/admin/me` | Проверка admin-доступа |
 | `GET` | `/api/v1/admin/users` | Таблица пользователей для администратора |
 | `GET` | `/api/v1/admin/devices` | Таблица устройств с владельцами |
 
 Для защищенных endpoints используется `Authorization: Bearer <token>`.
 Admin endpoints дополнительно требуют роль `admin`.
+Обычный пользователь в `/api/v1/devices/*` видит и изменяет только свои
+устройства; доступ к чужим устройствам возвращает `403`.

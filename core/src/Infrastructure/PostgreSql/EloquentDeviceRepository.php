@@ -9,6 +9,7 @@ use App\Models\User;
 use Core\Application\Devices\DeviceRepository;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Override;
 
 final class EloquentDeviceRepository implements DeviceRepository
 {
@@ -26,10 +27,19 @@ final class EloquentDeviceRepository implements DeviceRepository
 
     public function findForUser(User $user): Collection
     {
-        return Device::query()
-            ->where('user_id', $user->getKey())
+        return $this->findForUserId((int) $user->getKey());
+    }
+
+    #[Override]
+    public function findForUserId(int $userId): Collection
+    {
+        /** @var Collection<int, Device> $devices */
+        $devices = Device::query()
+            ->where('user_id', $userId)
             ->orderBy('id')
             ->get();
+
+        return $devices;
     }
 
     public function create(array $attributes): Device

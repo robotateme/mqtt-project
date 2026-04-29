@@ -56,6 +56,22 @@ defineProps({
     type: String,
     required: true,
   },
+  userDevices: {
+    type: Array,
+    required: true,
+  },
+  deviceLoading: {
+    type: Boolean,
+    required: true,
+  },
+  deviceError: {
+    type: String,
+    required: true,
+  },
+  authHeader: {
+    type: String,
+    required: true,
+  },
   error: {
     type: String,
     required: true,
@@ -66,7 +82,18 @@ defineProps({
   },
 });
 
-defineEmits(['update:mode', 'login', 'register', 'refresh-profile', 'refresh-token', 'refresh-catalog']);
+defineEmits([
+  'update:mode',
+  'login',
+  'register',
+  'refresh-profile',
+  'refresh-token',
+  'refresh-catalog',
+  'refresh-devices',
+  'create-device',
+  'update-device',
+  'delete-device',
+]);
 </script>
 
 <template>
@@ -83,9 +110,17 @@ defineEmits(['update:mode', 'login', 'register', 'refresh-profile', 'refresh-tok
       :admin-devices="adminDevices"
       :catalog-loading="catalogLoading"
       :catalog-error="catalogError"
+      :user-devices="userDevices"
+      :device-loading="deviceLoading"
+      :device-error="deviceError"
+      :auth-header="authHeader"
       @refresh-profile="$emit('refresh-profile')"
       @refresh-token="$emit('refresh-token')"
       @refresh-catalog="$emit('refresh-catalog')"
+      @refresh-devices="$emit('refresh-devices')"
+      @create-device="$emit('create-device', $event)"
+      @update-device="$emit('update-device', $event)"
+      @delete-device="$emit('delete-device', $event)"
     />
 
     <AuthForm

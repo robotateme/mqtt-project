@@ -68,6 +68,7 @@ use OpenApi\Attributes as OA;
     required: ['id', 'external_id'],
     properties: [
         new OA\Property(property: 'id', type: 'integer', example: 1),
+        new OA\Property(property: 'user_id', type: 'integer', nullable: true, example: 1),
         new OA\Property(property: 'external_id', type: 'string', example: 'seed-user-1-device-1'),
         new OA\Property(property: 'name', type: 'string', nullable: true, example: 'Admin User device 1'),
         new OA\Property(
@@ -80,6 +81,22 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'created_at', type: 'string', format: 'date-time', nullable: true),
         new OA\Property(property: 'updated_at', type: 'string', format: 'date-time', nullable: true),
         new OA\Property(property: 'user', ref: '#/components/schemas/DeviceOwner', nullable: true),
+    ],
+    type: 'object',
+)]
+#[OA\Schema(
+    schema: 'DeviceResponse',
+    required: ['device'],
+    properties: [
+        new OA\Property(property: 'device', ref: '#/components/schemas/Device'),
+    ],
+    type: 'object',
+)]
+#[OA\Schema(
+    schema: 'DeviceCollectionResponse',
+    required: ['data'],
+    properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/Device')),
     ],
     type: 'object',
 )]

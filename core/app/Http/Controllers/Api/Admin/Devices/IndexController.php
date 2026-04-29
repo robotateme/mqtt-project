@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Admin\Devices;
 
+use App\Http\Controllers\Api\Concerns\RespondsWithDevice;
 use App\Http\Controllers\Controller;
-use App\Models\Device;
-use App\Models\User;
 use Core\Application\Devices\Handlers\ListDevicesHandler;
 use Core\Application\Devices\Queries\ListDevicesQuery;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use OpenApi\Attributes as OA;
 
 final class IndexController extends Controller
 {
+    use RespondsWithDevice;
+
     #[OA\Get(
         path: '/admin/devices',
         summary: 'List devices for admin tables',
@@ -50,7 +50,7 @@ final class IndexController extends Controller
         $payload = [];
 
         foreach ($devices->items() as $device) {
-            $payload[] = $this->devicePayload($device);
+            $payload[] = $this->devicePayload($device, true);
         }
 
         return response()->json([
@@ -64,29 +64,4 @@ final class IndexController extends Controller
         ]);
     }
 
-    /**
-     * @return array<string, mixed>
-     *
-     * @psalm-suppress MixedAssignment
-     */
-    private function devicePayload(Device $device): array
-    {
-        $user = $device->getRelation('user');
-        $createdAt = $device->getAttribute('created_at');
-        $updatedAt = $device->getAttribute('updated_at');
-
-        return [
-            'id' => $device->getKey(),
-            'external_id' => $device->getAttribute('external_id'),
-            'name' => $device->getAttribute('name'),
-            'metadata' => $device->getAttribute('metadata'),
-            'created_at' => $createdAt instanceof Carbon ? $createdAt->toISOString() : null,
-            'updated_at' => $updatedAt instanceof Carbon ? $updatedAt->toISOString() : null,
-            'user' => $user instanceof User ? [
-                'id' => $user->getKey(),
-                'name' => $user->getAttribute('name'),
-                'email' => $user->getAttribute('email'),
-            ] : null,
-        ];
-    }
 }

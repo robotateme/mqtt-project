@@ -21,6 +21,11 @@ interface DeviceRepository
     public function findForUser(User $user): Collection;
 
     /**
+     * @return Collection<int, Device>
+     */
+    public function findForUserId(int $userId): Collection;
+
+    /**
      * @param array{external_id: string, user_id?: int|null, name?: string|null, metadata?: array<string, mixed>|null} $attributes
      */
     public function create(array $attributes): Device;

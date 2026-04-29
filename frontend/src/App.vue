@@ -26,6 +26,9 @@ const adminUsers = ref([]);
 const adminDevices = ref([]);
 const catalogLoading = ref(false);
 const catalogError = ref('');
+const userDevices = ref([]);
+const deviceLoading = ref(false);
+const deviceError = ref('');
 
 const loginForm = reactive({
   email: '',
@@ -71,6 +74,9 @@ function clearSession() {
   adminDevices.value = [];
   catalogLoading.value = false;
   catalogError.value = '';
+  userDevices.value = [];
+  deviceLoading.value = false;
+  deviceError.value = '';
   localStorage.removeItem(storageKey);
 }
 
@@ -148,6 +154,97 @@ async function loadAdminCatalog() {
   }
 }
 
+async function loadUserDevices() {
+  if (!token.value?.access_token) {
+    userDevices.value = [];
+    deviceError.value = '';
+    return;
+  }
+
+  deviceLoading.value = true;
+  deviceError.value = '';
+
+  try {
+    const data = await request('/devices', {
+      headers: {
+        Authorization: authHeader.value,
+      },
+    });
+
+    userDevices.value = data.data || [];
+  } catch (exception) {
+    deviceError.value = exception.message;
+  } finally {
+    deviceLoading.value = false;
+  }
+}
+
+async function createDevice({ payload }) {
+  deviceLoading.value = true;
+  deviceError.value = '';
+
+  try {
+    await request('/devices', {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader.value,
+      },
+      body: JSON.stringify(payload),
+    });
+    await loadUserDevices();
+    notice.value = 'Устройство создано.';
+  } catch (exception) {
+    deviceError.value = exception.message;
+  } finally {
+    deviceLoading.value = false;
+  }
+}
+
+async function updateDevice({ id, payload }) {
+  if (!id) {
+    return;
+  }
+
+  deviceLoading.value = true;
+  deviceError.value = '';
+
+  try {
+    await request(`/devices/${id}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: authHeader.value,
+      },
+      body: JSON.stringify(payload),
+    });
+    await loadUserDevices();
+    notice.value = 'Устройство обновлено.';
+  } catch (exception) {
+    deviceError.value = exception.message;
+  } finally {
+    deviceLoading.value = false;
+  }
+}
+
+async function deleteDevice(id) {
+  deviceLoading.value = true;
+  deviceError.value = '';
+
+  try {
+    await request(`/devices/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: authHeader.value,
+      },
+    });
+    await loadUserDevices();
+    notice.value = 'Устройство удалено.';
+  } catch (exception) {
+    deviceError.value = exception.message;
+  } finally {
+    deviceLoading.value = false;
+  }
+}
+
 async function submitLogin() {
   loading.value = true;
   error.value = '';
@@ -160,6 +257,7 @@ async function submitLogin() {
     });
 
     saveSession(data.user, data.token);
+    await loadUserDevices();
     await loadAdminCatalog();
     notice.value = 'Сессия открыта.';
   } catch (exception) {
@@ -181,6 +279,7 @@ async function submitRegister() {
     });
 
     saveSession(data.user, data.token);
+    await loadUserDevices();
     notice.value = 'Пользователь зарегистрирован.';
   } catch (exception) {
     error.value = exception.message;
@@ -229,6 +328,7 @@ async function loadProfile() {
 
     user.value = data.user;
     saveSession(data.user, token.value);
+    await loadUserDevices();
     await loadAdminCatalog();
   } catch {
     clearSession();
@@ -292,6 +392,10 @@ onMounted(() => {
         :admin-devices="adminDevices"
         :catalog-loading="catalogLoading"
         :catalog-error="catalogError"
+        :user-devices="userDevices"
+        :device-loading="deviceLoading"
+        :device-error="deviceError"
+        :auth-header="authHeader"
         :error="error"
         :notice="notice"
         @login="submitLogin"
@@ -299,6 +403,10 @@ onMounted(() => {
         @refresh-profile="loadProfile"
         @refresh-token="refreshToken"
         @refresh-catalog="loadAdminCatalog"
+        @refresh-devices="loadUserDevices"
+        @create-device="createDevice"
+        @update-device="updateDevice"
+        @delete-device="deleteDevice"
       />
       <InfoPanel :api-base-url="apiBaseUrl" />
     </section>

@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Support\Kafka\KafkaPacketMapper;
+use App\Support\Packets\PacketRealtimePublisher;
 use Core\Application\Packets\PacketStoragePort;
 use Illuminate\Console\Command;
 use RdKafka\Conf;
 use RdKafka\KafkaConsumer;
 use RdKafka\Message;
 use RuntimeException;
+use Throwable;
 
 final class ConsumeKafkaPackets extends Command
 {
@@ -20,15 +22,20 @@ final class ConsumeKafkaPackets extends Command
 
     protected $description = 'Consume MQTT packet events from Kafka and store them in ClickHouse.';
 
-    public function handle(PacketStoragePort $packetStorage, KafkaPacketMapper $mapper): int
-    {
+    public function handle(
+        PacketStoragePort $packetStorage,
+        KafkaPacketMapper $mapper,
+        PacketRealtimePublisher $realtime,
+    ): int {
         $consumer = $this->consumer();
         $topic = config('ingestion.kafka.packet_topic');
         $batchSize = config('ingestion.kafka.batch_size');
         $timeoutMs = config('ingestion.kafka.consume_timeout_ms');
         $maxMessages = (int) $this->option('max-messages');
         $consumed = 0;
+        /** @var array<int, array<string, mixed>> $batch */
         $batch = [];
+        /** @var array<int, Message> $messages */
         $messages = [];
 
         $consumer->subscribe([$topic]);
@@ -38,7 +45,7 @@ final class ConsumeKafkaPackets extends Command
             $message = $consumer->consume($timeoutMs);
 
             if ($message->err === RD_KAFKA_RESP_ERR__TIMED_OUT) {
-                $this->flushBatch($packetStorage, $consumer, $batch, $messages);
+                $this->flushBatch($packetStorage, $realtime, $consumer, $batch, $messages);
                 continue;
             }
 
@@ -46,12 +53,14 @@ final class ConsumeKafkaPackets extends Command
                 throw new RuntimeException($message->errstr(), $message->err);
             }
 
-            $batch[] = $this->row($message, $mapper);
+            /** @var array<string, mixed> $row */
+            $row = $this->row($message, $mapper);
+            $batch[] = $row;
             $messages[] = $message;
             $consumed++;
 
             if (count($batch) >= $batchSize) {
-                $this->flushBatch($packetStorage, $consumer, $batch, $messages);
+                $this->flushBatch($packetStorage, $realtime, $consumer, $batch, $messages);
 
                 if ($this->option('once')) {
                     return self::SUCCESS;
@@ -59,7 +68,7 @@ final class ConsumeKafkaPackets extends Command
             }
 
             if ($maxMessages > 0 && $consumed >= $maxMessages) {
-                $this->flushBatch($packetStorage, $consumer, $batch, $messages);
+                $this->flushBatch($packetStorage, $realtime, $consumer, $batch, $messages);
 
                 return self::SUCCESS;
             }
@@ -89,13 +98,30 @@ final class ConsumeKafkaPackets extends Command
         );
     }
 
-    private function flushBatch(PacketStoragePort $packetStorage, KafkaConsumer $consumer, array &$batch, array &$messages): void
-    {
+    /**
+     * @param array<int, array<string, mixed>> $batch
+     * @param array<int, Message> $messages
+     */
+    private function flushBatch(
+        PacketStoragePort $packetStorage,
+        PacketRealtimePublisher $realtime,
+        KafkaConsumer $consumer,
+        array &$batch,
+        array &$messages,
+    ): void {
         if ($batch === []) {
             return;
         }
 
         $packetStorage->store($batch);
+
+        foreach ($batch as $packet) {
+            try {
+                $realtime->publish($packet);
+            } catch (Throwable $exception) {
+                $this->warn(sprintf('Realtime publish skipped: %s', $exception->getMessage()));
+            }
+        }
 
         foreach ($messages as $message) {
             $consumer->commit($message);
