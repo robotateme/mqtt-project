@@ -12,6 +12,8 @@ const themes = [
   { id: 'empire-night', label: 'StarWars (empire-night)' },
   { id: 'republic-day', label: 'StarWars (republic-day)' },
   { id: 'tron-neon-night', label: 'Tron (tron-neon-night)' },
+  { id: 'cellular-automata-day', label: 'Conway (cellular-automata-day)' },
+  { id: 'cellular-automata-night', label: 'VonNewman (cellular-automata-night)' },
 ];
 
 const mode = ref('login');

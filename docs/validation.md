@@ -81,7 +81,7 @@ Pipeline описан в `.gitlab-ci.yml`, GitHub Actions workflow - в
 - Laravel tests для `core`.
 - PHPUnit tests для `bus`.
 
-Core jobs устанавливают PHP extensions `pcntl`, `redis`, `pdo_pgsql`,
+CI jobs запускаются на PHP `8.5`. Core jobs устанавливают PHP extensions `pcntl`, `redis`, `pdo_pgsql`,
 `pdo_sqlite` и `rdkafka`. Bus jobs устанавливают `rdkafka`.
 
 В `test:core` перед Laravel tests выполняется:

@@ -6,7 +6,7 @@
     "keywords": ["laravel", "kafka", "clickhouse", "postgresql"],
     "license": "MIT",
     "require": {
-        "php": "^8.3",
+        "php": "^8.5",
         "ext-pdo_pgsql": "*",
         "ext-rdkafka": "*",
         "darkaonline/l5-swagger": "^11.0",

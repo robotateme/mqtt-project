@@ -51,7 +51,8 @@ Admin-логин: `admin@example.com` / `password123`.
 sniffer-лотка с синтетическими MQTT-пакетами.
 
 В верхней панели доступно переключение Bootstrap-тем: default,
-`empire-night`, `republic-day`, `tron-neon-night`.
+`empire-night`, `republic-day`, `tron-neon-night`,
+`cellular-automata-day`, `cellular-automata-night`.
 
 ## Разработка
 
