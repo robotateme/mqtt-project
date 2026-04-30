@@ -34,7 +34,7 @@ final class EloquentCriteriaContextTest extends TestCase
             limit: 10,
         );
 
-        $query = (new EloquentCriteriaContext(Device::query()))->query($criteria);
+        $query = new EloquentCriteriaContext(Device::query())->query($criteria);
 
         self::assertSame(
             'select * from "devices" where "external_id" = ? and "name" like ? order by "id" desc limit 10',
@@ -50,7 +50,7 @@ final class EloquentCriteriaContextTest extends TestCase
             new Filter('status', FilterType::NOT_IN, ['archived']),
         ]);
 
-        $query = (new EloquentCriteriaContext(Device::query()))->query($criteria);
+        $query = new EloquentCriteriaContext(Device::query())->query($criteria);
 
         self::assertSame(
             'select * from "devices" where "id" in (?, ?, ?) and "status" not in (?)',
@@ -68,6 +68,6 @@ final class EloquentCriteriaContextTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Filter value must be iterable for IN operators.');
 
-        (new EloquentCriteriaContext(Device::query()))->query($criteria);
+        new EloquentCriteriaContext(Device::query())->query($criteria);
     }
 }
