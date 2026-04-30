@@ -48,26 +48,23 @@
 }
 
 :root[data-theme="cellular-automata-night"] body::before {
-  opacity: 0.92;
+  opacity: 0.62;
   background-image:
-    linear-gradient(90deg, rgb(110 231 183 / 11%) 1px, transparent 1px),
-    linear-gradient(rgb(110 231 183 / 11%) 1px, transparent 1px),
-    repeating-conic-gradient(from 0deg, transparent 0 25%, rgb(110 231 183 / 48%) 0 50%, transparent 0 75%, rgb(16 185 129 / 34%) 0 100%),
-    repeating-conic-gradient(from 0deg, rgb(16 185 129 / 42%) 0 25%, transparent 0 50%, rgb(110 231 183 / 36%) 0 75%, transparent 0 100%),
-    repeating-conic-gradient(from 0deg, transparent 0 50%, rgb(110 231 183 / 44%) 0 75%, rgb(16 185 129 / 28%) 0 100%);
-  background-position: 0 0, 0 0, 0 0, 24px 32px, 48px 64px;
-  background-size: 32px 32px, 32px 32px, 64px 64px, 96px 96px, 128px 128px;
-  filter: drop-shadow(0 0 8px rgb(110 231 183 / 38%));
-  animation: rule28-rows 1.4s steps(7, end) infinite;
+    linear-gradient(90deg, rgb(110 231 183 / 8%) 1px, transparent 1px),
+    linear-gradient(rgb(110 231 183 / 8%) 1px, transparent 1px),
+    repeating-conic-gradient(from 0deg, transparent 0 25%, rgb(110 231 183 / 32%) 0 50%, transparent 0 75%, rgb(16 185 129 / 22%) 0 100%);
+  background-position: 0 0, 0 0, 0 0;
+  background-size: 32px 32px, 32px 32px, 96px 96px;
+  filter: drop-shadow(0 0 5px rgb(110 231 183 / 24%));
+  animation: rule28-rows 5.5s steps(5, end) infinite;
 }
 
 :root[data-theme="cellular-automata-night"] body::after {
-  opacity: 0.52;
+  opacity: 0.32;
   background:
-    linear-gradient(180deg, rgb(2 6 5 / 0%) 0%, rgb(2 6 5 / 70%) 70%, rgb(2 6 5 / 90%) 100%),
-    linear-gradient(115deg, transparent 0 48%, rgb(110 231 183 / 15%) 48.1% 48.35%, transparent 48.6%),
-    linear-gradient(65deg, transparent 0 62%, rgb(16 185 129 / 13%) 62.1% 62.35%, transparent 62.6%);
-  animation: rule28-scan 9s ease-in-out infinite;
+    linear-gradient(180deg, rgb(2 6 5 / 0%) 0%, rgb(2 6 5 / 55%) 72%, rgb(2 6 5 / 82%) 100%),
+    radial-gradient(circle at 52% 62%, rgb(110 231 183 / 10%), transparent 34%);
+  animation: rule28-scan 14s ease-in-out infinite;
 }
 
 :root[data-theme="cellular-automata-night"] .brand::before {
@@ -75,25 +72,29 @@
 }
 
 @keyframes rule28-rows {
-  from {
-    background-position: 0 0, 0 0, 0 0, 24px 32px, 48px 64px;
+  0% {
+    background-position: 0 0, 0 0, 0 0;
   }
 
-  to {
-    background-position: 0 32px, 32px 0, 128px 32px, 120px 96px, 176px 128px;
+  50% {
+    background-position: 0 0, 0 0, 32px 32px;
+  }
+
+  100% {
+    background-position: 0 0, 0 0, 96px 96px;
   }
 }
 
 @keyframes rule28-scan {
   0%,
   100% {
-    transform: translate3d(-18px, 0, 0);
-    opacity: 0.42;
+    transform: translate3d(-8px, 0, 0);
+    opacity: 0.26;
   }
 
   50% {
-    transform: translate3d(18px, -10px, 0);
-    opacity: 0.62;
+    transform: translate3d(8px, -6px, 0);
+    opacity: 0.36;
   }
 }
 
