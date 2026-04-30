@@ -1,0 +1,103 @@
+:root[data-theme="cellular-automata-day"] {
+  color-scheme: light;
+  --app-bg: #f7fbf4;
+  --app-text: #1c2b22;
+  --topbar-bg: #f9fff6;
+  --topbar-text: #1c2b22;
+  --topbar-border: #37a169;
+  --panel-bg: #ffffff;
+  --panel-border: #cfe1ce;
+  --panel-shadow: 0 16px 30px rgb(55 161 105 / 12%);
+  --muted-text: #617061;
+  --chip-bg: #e8f8e8;
+  --chip-text: #276749;
+  --switch-bg: #eaf4e8;
+  --switch-active-bg: #ffffff;
+  --switch-text: #586a56;
+  --switch-active-text: #24563c;
+  --input-bg: #ffffff;
+  --input-border: #bfd4bd;
+  --input-text: #1c2b22;
+  --card-bg: #f5fbf2;
+  --card-border: #d7e6d4;
+  --code-text: #25724d;
+  --token-bg: #183224;
+  --token-text: #e9f8ef;
+  --token-label: #9ed7ad;
+  --brand-accent: #37a169;
+  --primary: #2f855a;
+  --primary-hover: #276749;
+  --secondary: #66806b;
+  --outline-text: #25543b;
+  --outline-border: #a8c8a5;
+  --outline-hover-bg: #2f855a;
+  --outline-hover-text: #fff;
+}
+
+:root[data-theme="cellular-automata-day"] body {
+  background:
+    radial-gradient(circle at 18% 18%, rgb(55 161 105 / 14%), transparent 26%),
+    radial-gradient(circle at 86% 12%, rgb(180 217 117 / 16%), transparent 28%),
+    radial-gradient(circle at 50% 110%, rgb(67 160 118 / 12%), transparent 36%),
+    linear-gradient(180deg, #fbfff7 0%, #edf8ed 100%);
+}
+
+:root[data-theme="cellular-automata-day"] body::before {
+  opacity: 0.82;
+  background-image:
+    linear-gradient(90deg, rgb(47 133 90 / 12%) 1px, transparent 1px),
+    linear-gradient(rgb(47 133 90 / 12%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(47 133 90 / 0%) 0 12px, rgb(47 133 90 / 18%) 12px 24px, rgb(47 133 90 / 0%) 24px 48px, rgb(47 133 90 / 14%) 48px 60px, rgb(47 133 90 / 0%) 60px 96px),
+    linear-gradient(90deg, rgb(180 217 117 / 0%) 0 24px, rgb(180 217 117 / 18%) 24px 36px, rgb(180 217 117 / 0%) 36px 72px, rgb(180 217 117 / 14%) 72px 84px, rgb(180 217 117 / 0%) 84px 120px);
+  background-position: 0 0, 0 0, 0 0, 36px 48px;
+  background-size: 24px 24px, 24px 24px, 96px 24px, 120px 24px;
+  animation: conway-generations 1.8s steps(6, end) infinite;
+}
+
+:root[data-theme="cellular-automata-day"] body::after {
+  opacity: 0.44;
+  background-image:
+    radial-gradient(circle at 12px 12px, rgb(47 133 90 / 24%) 0 5px, transparent 5.5px),
+    radial-gradient(circle at 36px 36px, rgb(180 217 117 / 24%) 0 5px, transparent 5.5px);
+  background-size: 96px 96px, 120px 120px;
+  animation: conway-gliders 14s linear infinite;
+}
+
+:root[data-theme="cellular-automata-day"] .brand::before {
+  display: inline-block;
+}
+
+@keyframes conway-generations {
+  0% {
+    background-position: 0 0, 0 0, 0 0, 36px 48px;
+  }
+
+  33% {
+    background-position: 0 0, 0 0, 24px 24px, 60px 72px;
+  }
+
+  66% {
+    background-position: 0 0, 0 0, 48px 0, 12px 24px;
+  }
+
+  100% {
+    background-position: 0 0, 0 0, 96px 24px, 156px 72px;
+  }
+}
+
+@keyframes conway-gliders {
+  from {
+    background-position: 0 0, 36px 48px;
+  }
+
+  to {
+    background-position: 192px 144px, -84px 192px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="cellular-automata-day"] body::before,
+  :root[data-theme="cellular-automata-day"] body::after {
+    animation: none;
+  }
+}

@@ -1,0 +1,107 @@
+:root[data-theme="republic-day"] {
+  color-scheme: light;
+  --app-bg: #f4f7fb;
+  --app-text: #17213a;
+  --topbar-bg: #f7f9fd;
+  --topbar-text: #17213a;
+  --topbar-border: #1f5fbf;
+  --panel-bg: #ffffff;
+  --panel-border: #cdd9ea;
+  --panel-shadow: 0 16px 30px rgb(31 95 191 / 12%);
+  --muted-text: #63708a;
+  --chip-bg: #e7f0ff;
+  --chip-text: #1f5fbf;
+  --switch-bg: #e8eef8;
+  --switch-active-bg: #ffffff;
+  --switch-text: #52627f;
+  --switch-active-text: #153c84;
+  --input-bg: #ffffff;
+  --input-border: #bccbe1;
+  --input-text: #17213a;
+  --card-bg: #f7faff;
+  --card-border: #d7e2f2;
+  --code-text: #1f5fbf;
+  --token-bg: #18345f;
+  --token-text: #eef5ff;
+  --token-label: #b9d3ff;
+  --brand-accent: #d4a017;
+  --primary: #1f5fbf;
+  --primary-hover: #174fa4;
+  --secondary: #5f6f8a;
+  --outline-text: #173d7c;
+  --outline-border: #a9bfdf;
+  --outline-hover-bg: #1f5fbf;
+  --outline-hover-text: #fff;
+}
+
+:root[data-theme="republic-day"] body {
+  background:
+    radial-gradient(circle at 18% 24%, rgb(212 160 23 / 15%), transparent 20%),
+    radial-gradient(circle at 78% 18%, rgb(31 95 191 / 14%), transparent 30%),
+    radial-gradient(circle at 50% 104%, rgb(31 95 191 / 10%), transparent 34%),
+    linear-gradient(180deg, #fbfdff 0%, #eef4fb 100%);
+}
+
+:root[data-theme="republic-day"] body::before {
+  opacity: 0.68;
+  background-image:
+    linear-gradient(90deg, rgb(31 95 191 / 7%) 1px, transparent 1px),
+    linear-gradient(rgb(31 95 191 / 7%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(212 160 23 / 9%) 2px, transparent 2px),
+    linear-gradient(rgb(212 160 23 / 9%) 2px, transparent 2px);
+  background-position: 0 0, 0 0, 0 0, 0 0;
+  background-size: 96px 96px, 96px 96px, 384px 384px, 384px 384px;
+  animation: republic-grid-drift 22s linear infinite;
+}
+
+:root[data-theme="republic-day"] body::after {
+  opacity: 0.82;
+  background:
+    radial-gradient(circle at 16% 78%, transparent 0 42px, rgb(31 95 191 / 18%) 43px 44px, transparent 45px 78px, rgb(31 95 191 / 11%) 79px 80px, transparent 81px 120px, rgb(212 160 23 / 14%) 121px 122px, transparent 123px),
+    conic-gradient(from 22deg at 84% 21%, transparent 0 9deg, rgb(31 95 191 / 18%) 9deg 11deg, transparent 11deg 42deg, rgb(212 160 23 / 18%) 42deg 44deg, transparent 44deg 98deg, rgb(31 95 191 / 14%) 98deg 100deg, transparent 100deg),
+    radial-gradient(circle at 84% 21%, transparent 0 34px, rgb(31 95 191 / 16%) 35px 36px, transparent 37px 64px, rgb(31 95 191 / 10%) 65px 66px, transparent 67px),
+    conic-gradient(from -18deg at 50% 54%, rgb(31 95 191 / 0%) 0 12deg, rgb(31 95 191 / 9%) 12deg 13deg, transparent 13deg 58deg, rgb(212 160 23 / 12%) 58deg 59deg, transparent 59deg 124deg, rgb(31 95 191 / 9%) 124deg 125deg, transparent 125deg),
+    radial-gradient(circle at 50% 54%, transparent 0 130px, rgb(31 95 191 / 8%) 131px 132px, transparent 133px 190px, rgb(212 160 23 / 10%) 191px 192px, transparent 193px 258px, rgb(31 95 191 / 8%) 259px 260px, transparent 261px),
+    linear-gradient(115deg, transparent 0 47%, rgb(31 95 191 / 9%) 47.15% 47.45%, transparent 47.7%),
+    linear-gradient(64deg, transparent 0 63%, rgb(212 160 23 / 8%) 63.1% 63.4%, transparent 63.65%);
+  animation: republic-command-scan 18s ease-in-out infinite;
+}
+
+:root[data-theme="republic-day"] .brand::before {
+  display: inline-block;
+}
+
+@keyframes republic-grid-drift {
+  from {
+    background-position: 0 0, 0 0, 0 0, 0 0;
+  }
+
+  to {
+    background-position: 96px 48px, 48px 96px, 384px 192px, 192px 384px;
+  }
+}
+
+@keyframes republic-command-scan {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0.72;
+  }
+
+  45% {
+    transform: translate3d(14px, -10px, 0) rotate(0.45deg);
+    opacity: 0.88;
+  }
+
+  70% {
+    transform: translate3d(-8px, 8px, 0) rotate(-0.3deg);
+    opacity: 0.78;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="republic-day"] body::before,
+  :root[data-theme="republic-day"] body::after {
+    animation: none;
+  }
+}

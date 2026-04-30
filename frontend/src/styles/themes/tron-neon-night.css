@@ -1,0 +1,85 @@
+:root[data-theme="tron-neon-night"] {
+  color-scheme: dark;
+  --app-bg: #02070d;
+  --app-text: #e8fbff;
+  --topbar-bg: #02040a;
+  --topbar-text: #e8fbff;
+  --topbar-border: #00e5ff;
+  --panel-bg: #07111c;
+  --panel-border: #00b8d4;
+  --panel-shadow: 0 0 28px rgb(0 229 255 / 18%);
+  --muted-text: #8ccbd6;
+  --chip-bg: #03222a;
+  --chip-text: #00e5ff;
+  --switch-bg: #041924;
+  --switch-active-bg: #082d3a;
+  --switch-text: #95d5df;
+  --switch-active-text: #f1feff;
+  --input-bg: #020b12;
+  --input-border: #087c91;
+  --input-text: #e8fbff;
+  --card-bg: #061927;
+  --card-border: #0c6f85;
+  --code-text: #48f3ff;
+  --token-bg: #02040a;
+  --token-text: #dffcff;
+  --token-label: #00e5ff;
+  --brand-accent: #00e5ff;
+  --primary: #00bcd4;
+  --primary-hover: #22e7ff;
+  --secondary: #8bcad6;
+  --outline-text: #86f8ff;
+  --outline-border: #00e5ff;
+  --outline-hover-bg: #00e5ff;
+  --outline-hover-text: #041018;
+  --danger-bg: #2d0715;
+  --danger-border: #ff2f74;
+  --danger-text: #ffc1d8;
+  --success-bg: #06251f;
+  --success-border: #00d89a;
+  --success-text: #9dffe2;
+}
+
+:root[data-theme="tron-neon-night"] body {
+  background:
+    radial-gradient(circle at 50% 100%, rgb(0 229 255 / 22%), transparent 38%),
+    linear-gradient(180deg, #01050a 0%, #03101a 52%, #02070d 100%);
+}
+
+:root[data-theme="tron-neon-night"] body::before {
+  opacity: 0.9;
+  background-image:
+    linear-gradient(rgb(0 229 255 / 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(0 229 255 / 0.2) 1px, transparent 1px),
+    linear-gradient(rgb(0 229 255 / 0.48) 2px, transparent 2px),
+    linear-gradient(90deg, rgb(0 229 255 / 0.42) 2px, transparent 2px);
+  background-position: 0 0;
+  background-size: 48px 48px, 48px 48px, 192px 192px, 192px 192px;
+  filter: drop-shadow(0 0 6px rgb(0 229 255 / 42%));
+  transform: perspective(680px) rotateX(62deg) translateY(20vh) scale(1.6);
+  transform-origin: 50% 100%;
+  animation: tron-grid-run 2.8s linear infinite;
+}
+
+:root[data-theme="tron-neon-night"] body::after {
+  opacity: 0.75;
+  background:
+    linear-gradient(180deg, rgb(2 7 13 / 0%) 0%, rgb(2 7 13 / 72%) 58%, rgb(2 7 13 / 92%) 100%),
+    radial-gradient(circle at 50% 92%, rgb(255 0 204 / 16%), transparent 28%);
+}
+
+@keyframes tron-grid-run {
+  from {
+    background-position: 0 0, 0 0, 0 0, 0 0;
+  }
+
+  to {
+    background-position: 0 48px, 48px 0, 0 192px, 192px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="tron-neon-night"] body::before {
+    animation: none;
+  }
+}

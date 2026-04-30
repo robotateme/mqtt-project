@@ -1,0 +1,105 @@
+:root[data-theme="cellular-automata-night"] {
+  color-scheme: dark;
+  --app-bg: #030608;
+  --app-text: #e7fff7;
+  --topbar-bg: #05090c;
+  --topbar-text: #e7fff7;
+  --topbar-border: #6ee7b7;
+  --panel-bg: #07110f;
+  --panel-border: #1f5c4b;
+  --panel-shadow: 0 0 30px rgb(110 231 183 / 14%);
+  --muted-text: #8fc9b4;
+  --chip-bg: #09261f;
+  --chip-text: #7df8c7;
+  --switch-bg: #061914;
+  --switch-active-bg: #0d2b22;
+  --switch-text: #9bd2bf;
+  --switch-active-text: #edfff8;
+  --input-bg: #030b09;
+  --input-border: #23745c;
+  --input-text: #e7fff7;
+  --card-bg: #081b16;
+  --card-border: #1c5a49;
+  --code-text: #87ffd2;
+  --token-bg: #020605;
+  --token-text: #e7fff7;
+  --token-label: #72e7ba;
+  --brand-accent: #6ee7b7;
+  --primary: #10b981;
+  --primary-hover: #34d399;
+  --secondary: #8ccfbb;
+  --outline-text: #a9ffe0;
+  --outline-border: #4ade80;
+  --outline-hover-bg: #10b981;
+  --outline-hover-text: #03120d;
+  --danger-bg: #2b0a16;
+  --danger-border: #fb7185;
+  --danger-text: #ffd0da;
+  --success-bg: #06251d;
+  --success-border: #34d399;
+  --success-text: #b9ffe7;
+}
+
+:root[data-theme="cellular-automata-night"] body {
+  background:
+    radial-gradient(circle at 50% 120%, rgb(16 185 129 / 18%), transparent 38%),
+    radial-gradient(circle at 16% 22%, rgb(74 222 128 / 14%), transparent 24%),
+    linear-gradient(180deg, #020405 0%, #06110e 52%, #020605 100%);
+}
+
+:root[data-theme="cellular-automata-night"] body::before {
+  opacity: 0.92;
+  background-image:
+    linear-gradient(90deg, rgb(110 231 183 / 11%) 1px, transparent 1px),
+    linear-gradient(rgb(110 231 183 / 11%) 1px, transparent 1px),
+    linear-gradient(90deg, transparent 0 16px, rgb(110 231 183 / 48%) 16px 32px, transparent 32px 48px, rgb(16 185 129 / 34%) 48px 64px, transparent 64px 112px),
+    linear-gradient(90deg, rgb(16 185 129 / 42%) 0 16px, transparent 16px 48px, rgb(110 231 183 / 36%) 48px 64px, transparent 64px 96px, rgb(16 185 129 / 28%) 96px 112px, transparent 112px 128px),
+    linear-gradient(90deg, transparent 0 32px, rgb(110 231 183 / 44%) 32px 48px, transparent 48px 80px, rgb(16 185 129 / 36%) 80px 96px, transparent 96px 144px);
+  background-position: 0 0, 0 0, 0 0, 24px 32px, 48px 64px;
+  background-size: 32px 32px, 32px 32px, 128px 32px, 128px 32px, 160px 32px;
+  filter: drop-shadow(0 0 8px rgb(110 231 183 / 38%));
+  animation: rule28-rows 1.4s steps(7, end) infinite;
+}
+
+:root[data-theme="cellular-automata-night"] body::after {
+  opacity: 0.52;
+  background:
+    linear-gradient(180deg, rgb(2 6 5 / 0%) 0%, rgb(2 6 5 / 70%) 70%, rgb(2 6 5 / 90%) 100%),
+    linear-gradient(115deg, transparent 0 48%, rgb(110 231 183 / 15%) 48.1% 48.35%, transparent 48.6%),
+    linear-gradient(65deg, transparent 0 62%, rgb(16 185 129 / 13%) 62.1% 62.35%, transparent 62.6%);
+  animation: rule28-scan 9s ease-in-out infinite;
+}
+
+:root[data-theme="cellular-automata-night"] .brand::before {
+  display: inline-block;
+}
+
+@keyframes rule28-rows {
+  from {
+    background-position: 0 0, 0 0, 0 0, 24px 32px, 48px 64px;
+  }
+
+  to {
+    background-position: 0 32px, 32px 0, 128px 32px, 152px 64px, 208px 96px;
+  }
+}
+
+@keyframes rule28-scan {
+  0%,
+  100% {
+    transform: translate3d(-18px, 0, 0);
+    opacity: 0.42;
+  }
+
+  50% {
+    transform: translate3d(18px, -10px, 0);
+    opacity: 0.62;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="cellular-automata-night"] body::before,
+  :root[data-theme="cellular-automata-night"] body::after {
+    animation: none;
+  }
+}

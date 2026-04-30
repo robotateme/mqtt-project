@@ -1,0 +1,108 @@
+:root[data-theme="empire-night"] {
+  color-scheme: dark;
+  --app-bg: #07080d;
+  --app-text: #f4f7fb;
+  --topbar-bg: #0a0a0d;
+  --topbar-text: #f8f8f8;
+  --topbar-border: #c1121f;
+  --panel-bg: #11131a;
+  --panel-border: #3a1d24;
+  --panel-shadow: 0 18px 38px rgb(0 0 0 / 42%);
+  --muted-text: #a8b0bd;
+  --chip-bg: #2a1116;
+  --chip-text: #ff6b76;
+  --switch-bg: #1b1d27;
+  --switch-active-bg: #2a1016;
+  --switch-text: #b9c1cf;
+  --switch-active-text: #fff5f6;
+  --input-bg: #080a10;
+  --input-border: #56313b;
+  --input-text: #f5f7fb;
+  --card-bg: #171a23;
+  --card-border: #39222b;
+  --code-text: #ffb3b9;
+  --token-bg: #050507;
+  --token-text: #f6f1f1;
+  --token-label: #ff7b84;
+  --primary: #d71920;
+  --primary-hover: #f02f38;
+  --secondary: #a2a8b3;
+  --outline-text: #f6d8dc;
+  --outline-border: #a73542;
+  --outline-hover-bg: #d71920;
+  --outline-hover-text: #fff;
+  --danger-bg: #341016;
+  --danger-border: #8f2430;
+  --danger-text: #ffb7be;
+  --success-bg: #10271f;
+  --success-border: #2e7b60;
+  --success-text: #9ff0d0;
+}
+
+:root[data-theme="empire-night"] body {
+  background:
+    radial-gradient(circle at 20% 10%, rgb(118 20 31 / 24%), transparent 30%),
+    linear-gradient(180deg, #05060a 0%, #0b0d14 48%, #050509 100%);
+}
+
+:root[data-theme="empire-night"] body::before {
+  opacity: 1;
+  background-image:
+    radial-gradient(circle at 11px 17px, rgb(255 255 255 / 88%) 0 1px, transparent 1.4px),
+    radial-gradient(circle at 73px 41px, rgb(255 255 255 / 72%) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 148px 91px, rgb(255 255 255 / 80%) 0 1.3px, transparent 1.8px),
+    radial-gradient(circle at 37px 126px, rgb(255 118 128 / 70%) 0 1.1px, transparent 1.6px),
+    radial-gradient(circle at 214px 23px, rgb(181 205 255 / 72%) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 276px 168px, rgb(255 255 255 / 58%) 0 1.4px, transparent 2px),
+    radial-gradient(circle at 132px 214px, rgb(255 80 96 / 52%) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 326px 77px, rgb(226 235 255 / 64%) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 391px 253px, rgb(255 255 255 / 76%) 0 1.2px, transparent 1.9px),
+    radial-gradient(circle at 462px 139px, rgb(255 149 157 / 56%) 0 1px, transparent 1.6px);
+  background-position: 0 0, 41px 83px, 97px 29px, 13px 151px, 188px 47px, 271px 109px, 59px 239px, 344px 68px, 419px 203px, 503px 137px;
+  background-size: 533px 389px, 419px 571px, 683px 461px, 367px 617px, 761px 337px, 557px 719px, 827px 503px, 641px 853px, 947px 587px, 743px 677px;
+  animation: empire-stars-drift 58s linear infinite;
+}
+
+:root[data-theme="empire-night"] body::after {
+  opacity: 1;
+  background:
+    linear-gradient(115deg, transparent 0 46%, rgb(255 255 255 / 12%) 49%, transparent 52%),
+    radial-gradient(circle at 76% 18%, rgb(218 20 38 / 18%), transparent 22%);
+  transform: translateX(-55%);
+  animation: empire-hyperspace 9s ease-in-out infinite;
+}
+
+@keyframes empire-stars-drift {
+  from {
+    background-position: 0 0, 41px 83px, 97px 29px, 13px 151px, 188px 47px, 271px 109px, 59px 239px, 344px 68px, 419px 203px, 503px 137px;
+  }
+
+  to {
+    background-position: 37px 521px, -121px 731px, 223px 641px, -91px 837px, 311px 487px, 103px 929px, 267px 743px, -64px 1091px, 173px 857px, 719px 947px;
+  }
+}
+
+@keyframes empire-hyperspace {
+  0%,
+  72%,
+  100% {
+    transform: translateX(-55%);
+    opacity: 0;
+  }
+
+  78% {
+    opacity: 0.9;
+  }
+
+  86% {
+    transform: translateX(55%);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="empire-night"] body::before,
+  :root[data-theme="empire-night"] body::after {
+    animation: none;
+  }
+}
