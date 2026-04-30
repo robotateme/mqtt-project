@@ -52,11 +52,11 @@
   background-image:
     linear-gradient(90deg, rgb(110 231 183 / 11%) 1px, transparent 1px),
     linear-gradient(rgb(110 231 183 / 11%) 1px, transparent 1px),
-    linear-gradient(90deg, transparent 0 16px, rgb(110 231 183 / 48%) 16px 32px, transparent 32px 48px, rgb(16 185 129 / 34%) 48px 64px, transparent 64px 112px),
-    linear-gradient(90deg, rgb(16 185 129 / 42%) 0 16px, transparent 16px 48px, rgb(110 231 183 / 36%) 48px 64px, transparent 64px 96px, rgb(16 185 129 / 28%) 96px 112px, transparent 112px 128px),
-    linear-gradient(90deg, transparent 0 32px, rgb(110 231 183 / 44%) 32px 48px, transparent 48px 80px, rgb(16 185 129 / 36%) 80px 96px, transparent 96px 144px);
+    repeating-conic-gradient(from 0deg, transparent 0 25%, rgb(110 231 183 / 48%) 0 50%, transparent 0 75%, rgb(16 185 129 / 34%) 0 100%),
+    repeating-conic-gradient(from 0deg, rgb(16 185 129 / 42%) 0 25%, transparent 0 50%, rgb(110 231 183 / 36%) 0 75%, transparent 0 100%),
+    repeating-conic-gradient(from 0deg, transparent 0 50%, rgb(110 231 183 / 44%) 0 75%, rgb(16 185 129 / 28%) 0 100%);
   background-position: 0 0, 0 0, 0 0, 24px 32px, 48px 64px;
-  background-size: 32px 32px, 32px 32px, 128px 32px, 128px 32px, 160px 32px;
+  background-size: 32px 32px, 32px 32px, 64px 64px, 96px 96px, 128px 128px;
   filter: drop-shadow(0 0 8px rgb(110 231 183 / 38%));
   animation: rule28-rows 1.4s steps(7, end) infinite;
 }
@@ -80,7 +80,7 @@
   }
 
   to {
-    background-position: 0 32px, 32px 0, 128px 32px, 152px 64px, 208px 96px;
+    background-position: 0 32px, 32px 0, 128px 32px, 120px 96px, 176px 128px;
   }
 }
 

@@ -47,18 +47,19 @@
   background-image:
     linear-gradient(90deg, rgb(47 133 90 / 12%) 1px, transparent 1px),
     linear-gradient(rgb(47 133 90 / 12%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(47 133 90 / 0%) 0 12px, rgb(47 133 90 / 18%) 12px 24px, rgb(47 133 90 / 0%) 24px 48px, rgb(47 133 90 / 14%) 48px 60px, rgb(47 133 90 / 0%) 60px 96px),
-    linear-gradient(90deg, rgb(180 217 117 / 0%) 0 24px, rgb(180 217 117 / 18%) 24px 36px, rgb(180 217 117 / 0%) 36px 72px, rgb(180 217 117 / 14%) 72px 84px, rgb(180 217 117 / 0%) 84px 120px);
+    repeating-conic-gradient(from 0deg, rgb(47 133 90 / 22%) 0 25%, transparent 0 50%, rgb(47 133 90 / 16%) 0 75%, transparent 0 100%),
+    repeating-conic-gradient(from 0deg, transparent 0 25%, rgb(180 217 117 / 18%) 0 50%, transparent 0 75%, rgb(47 133 90 / 14%) 0 100%);
   background-position: 0 0, 0 0, 0 0, 36px 48px;
-  background-size: 24px 24px, 24px 24px, 96px 24px, 120px 24px;
+  background-size: 24px 24px, 24px 24px, 48px 48px, 72px 72px;
   animation: conway-generations 1.8s steps(6, end) infinite;
 }
 
 :root[data-theme="cellular-automata-day"] body::after {
   opacity: 0.44;
   background-image:
-    radial-gradient(circle at 12px 12px, rgb(47 133 90 / 24%) 0 5px, transparent 5.5px),
-    radial-gradient(circle at 36px 36px, rgb(180 217 117 / 24%) 0 5px, transparent 5.5px);
+    repeating-conic-gradient(from 0deg, rgb(47 133 90 / 24%) 0 25%, transparent 0 100%),
+    repeating-conic-gradient(from 0deg, transparent 0 50%, rgb(180 217 117 / 24%) 0 75%, transparent 0 100%);
+  background-position: 0 0, 36px 48px;
   background-size: 96px 96px, 120px 120px;
   animation: conway-gliders 14s linear infinite;
 }
@@ -73,15 +74,15 @@
   }
 
   33% {
-    background-position: 0 0, 0 0, 24px 24px, 60px 72px;
+    background-position: 0 0, 0 0, 24px 24px, 72px 72px;
   }
 
   66% {
-    background-position: 0 0, 0 0, 48px 0, 12px 24px;
+    background-position: 0 0, 0 0, 48px 0, 0 24px;
   }
 
   100% {
-    background-position: 0 0, 0 0, 96px 24px, 156px 72px;
+    background-position: 0 0, 0 0, 96px 24px, 144px 72px;
   }
 }
 
