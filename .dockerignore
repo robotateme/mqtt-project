@@ -1,0 +1,17 @@
+.git
+.idea
+.wiki
+.ai
+laradock
+**/.env
+**/.phpunit.result.cache
+**/node_modules
+**/vendor
+frontend/dist
+core/storage/logs/*
+core/storage/framework/cache/*
+core/storage/framework/sessions/*
+core/storage/framework/views/*
+core/bootstrap/cache/*.php
+bus/storage/runtime/*
+bus/storage/logs/*

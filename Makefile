@@ -1,6 +1,8 @@
 SHELL := /usr/bin/env bash
 
 DC := docker compose -f laradock/docker-compose.yml --env-file laradock/.env
+DEPLOY_ENV_FILE ?= deploy/.env
+DEPLOY_DC := docker compose -f deploy/docker-compose.yml --env-file $(DEPLOY_ENV_FILE)
 SERVICES := nginx php-fpm php-worker workspace postgres redis mercure clickhouse zookeeper kafka mosquitto
 CORE := /var/www/core
 BUS := /var/www/bus
@@ -14,7 +16,9 @@ SAFE_GIT := git config --global --add safe.directory /var/www >/dev/null 2>&1 ||
 	core-test core-phpstan core-psalm core-analyse core-health \
 	core-horizon core-horizon-status core-telescope-prune \
 	bus-install bus-consume bus-test bus-phpstan bus-psalm bus-analyse bus-health bus-ready \
-	frontend-install frontend-build frontend-health analyse check
+	frontend-install frontend-build frontend-health \
+	deploy-config deploy-build deploy-up deploy-down deploy-logs deploy-migrate deploy-health \
+	analyse check
 
 help:
 	@printf '\033[1;36m%s\033[0m\n\n' 'MQTT Project'
@@ -56,6 +60,14 @@ help:
 	@printf '  \033[32m%-22s\033[0m %s\n' 'frontend-install' 'NPM clean install for Vue frontend'
 	@printf '  \033[32m%-22s\033[0m %s\n' 'frontend-build' 'Build Vue frontend assets'
 	@printf '  \033[32m%-22s\033[0m %s\n\n' 'frontend-health' 'Check frontend HTTP entrypoint'
+	@printf '\033[1;35m%s\033[0m\n' 'Deploy'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'deploy-config' 'Validate deploy/docker-compose.yml'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'deploy-build' 'Build production deploy images'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'deploy-up' 'Start production deploy stack'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'deploy-down' 'Stop production deploy stack'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'deploy-logs service=bus' 'Follow deploy service logs'
+	@printf '  \033[32m%-22s\033[0m %s\n' 'deploy-migrate' 'Run Laravel and ClickHouse migrations'
+	@printf '  \033[32m%-22s\033[0m %s\n\n' 'deploy-health' 'Check deploy HTTP endpoints'
 	@printf '\033[1;35m%s\033[0m\n' 'Validation'
 	@printf '  \033[32m%-22s\033[0m %s\n' 'analyse' 'Run static analysis for core and bus'
 	@printf '  \033[32m%-22s\033[0m %s\n' 'check' 'Run syntax, tests and health checks'
@@ -163,6 +175,33 @@ frontend-build:
 frontend-health:
 	curl -fsS -H 'Host: frontend.localhost' http://localhost/ >/dev/null
 	@printf 'frontend ok\n'
+
+deploy-config:
+	$(DEPLOY_DC) config >/dev/null
+
+deploy-build:
+	$(DEPLOY_DC) build
+
+deploy-up:
+	$(DEPLOY_DC) up -d --remove-orphans
+
+deploy-down:
+	$(DEPLOY_DC) down
+
+deploy-logs:
+	$(DEPLOY_DC) logs -f --tail=200 $(service)
+
+deploy-migrate:
+	$(DEPLOY_DC) exec -T core-php php artisan migrate --force
+	$(DEPLOY_DC) exec -T core-php php artisan clickhouse:migrate
+
+deploy-health:
+	curl -fsS http://127.0.0.1:$${CORE_HTTP_PORT:-8080}/health
+	@printf '\n'
+	curl -fsS http://127.0.0.1:$${FRONTEND_HTTP_PORT:-8081}/ >/dev/null
+	@printf 'frontend ok\n'
+	curl -fsS http://127.0.0.1:$${BUS_HTTP_PORT:-8082}/health
+	@printf '\n'
 
 analyse:
 	$(MAKE) core-analyse
