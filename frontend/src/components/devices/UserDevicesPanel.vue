@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue';
+import FullscreenTable from '../FullscreenTable.vue';
 
 const props = defineProps({
   apiBaseUrl: {
@@ -22,11 +23,15 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  view: {
+    type: String,
+    default: 'devices',
+    validator: (value) => ['devices', 'packets'].includes(value),
+  },
 });
 
 const emit = defineEmits(['refresh', 'create', 'update', 'delete']);
 
-const activeTab = ref('devices');
 const editingId = ref(null);
 const selectedDeviceId = ref('');
 const streamStatus = ref('idle');
@@ -42,6 +47,7 @@ const form = reactive({
 });
 
 const selectedDevice = computed(() => props.devices.find((item) => String(item.id) === String(selectedDeviceId.value)));
+const activeView = computed(() => props.view);
 
 function resetForm() {
   editingId.value = null;
@@ -194,23 +200,20 @@ watch(() => props.devices, () => {
   }
 }, { immediate: true });
 
+watch(() => props.view, (view) => {
+  if (view !== 'packets') {
+    closeStream();
+  }
+});
+
 onBeforeUnmount(closeStream);
 </script>
 
 <template>
   <section class="device-section">
-    <div class="device-tabs" role="tablist">
-      <button :class="{ active: activeTab === 'devices' }" type="button" @click="activeTab = 'devices'">
-        Devices
-      </button>
-      <button :class="{ active: activeTab === 'packets' }" type="button" @click="activeTab = 'packets'">
-        Live packets
-      </button>
-    </div>
-
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
 
-    <div v-if="activeTab === 'devices'" class="device-grid">
+    <div v-if="activeView === 'devices'" class="device-grid">
       <form class="device-form" @submit.prevent="submitDevice">
         <h2>{{ editingId ? 'Редактирование устройства' : 'Новое устройство' }}</h2>
         <div v-if="formError" class="alert alert-danger mb-0">{{ formError }}</div>
@@ -239,9 +242,43 @@ onBeforeUnmount(closeStream);
       <div class="table-block">
         <div class="table-title">
           <h3>Мои устройства</h3>
-          <button class="btn btn-outline-secondary btn-sm" type="button" :disabled="loading" @click="$emit('refresh')">
-            Обновить
-          </button>
+          <div class="table-actions">
+            <button class="btn btn-outline-secondary btn-sm" type="button" :disabled="loading" @click="$emit('refresh')">
+              Обновить
+            </button>
+            <FullscreenTable title="My devices">
+              <table class="table catalog-table catalog-table-fullscreen align-middle">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>External ID</th>
+                    <th>Название</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="device in devices" :key="device.id">
+                    <td>{{ device.id }}</td>
+                    <td><code>{{ device.external_id }}</code></td>
+                    <td>{{ device.name || '-' }}</td>
+                    <td><span class="role-badge">{{ device.metadata?.status || 'unknown' }}</span></td>
+                    <td class="row-actions">
+                      <button class="btn btn-outline-secondary btn-sm" type="button" @click="editDevice(device)">
+                        Edit
+                      </button>
+                      <button class="btn btn-outline-danger btn-sm" type="button" @click="$emit('delete', device.id)">
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                  <tr v-if="!devices.length">
+                    <td class="empty-cell" colspan="5">Нет устройств</td>
+                  </tr>
+                </tbody>
+              </table>
+            </FullscreenTable>
+          </div>
         </div>
         <div class="table-responsive">
           <table class="table catalog-table align-middle">
@@ -299,6 +336,33 @@ onBeforeUnmount(closeStream);
       </div>
 
       <div v-if="streamError" class="alert alert-danger">{{ streamError }}</div>
+
+      <div class="table-title">
+        <h3>Live packets</h3>
+        <FullscreenTable title="Live packets">
+          <table class="table catalog-table catalog-table-fullscreen align-middle">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Topic</th>
+                <th>Type</th>
+                <th>Payload</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(packet, index) in packets" :key="`${packet.kafka_offset}-${index}`">
+                <td>{{ packetTime(packet) }}</td>
+                <td><code>{{ packet.mqtt_topic }}</code></td>
+                <td>{{ packet.payload_type }}<span v-if="packet.demo" class="demo-mark">demo</span></td>
+                <td><code>{{ packetPayload(packet) }}</code></td>
+              </tr>
+              <tr v-if="!packets.length">
+                <td class="empty-cell" colspan="4">Пакетов пока нет</td>
+              </tr>
+            </tbody>
+          </table>
+        </FullscreenTable>
+      </div>
 
       <div class="packet-sniffer">
         <table class="table catalog-table align-middle">

@@ -1,26 +1,34 @@
 <script setup>
+import { RouterLink } from 'vue-router';
+
 defineProps({
-  apiBaseUrl: {
-    type: String,
+  isAdmin: {
+    type: Boolean,
     required: true,
   },
 });
+
+const navItems = [
+  { to: '/all-devices', label: 'All devices', adminOnly: true },
+  { to: '/all-users', label: 'All users', adminOnly: true },
+  { to: '/my-devices', label: 'My devices' },
+  { to: '/live-packets', label: 'Live packets' },
+  { to: '/my-profile', label: 'My profile' },
+];
 </script>
 
 <template>
   <aside class="info-panel">
-    <h2>API endpoints</h2>
-    <ul>
-      <li><code>POST /api/v1/auth/login</code></li>
-      <li><code>POST /api/v1/auth/register</code></li>
-      <li><code>GET /api/v1/auth/me</code></li>
-      <li><code>POST /api/v1/auth/refresh</code></li>
-      <li><code>GET /api/v1/devices</code></li>
-      <li><code>POST /api/v1/devices</code></li>
-      <li><code>GET /api/v1/devices/{id}/stream</code></li>
-      <li><code>GET /api/v1/admin/users</code></li>
-      <li><code>GET /api/v1/admin/devices</code></li>
-    </ul>
-    <a class="btn btn-outline-dark w-100" :href="`${apiBaseUrl}/health`">API health</a>
+    <h2>Navigation</h2>
+    <nav class="side-nav" aria-label="Admin navigation">
+      <RouterLink
+        v-for="item in navItems.filter((navItem) => !navItem.adminOnly || isAdmin)"
+        :key="item.to"
+        :to="item.to"
+        class="side-nav-link"
+      >
+        {{ item.label }}
+      </RouterLink>
+    </nav>
   </aside>
 </template>

@@ -410,7 +410,7 @@ onMounted(() => {
         @update-device="updateDevice"
         @delete-device="deleteDevice"
       />
-      <InfoPanel :api-base-url="apiBaseUrl" />
+      <InfoPanel :is-admin="isAdmin" />
     </section>
   </main>
 </template>

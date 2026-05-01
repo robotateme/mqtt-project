@@ -1,9 +1,10 @@
 <script setup>
+import { computed } from 'vue';
+import { RouterView, useRoute } from 'vue-router';
 import AuthForm from './AuthForm.vue';
 import LoadingState from './LoadingState.vue';
-import ProfilePanel from './ProfilePanel.vue';
 
-defineProps({
+const props = defineProps({
   apiBaseUrl: {
     type: String,
     required: true,
@@ -82,7 +83,7 @@ defineProps({
   },
 });
 
-defineEmits([
+const emit = defineEmits([
   'update:mode',
   'login',
   'register',
@@ -94,34 +95,92 @@ defineEmits([
   'update-device',
   'delete-device',
 ]);
+
+const route = useRoute();
+
+const routedPanelProps = computed(() => {
+  if (route.name === 'all-devices') {
+    return {
+      loading: props.catalogLoading,
+      devices: props.adminDevices,
+      error: props.catalogError,
+    };
+  }
+
+  if (route.name === 'all-users') {
+    return {
+      loading: props.catalogLoading,
+      users: props.adminUsers,
+      error: props.catalogError,
+    };
+  }
+
+  if (route.name === 'my-profile') {
+    return {
+      apiBaseUrl: props.apiBaseUrl,
+      loading: props.loading,
+      user: props.user,
+      token: props.token,
+    };
+  }
+
+  if (route.name === 'live-packets') {
+    return {
+      apiBaseUrl: props.apiBaseUrl,
+      authHeader: props.authHeader,
+      devices: props.user?.role === 'admin' ? props.adminDevices : props.userDevices,
+      loading: props.user?.role === 'admin' ? props.catalogLoading : props.deviceLoading,
+      error: props.user?.role === 'admin' ? props.catalogError : props.deviceError,
+      view: 'packets',
+    };
+  }
+
+  return {
+    apiBaseUrl: props.apiBaseUrl,
+    authHeader: props.authHeader,
+    devices: props.userDevices,
+    loading: props.deviceLoading,
+    error: props.deviceError,
+    view: route.meta.view || 'devices',
+  };
+});
+
+const routedPanelListeners = computed(() => {
+  if (route.name === 'all-devices') {
+    return {
+      refresh: () => emit('refresh-catalog'),
+    };
+  }
+
+  if (route.name === 'all-users') {
+    return {
+      refresh: () => emit('refresh-catalog'),
+    };
+  }
+
+  if (route.name === 'my-profile') {
+    return {
+      'refresh-profile': () => emit('refresh-profile'),
+      'refresh-token': () => emit('refresh-token'),
+    };
+  }
+
+  return {
+    refresh: () => emit('refresh-devices'),
+    create: (event) => emit('create-device', event),
+    update: (event) => emit('update-device', event),
+    delete: (event) => emit('delete-device', event),
+  };
+});
 </script>
 
 <template>
   <div class="auth-panel">
     <LoadingState v-if="checkingSession" />
 
-    <ProfilePanel
-      v-else-if="authenticated"
-      :api-base-url="apiBaseUrl"
-      :loading="loading"
-      :user="user"
-      :token="token"
-      :admin-users="adminUsers"
-      :admin-devices="adminDevices"
-      :catalog-loading="catalogLoading"
-      :catalog-error="catalogError"
-      :user-devices="userDevices"
-      :device-loading="deviceLoading"
-      :device-error="deviceError"
-      :auth-header="authHeader"
-      @refresh-profile="$emit('refresh-profile')"
-      @refresh-token="$emit('refresh-token')"
-      @refresh-catalog="$emit('refresh-catalog')"
-      @refresh-devices="$emit('refresh-devices')"
-      @create-device="$emit('create-device', $event)"
-      @update-device="$emit('update-device', $event)"
-      @delete-device="$emit('delete-device', $event)"
-    />
+    <RouterView v-else-if="authenticated" v-slot="{ Component }">
+      <component :is="Component" v-bind="routedPanelProps" v-on="routedPanelListeners" />
+    </RouterView>
 
     <AuthForm
       v-else
