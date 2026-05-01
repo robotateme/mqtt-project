@@ -316,6 +316,16 @@ onBeforeUnmount(closeStream);
     </div>
 
     <div v-else class="packet-panel">
+      <div class="packet-toolbar">
+        <select v-model="selectedDeviceId" class="form-select">
+          <option value="" disabled>Выберите устройство</option>
+          <option v-for="device in devices" :key="device.id" :value="device.id">
+            {{ device.external_id }}
+          </option>
+        </select>
+        <span class="status-pill">{{ streamStatus }}</span>
+      </div>
+
       <div v-if="streamError" class="alert alert-danger">{{ streamError }}</div>
 
       <div class="table-title">
