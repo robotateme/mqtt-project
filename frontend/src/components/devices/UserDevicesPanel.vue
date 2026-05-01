@@ -316,13 +316,22 @@ onBeforeUnmount(closeStream);
     </div>
 
     <div v-else class="packet-panel">
-      <div class="packet-toolbar">
+      <div class="fullscreen-packet-toolbar">
         <select v-model="selectedDeviceId" class="form-select">
           <option value="" disabled>Выберите устройство</option>
           <option v-for="device in devices" :key="device.id" :value="device.id">
             {{ device.external_id }}
           </option>
         </select>
+        <button class="btn btn-primary" type="button" :disabled="!selectedDevice" @click="openStream">
+          Start
+        </button>
+        <button class="btn btn-outline-secondary" type="button" @click="closeStream">
+          Stop
+        </button>
+        <button class="btn btn-outline-secondary" type="button" @click="startDemo">
+          Demo
+        </button>
         <span class="status-pill">{{ streamStatus }}</span>
       </div>
 
