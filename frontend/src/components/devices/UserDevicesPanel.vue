@@ -316,62 +316,55 @@ onBeforeUnmount(closeStream);
     </div>
 
     <div v-else class="packet-panel">
-      <div class="packet-toolbar">
-        <select v-model="selectedDeviceId" class="form-select">
-          <option value="" disabled>Выберите устройство</option>
-          <option v-for="device in devices" :key="device.id" :value="device.id">
-            {{ device.external_id }}
-          </option>
-        </select>
-        <span class="status-pill">{{ streamStatus }}</span>
-      </div>
-
       <div v-if="streamError" class="alert alert-danger">{{ streamError }}</div>
 
       <div class="table-title">
         <h3>Live packets</h3>
-        <FullscreenTable title="Live packets">
-          <div class="fullscreen-packet-toolbar">
-            <select v-model="selectedDeviceId" class="form-select">
-              <option value="" disabled>Выберите устройство</option>
-              <option v-for="device in devices" :key="device.id" :value="device.id">
-                {{ device.external_id }}
-              </option>
-            </select>
-            <button class="btn btn-primary" type="button" :disabled="!selectedDevice" @click="openStream">
-              Start
-            </button>
-            <button class="btn btn-outline-secondary" type="button" @click="closeStream">
-              Stop
-            </button>
-            <button class="btn btn-outline-secondary" type="button" @click="startDemo">
-              Demo
-            </button>
-            <span class="status-pill">{{ streamStatus }}</span>
-          </div>
-          <div v-if="streamError" class="alert alert-danger">{{ streamError }}</div>
-          <table class="table catalog-table catalog-table-fullscreen align-middle">
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>Topic</th>
-                <th>Type</th>
-                <th>Payload</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(packet, index) in packets" :key="`${packet.kafka_offset}-${index}`">
-                <td>{{ packetTime(packet) }}</td>
-                <td><code>{{ packet.mqtt_topic }}</code></td>
-                <td>{{ packet.payload_type }}<span v-if="packet.demo" class="demo-mark">demo</span></td>
-                <td><code>{{ packetPayload(packet) }}</code></td>
-              </tr>
-              <tr v-if="!packets.length">
-                <td class="empty-cell" colspan="4">Пакетов пока нет</td>
-              </tr>
-            </tbody>
-          </table>
-        </FullscreenTable>
+        <div class="table-actions">
+          <span class="status-pill">{{ streamStatus }}</span>
+          <FullscreenTable title="Live packets">
+            <div class="fullscreen-packet-toolbar">
+              <select v-model="selectedDeviceId" class="form-select">
+                <option value="" disabled>Выберите устройство</option>
+                <option v-for="device in devices" :key="device.id" :value="device.id">
+                  {{ device.external_id }}
+                </option>
+              </select>
+              <button class="btn btn-primary" type="button" :disabled="!selectedDevice" @click="openStream">
+                Start
+              </button>
+              <button class="btn btn-outline-secondary" type="button" @click="closeStream">
+                Stop
+              </button>
+              <button class="btn btn-outline-secondary" type="button" @click="startDemo">
+                Demo
+              </button>
+              <span class="status-pill">{{ streamStatus }}</span>
+            </div>
+            <div v-if="streamError" class="alert alert-danger">{{ streamError }}</div>
+            <table class="table catalog-table catalog-table-fullscreen align-middle">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Topic</th>
+                  <th>Type</th>
+                  <th>Payload</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(packet, index) in packets" :key="`${packet.kafka_offset}-${index}`">
+                  <td>{{ packetTime(packet) }}</td>
+                  <td><code>{{ packet.mqtt_topic }}</code></td>
+                  <td>{{ packet.payload_type }}<span v-if="packet.demo" class="demo-mark">demo</span></td>
+                  <td><code>{{ packetPayload(packet) }}</code></td>
+                </tr>
+                <tr v-if="!packets.length">
+                  <td class="empty-cell" colspan="4">Пакетов пока нет</td>
+                </tr>
+              </tbody>
+            </table>
+          </FullscreenTable>
+        </div>
       </div>
 
       <div class="packet-sniffer">

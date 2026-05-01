@@ -590,13 +590,6 @@ input {
   gap: 14px;
 }
 
-.packet-toolbar {
-  display: grid;
-  grid-template-columns: minmax(220px, 1fr) auto;
-  align-items: center;
-  gap: 10px;
-}
-
 .fullscreen-packet-toolbar {
   display: grid;
   grid-template-columns: minmax(260px, 1fr) auto auto auto auto;
@@ -648,7 +641,6 @@ input {
   }
 
   .device-grid,
-  .packet-toolbar,
   .fullscreen-packet-toolbar {
     grid-template-columns: 1fr;
   }
