@@ -1,159 +1,182 @@
 :root[data-theme="cellular-automata-day"] {
   color-scheme: light;
-  --app-bg: #f7fbf4;
-  --app-text: #1c2b22;
-  --topbar-bg: #f9fff6;
-  --topbar-text: #1c2b22;
-  --topbar-border: #37a169;
-  --panel-bg: #ffffff;
-  --panel-border: #cfe1ce;
-  --panel-shadow: 0 16px 30px rgb(55 161 105 / 12%);
-  --muted-text: #617061;
-  --chip-bg: #e8f8e8;
-  --chip-text: #276749;
-  --switch-bg: #eaf4e8;
-  --switch-active-bg: #ffffff;
-  --switch-text: #586a56;
-  --switch-active-text: #24563c;
+  --app-bg: #f3f4f6;
+  --app-text: #111827;
+  --topbar-bg: rgb(249 250 251 / 68%);
+  --topbar-text: #111827;
+  --topbar-border: #374151;
+  --panel-bg: rgb(255 255 255 / 56%);
+  --panel-border: #c4c9d2;
+  --panel-shadow: 0 16px 30px rgb(17 24 39 / 12%);
+  --muted-text: #6b7280;
+  --chip-bg: #e5e7eb;
+  --chip-text: #111827;
+  --switch-bg: #e5e7eb;
+  --switch-active-bg: rgb(255 255 255 / 66%);
+  --switch-text: #4b5563;
+  --switch-active-text: #111827;
   --input-bg: #ffffff;
-  --input-border: #bfd4bd;
-  --input-text: #1c2b22;
-  --card-bg: #f5fbf2;
-  --card-border: #d7e6d4;
-  --code-text: #25724d;
-  --token-bg: #183224;
-  --token-text: #e9f8ef;
-  --token-label: #9ed7ad;
-  --brand-accent: #37a169;
-  --primary: #2f855a;
-  --primary-hover: #276749;
-  --secondary: #66806b;
-  --outline-text: #25543b;
-  --outline-border: #a8c8a5;
-  --outline-hover-bg: #2f855a;
+  --input-border: #9ca3af;
+  --input-text: #111827;
+  --card-bg: rgb(243 244 246 / 54%);
+  --card-border: #d1d5db;
+  --code-text: #374151;
+  --token-bg: #111827;
+  --token-text: #f9fafb;
+  --token-label: #d1d5db;
+  --brand-accent: #111827;
+  --primary: #374151;
+  --primary-hover: #111827;
+  --secondary: #6b7280;
+  --outline-text: #111827;
+  --outline-border: #9ca3af;
+  --outline-hover-bg: #111827;
   --outline-hover-text: #fff;
 }
 
 :root[data-theme="cellular-automata-day"] body {
   background:
-    radial-gradient(circle at 18% 18%, rgb(55 161 105 / 14%), transparent 26%),
-    radial-gradient(circle at 86% 12%, rgb(180 217 117 / 16%), transparent 28%),
-    radial-gradient(circle at 50% 110%, rgb(67 160 118 / 12%), transparent 36%),
-    linear-gradient(180deg, #fbfff7 0%, #edf8ed 100%);
+    linear-gradient(90deg, rgb(17 24 39 / 8%) 1px, transparent 1px),
+    linear-gradient(rgb(17 24 39 / 8%) 1px, transparent 1px),
+    radial-gradient(circle at 18% 18%, rgb(17 24 39 / 10%), transparent 26%),
+    radial-gradient(circle at 86% 12%, rgb(107 114 128 / 14%), transparent 28%),
+    radial-gradient(circle at 50% 110%, rgb(75 85 99 / 12%), transparent 36%),
+    linear-gradient(180deg, #ffffff 0%, #e5e7eb 100%);
+  background-size: 24px 24px, 24px 24px, auto, auto, auto, auto;
 }
 
 :root[data-theme="cellular-automata-day"] body::before {
-  opacity: 0.62;
-  background-image:
-    linear-gradient(90deg, rgb(47 133 90 / 6%) 1px, transparent 1px),
-    linear-gradient(rgb(47 133 90 / 6%) 1px, transparent 1px),
-    linear-gradient(rgb(47 133 90 / 28%) 0 0),
-    linear-gradient(rgb(47 133 90 / 28%) 0 0),
-    linear-gradient(rgb(47 133 90 / 28%) 0 0),
-    linear-gradient(rgb(47 133 90 / 28%) 0 0),
-    linear-gradient(rgb(47 133 90 / 28%) 0 0),
-    linear-gradient(rgb(180 217 117 / 26%) 0 0),
-    linear-gradient(rgb(180 217 117 / 26%) 0 0),
-    linear-gradient(rgb(180 217 117 / 26%) 0 0),
-    linear-gradient(rgb(180 217 117 / 26%) 0 0),
-    linear-gradient(rgb(180 217 117 / 26%) 0 0),
-    linear-gradient(rgb(180 217 117 / 26%) 0 0),
-    linear-gradient(rgb(37 114 77 / 20%) 0 0),
-    linear-gradient(rgb(37 114 77 / 20%) 0 0),
-    linear-gradient(rgb(37 114 77 / 20%) 0 0),
-    linear-gradient(rgb(37 114 77 / 20%) 0 0),
-    linear-gradient(rgb(37 114 77 / 20%) 0 0),
-    linear-gradient(rgb(37 114 77 / 20%) 0 0);
-  background-position:
-    0 0,
-    0 0,
-    12vw 18vh,
-    calc(12vw + 18px) calc(18vh + 18px),
-    calc(12vw + 36px) calc(18vh - 18px),
-    calc(12vw + 36px) 18vh,
-    calc(12vw + 36px) calc(18vh + 18px),
-    72vw 16vh,
-    calc(72vw + 18px) 16vh,
-    calc(72vw + 36px) 16vh,
-    calc(72vw + 18px) calc(16vh + 18px),
-    calc(72vw + 36px) calc(16vh + 18px),
-    calc(72vw + 54px) calc(16vh + 18px),
-    18vw 72vh,
-    calc(18vw + 18px) 72vh,
-    18vw calc(72vh + 18px),
-    calc(18vw + 54px) calc(72vh + 36px),
-    calc(18vw + 36px) calc(72vh + 54px),
-    calc(18vw + 54px) calc(72vh + 54px);
-  background-repeat:
-    repeat,
-    repeat,
-    no-repeat,
-    no-repeat,
-    no-repeat,
-    no-repeat,
-    no-repeat,
-    no-repeat,
-    no-repeat,
-    no-repeat,
-    no-repeat,
-    no-repeat,
-    no-repeat,
-    no-repeat,
-    no-repeat,
-    no-repeat,
-    no-repeat,
-    no-repeat,
-    no-repeat;
-  background-size:
-    32px 32px,
-    32px 32px,
-    14px 14px,
-    14px 14px,
-    14px 14px,
-    14px 14px,
-    14px 14px,
-    14px 14px,
-    14px 14px,
-    14px 14px,
-    14px 14px,
-    14px 14px,
-    14px 14px,
-    14px 14px,
-    14px 14px,
-    14px 14px,
-    14px 14px,
-    14px 14px,
-    14px 14px;
+  inset: auto;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  opacity: 0.86;
+  background: rgb(17 24 39 / 40%);
+  border-radius: 2px;
+  box-shadow:
+    10vw 12vh 0 rgb(17 24 39 / 40%),
+    calc(10vw + 18px) calc(12vh + 18px) 0 rgb(17 24 39 / 40%),
+    calc(10vw + 36px) calc(12vh - 18px) 0 rgb(17 24 39 / 40%),
+    calc(10vw + 36px) 12vh 0 rgb(17 24 39 / 40%),
+    calc(10vw + 36px) calc(12vh + 18px) 0 rgb(17 24 39 / 40%),
+    24vw 28vh 0 rgb(31 41 55 / 36%),
+    calc(24vw + 18px) 28vh 0 rgb(31 41 55 / 36%),
+    calc(24vw + 36px) 28vh 0 rgb(31 41 55 / 36%),
+    calc(24vw + 18px) calc(28vh + 18px) 0 rgb(31 41 55 / 36%),
+    calc(24vw + 36px) calc(28vh + 18px) 0 rgb(31 41 55 / 36%),
+    calc(24vw + 54px) calc(28vh + 18px) 0 rgb(31 41 55 / 36%),
+    76vw 16vh 0 rgb(17 24 39 / 38%),
+    calc(76vw + 18px) 16vh 0 rgb(17 24 39 / 38%),
+    76vw calc(16vh + 18px) 0 rgb(17 24 39 / 38%),
+    calc(76vw + 54px) calc(16vh + 36px) 0 rgb(17 24 39 / 38%),
+    calc(76vw + 36px) calc(16vh + 54px) 0 rgb(17 24 39 / 38%),
+    calc(76vw + 54px) calc(16vh + 54px) 0 rgb(17 24 39 / 38%),
+    13vw 58vh 0 rgb(55 65 81 / 34%),
+    calc(13vw + 18px) 58vh 0 rgb(55 65 81 / 34%),
+    calc(13vw + 36px) 58vh 0 rgb(55 65 81 / 34%),
+    calc(13vw + 54px) 58vh 0 rgb(55 65 81 / 34%),
+    calc(13vw + 18px) calc(58vh + 18px) 0 rgb(55 65 81 / 34%),
+    calc(13vw + 36px) calc(58vh + 18px) 0 rgb(55 65 81 / 34%),
+    calc(13vw + 72px) calc(58vh + 18px) 0 rgb(55 65 81 / 34%),
+    70vw 64vh 0 rgb(31 41 55 / 38%),
+    calc(70vw + 18px) 64vh 0 rgb(31 41 55 / 38%),
+    calc(70vw + 36px) 64vh 0 rgb(31 41 55 / 38%),
+    calc(70vw + 18px) calc(64vh - 18px) 0 rgb(31 41 55 / 38%),
+    calc(70vw + 18px) calc(64vh + 18px) 0 rgb(31 41 55 / 38%),
+    42vw 78vh 0 rgb(75 85 99 / 32%),
+    calc(42vw + 18px) calc(78vh + 18px) 0 rgb(75 85 99 / 32%),
+    calc(42vw + 36px) calc(78vh + 18px) 0 rgb(75 85 99 / 32%),
+    calc(42vw + 36px) calc(78vh + 36px) 0 rgb(75 85 99 / 32%),
+    5vw 36vh 0 rgb(17 24 39 / 36%),
+    calc(5vw + 14px) 36vh 0 rgb(17 24 39 / 36%),
+    calc(5vw + 28px) 36vh 0 rgb(17 24 39 / 36%),
+    calc(5vw + 14px) calc(36vh + 14px) 0 rgb(17 24 39 / 36%),
+    50vw 24vh 0 rgb(55 65 81 / 32%),
+    calc(50vw + 14px) calc(24vh + 14px) 0 rgb(55 65 81 / 32%),
+    calc(50vw + 28px) calc(24vh - 14px) 0 rgb(55 65 81 / 32%),
+    calc(50vw + 28px) 24vh 0 rgb(55 65 81 / 32%),
+    calc(50vw + 28px) calc(24vh + 14px) 0 rgb(55 65 81 / 32%),
+    84vw 58vh 0 rgb(17 24 39 / 34%),
+    calc(84vw + 14px) 58vh 0 rgb(17 24 39 / 34%),
+    84vw calc(58vh + 14px) 0 rgb(17 24 39 / 34%),
+    calc(84vw + 14px) calc(58vh + 14px) 0 rgb(17 24 39 / 34%),
+    8vw 82vh 0 rgb(31 41 55 / 32%),
+    calc(8vw + 14px) 82vh 0 rgb(31 41 55 / 32%),
+    calc(8vw + 28px) 82vh 0 rgb(31 41 55 / 32%),
+    calc(8vw + 14px) calc(82vh - 14px) 0 rgb(31 41 55 / 32%),
+    calc(8vw + 14px) calc(82vh + 14px) 0 rgb(31 41 55 / 32%),
+    92vw 76vh 0 rgb(55 65 81 / 30%),
+    calc(92vw + 14px) calc(76vh + 14px) 0 rgb(55 65 81 / 30%),
+    calc(92vw + 28px) calc(76vh + 14px) 0 rgb(55 65 81 / 30%),
+    calc(92vw + 28px) calc(76vh + 28px) 0 rgb(55 65 81 / 30%);
   animation: conway-generations 18s steps(6, end) infinite;
 }
 
 :root[data-theme="cellular-automata-day"] body::after {
-  opacity: 0.36;
-  background-image:
-    linear-gradient(rgb(47 133 90 / 18%) 0 0),
-    linear-gradient(rgb(47 133 90 / 18%) 0 0),
-    linear-gradient(rgb(47 133 90 / 18%) 0 0),
-    linear-gradient(rgb(47 133 90 / 18%) 0 0),
-    linear-gradient(rgb(47 133 90 / 18%) 0 0),
-    linear-gradient(rgb(180 217 117 / 20%) 0 0),
-    linear-gradient(rgb(180 217 117 / 20%) 0 0),
-    linear-gradient(rgb(180 217 117 / 20%) 0 0),
-    linear-gradient(rgb(180 217 117 / 20%) 0 0),
-    linear-gradient(rgb(180 217 117 / 20%) 0 0);
-  background-position:
-    58vw 62vh,
-    calc(58vw + 18px) 62vh,
-    calc(58vw + 36px) 62vh,
-    calc(58vw + 18px) calc(62vh + 18px),
-    calc(58vw + 18px) calc(62vh - 18px),
-    38vw 36vh,
-    calc(38vw + 18px) 36vh,
-    calc(38vw + 18px) calc(36vh + 18px),
-    calc(38vw + 36px) calc(36vh + 18px),
-    calc(38vw + 36px) calc(36vh + 36px);
-  background-repeat: no-repeat;
-  background-size: 14px 14px;
+  inset: auto;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  opacity: 0.78;
+  background: rgb(107 114 128 / 34%);
+  border-radius: 2px;
+  box-shadow:
+    55vw 12vh 0 rgb(107 114 128 / 34%),
+    calc(55vw + 18px) 12vh 0 rgb(107 114 128 / 34%),
+    calc(55vw + 36px) 12vh 0 rgb(107 114 128 / 34%),
+    calc(55vw + 18px) calc(12vh + 18px) 0 rgb(107 114 128 / 34%),
+    calc(55vw + 36px) calc(12vh + 18px) 0 rgb(107 114 128 / 34%),
+    calc(55vw + 54px) calc(12vh + 18px) 0 rgb(107 114 128 / 34%),
+    38vw 34vh 0 rgb(75 85 99 / 32%),
+    calc(38vw + 18px) 34vh 0 rgb(75 85 99 / 32%),
+    calc(38vw + 18px) calc(34vh + 18px) 0 rgb(75 85 99 / 32%),
+    calc(38vw + 36px) calc(34vh + 18px) 0 rgb(75 85 99 / 32%),
+    calc(38vw + 36px) calc(34vh + 36px) 0 rgb(75 85 99 / 32%),
+    86vw 42vh 0 rgb(31 41 55 / 30%),
+    calc(86vw + 18px) 42vh 0 rgb(31 41 55 / 30%),
+    86vw calc(42vh + 18px) 0 rgb(31 41 55 / 30%),
+    calc(86vw + 18px) calc(42vh + 18px) 0 rgb(31 41 55 / 30%),
+    30vw 72vh 0 rgb(55 65 81 / 32%),
+    calc(30vw + 18px) calc(72vh + 18px) 0 rgb(55 65 81 / 32%),
+    calc(30vw + 36px) calc(72vh - 18px) 0 rgb(55 65 81 / 32%),
+    calc(30vw + 36px) 72vh 0 rgb(55 65 81 / 32%),
+    calc(30vw + 36px) calc(72vh + 18px) 0 rgb(55 65 81 / 32%),
+    60vw 82vh 0 rgb(75 85 99 / 28%),
+    calc(60vw + 18px) 82vh 0 rgb(75 85 99 / 28%),
+    calc(60vw + 36px) 82vh 0 rgb(75 85 99 / 28%),
+    calc(60vw + 18px) calc(82vh - 18px) 0 rgb(75 85 99 / 28%),
+    calc(60vw + 18px) calc(82vh + 18px) 0 rgb(75 85 99 / 28%),
+    18vw 18vh 0 rgb(107 114 128 / 30%),
+    calc(18vw + 14px) 18vh 0 rgb(107 114 128 / 30%),
+    calc(18vw + 28px) 18vh 0 rgb(107 114 128 / 30%),
+    calc(18vw + 14px) calc(18vh + 14px) 0 rgb(107 114 128 / 30%),
+    calc(18vw + 28px) calc(18vh + 14px) 0 rgb(107 114 128 / 30%),
+    48vw 54vh 0 rgb(31 41 55 / 28%),
+    calc(48vw + 14px) 54vh 0 rgb(31 41 55 / 28%),
+    48vw calc(54vh + 14px) 0 rgb(31 41 55 / 28%),
+    calc(48vw + 42px) calc(54vh + 28px) 0 rgb(31 41 55 / 28%),
+    calc(48vw + 28px) calc(54vh + 42px) 0 rgb(31 41 55 / 28%),
+    74vw 36vh 0 rgb(75 85 99 / 26%),
+    calc(74vw + 14px) calc(36vh + 14px) 0 rgb(75 85 99 / 26%),
+    calc(74vw + 28px) calc(36vh + 14px) 0 rgb(75 85 99 / 26%),
+    calc(74vw + 28px) calc(36vh + 28px) 0 rgb(75 85 99 / 26%),
+    6vw 70vh 0 rgb(17 24 39 / 28%),
+    calc(6vw + 14px) 70vh 0 rgb(17 24 39 / 28%),
+    calc(6vw + 28px) 70vh 0 rgb(17 24 39 / 28%),
+    calc(6vw + 14px) calc(70vh - 14px) 0 rgb(17 24 39 / 28%),
+    calc(6vw + 14px) calc(70vh + 14px) 0 rgb(17 24 39 / 28%),
+    92vw 22vh 0 rgb(55 65 81 / 26%),
+    calc(92vw + 14px) calc(22vh + 14px) 0 rgb(55 65 81 / 26%),
+    calc(92vw + 28px) calc(22vh + 14px) 0 rgb(55 65 81 / 26%),
+    calc(92vw + 28px) calc(22vh + 28px) 0 rgb(55 65 81 / 26%);
   animation: conway-gliders 26s steps(8, end) infinite;
+}
+
+:root[data-theme="cellular-automata-day"] .auth-panel,
+:root[data-theme="cellular-automata-day"] .info-panel {
+  backdrop-filter: blur(10px);
 }
 
 :root[data-theme="cellular-automata-day"] .brand::before {

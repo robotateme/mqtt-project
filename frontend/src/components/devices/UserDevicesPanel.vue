@@ -97,6 +97,10 @@ function packetPayload(packet) {
   return packet.payload_json || packet.payload || '';
 }
 
+function clearPackets() {
+  packets.value = [];
+}
+
 function stopDemo() {
   if (demoTimer.value) {
     window.clearInterval(demoTimer.value);
@@ -144,7 +148,6 @@ function pushDemoPacket() {
 
 function startDemo() {
   closeStream();
-  packets.value = [];
   streamError.value = '';
   streamStatus.value = 'demo';
   pushDemoPacket();
@@ -153,7 +156,6 @@ function startDemo() {
 
 async function openStream() {
   closeStream();
-  packets.value = [];
   streamError.value = '';
 
   if (!selectedDevice.value) {
@@ -332,6 +334,9 @@ onBeforeUnmount(closeStream);
         <button class="btn btn-outline-secondary" type="button" @click="startDemo">
           Demo
         </button>
+        <button class="btn btn-outline-secondary" type="button" :disabled="!packets.length" @click="clearPackets">
+          Clear
+        </button>
         <span class="status-pill">{{ streamStatus }}</span>
       </div>
 
@@ -357,6 +362,9 @@ onBeforeUnmount(closeStream);
               </button>
               <button class="btn btn-outline-secondary" type="button" @click="startDemo">
                 Demo
+              </button>
+              <button class="btn btn-outline-secondary" type="button" :disabled="!packets.length" @click="clearPackets">
+                Clear
               </button>
               <span class="status-pill">{{ streamStatus }}</span>
             </div>
