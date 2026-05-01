@@ -158,34 +158,28 @@ Devices -> Mosquitto cluster(s) -> bus instance(s) -> Redis Streams outbox
 
 declare(strict_types=1);
 
-namespace App\Application\Device\Query;
+namespace Core\Application\Devices\Query;
 
-use App\Application\Device\Port\DeviceReadRepository;
-use App\Application\Shared\Criteria\Criteria;
-use App\Application\Shared\Criteria\Filter;
-use App\Application\Shared\Criteria\Sort;
+use Core\Application\Persistence\SearchCriteria\Units\FilterType;
+use Core\Application\Persistence\SearchCriteria\Units\Order;
+use Core\Application\Persistence\Units\Criteria;
+use Core\Application\Persistence\Units\Filter;
+use Core\Application\Persistence\Units\OrderType;
 
 final readonly class ListUserDevicesHandler
 {
-    public function __construct(
-        private DeviceReadRepository $devices,
-    ) {
-    }
-
-    public function __invoke(ListUserDevicesQuery $query): DeviceList
+    public function criteria(ListUserDevicesQuery $query): Criteria
     {
-        $criteria = new Criteria(
+        return new Criteria(
             filters: [
-                Filter::equals('user_id', $query->userId),
-                Filter::equals('status', $query->status),
+                new Filter('user_id', FilterType::EQUAL, $query->userId),
+                new Filter('name', FilterType::LIKE, $query->nameMask),
             ],
-            sort: [
-                Sort::desc('created_at'),
+            orders: [
+                new Order('id', OrderType::DESC),
             ],
             limit: $query->limit,
         );
-
-        return $this->devices->matching($criteria);
     }
 }
 ```
@@ -197,27 +191,23 @@ Eloquent-specific применение Criteria остается в Infrastructu
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Persistence\Eloquent;
+namespace Core\Infrastructure\PostgreSql;
 
-use App\Application\Device\Port\DeviceReadRepository;
-use App\Application\Device\Query\DeviceList;
-use App\Application\Shared\Criteria\Criteria;
-use App\Infrastructure\Persistence\Eloquent\Model\Device;
+use App\Models\Device;
+use Core\Application\Persistence\SearchCriteria\Contracts\Criteria;
+use Core\Infrastructure\Persistence\SQL\EloquentCriteriaContext;
+use Illuminate\Database\Eloquent\Collection;
 
-final readonly class EloquentDeviceReadRepository implements DeviceReadRepository
+final readonly class EloquentDeviceReadRepository
 {
-    public function __construct(
-        private EloquentCriteriaApplier $criteriaApplier,
-    ) {
-    }
-
-    public function matching(Criteria $criteria): DeviceList
+    /**
+     * @return Collection<int, Device>
+     */
+    public function matching(Criteria $criteria): Collection
     {
-        $query = Device::query();
+        $query = new EloquentCriteriaContext(Device::query())->query($criteria);
 
-        $this->criteriaApplier->apply($query, $criteria);
-
-        return DeviceList::fromPaginator($query->paginate($criteria->limit));
+        return $query->get();
     }
 }
 ```

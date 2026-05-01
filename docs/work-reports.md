@@ -6,7 +6,7 @@
 в диапазоне `0.5-4.0` ч и зависит от объема diff: мелкие правки - `0.5`, средние
 - `1.0-2.0`, крупные - `3.0-4.0`.
 
-Итого: `132.0` ч.
+Итого: `132.5` ч.
 
 | # | Изменение из git-history | Оценка, ч |
 | --- | --- | ---: |
@@ -77,6 +77,7 @@
 | 65 | Продублировал фильтр live packets в fullscreen | 0.5 |
 | 66 | Описал Criteria как архитектурный инвариант | 0.5 |
 | 67 | Добавил пример использования Criteria в RFC | 0.5 |
+| 68 | Исправил пример Criteria по Eloquent context | 0.5 |
 
 ## Выполненные работы
 
@@ -212,3 +213,5 @@
   запросов из Application-слоя, запрет протечки Eloquent и тонкие Repository.
 - Добавил в RFC пример использования Criteria из Application handler и
   применения Criteria в инфраструктурном Eloquent-адаптере.
+- Исправил RFC-пример Criteria по реальному API `EloquentCriteriaContext`,
+  `Filter`, `Order`, `FilterType` и `OrderType`.
