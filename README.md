@@ -151,6 +151,77 @@ Devices -> Mosquitto cluster(s) -> bus instance(s) -> Redis Streams outbox
 - В PHP-коде глобальные классы импортируются через `use`, без leading slash в
   теле класса.
 
+Пример стандартного использования Criteria:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Application\Device\Query;
+
+use App\Application\Device\Port\DeviceReadRepository;
+use App\Application\Shared\Criteria\Criteria;
+use App\Application\Shared\Criteria\Filter;
+use App\Application\Shared\Criteria\Sort;
+
+final readonly class ListUserDevicesHandler
+{
+    public function __construct(
+        private DeviceReadRepository $devices,
+    ) {
+    }
+
+    public function __invoke(ListUserDevicesQuery $query): DeviceList
+    {
+        $criteria = new Criteria(
+            filters: [
+                Filter::equals('user_id', $query->userId),
+                Filter::equals('status', $query->status),
+            ],
+            sort: [
+                Sort::desc('created_at'),
+            ],
+            limit: $query->limit,
+        );
+
+        return $this->devices->matching($criteria);
+    }
+}
+```
+
+Eloquent-specific применение Criteria остается в Infrastructure:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Infrastructure\Persistence\Eloquent;
+
+use App\Application\Device\Port\DeviceReadRepository;
+use App\Application\Device\Query\DeviceList;
+use App\Application\Shared\Criteria\Criteria;
+use App\Infrastructure\Persistence\Eloquent\Model\Device;
+
+final readonly class EloquentDeviceReadRepository implements DeviceReadRepository
+{
+    public function __construct(
+        private EloquentCriteriaApplier $criteriaApplier,
+    ) {
+    }
+
+    public function matching(Criteria $criteria): DeviceList
+    {
+        $query = Device::query();
+
+        $this->criteriaApplier->apply($query, $criteria);
+
+        return DeviceList::fromPaginator($query->paginate($criteria->limit));
+    }
+}
+```
+
 Изменения, которые нарушают эти инварианты, оформляются отдельным RFC-разделом
 в README перед реализацией.
 
