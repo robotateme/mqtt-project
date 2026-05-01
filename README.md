@@ -139,6 +139,10 @@ Devices -> Mosquitto cluster(s) -> bus instance(s) -> Redis Streams outbox
   value - исходный MQTT payload.
 - `core` владеет HTTP API, пользователями, устройствами, интерпретацией
   пакетов, записью в ClickHouse и realtime-публикацией в Mercure.
+- Запросы из Application-слоя в инфраструктурные read-модели описываются через
+  Criteria/value-объекты. Eloquent `Builder`, модели и relation API не
+  протекают в Application-код, а Repository остаются тонкими адаптерами без
+  собственной бизнес-логики и скрытых query-сценариев.
 - Laradock/Docker описывает локальную разработку и не является частью стендовой
   runtime-архитектуры.
 - PHP-код ведется в `strict_types`; классы закрываются через `final`, а
