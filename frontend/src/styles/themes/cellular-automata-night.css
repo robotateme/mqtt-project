@@ -48,22 +48,145 @@
 }
 
 :root[data-theme="cellular-automata-night"] body::before {
-  opacity: 0.62;
+  opacity: 0.74;
   background-image:
     linear-gradient(90deg, rgb(110 231 183 / 8%) 1px, transparent 1px),
     linear-gradient(rgb(110 231 183 / 8%) 1px, transparent 1px),
-    repeating-conic-gradient(from 0deg, transparent 0 25%, rgb(110 231 183 / 32%) 0 50%, transparent 0 75%, rgb(16 185 129 / 22%) 0 100%);
-  background-position: 0 0, 0 0, 0 0;
-  background-size: 32px 32px, 32px 32px, 96px 96px;
+    linear-gradient(rgb(110 231 183 / 42%) 0 0),
+    linear-gradient(rgb(110 231 183 / 42%) 0 0),
+    linear-gradient(rgb(110 231 183 / 42%) 0 0),
+    linear-gradient(rgb(110 231 183 / 42%) 0 0),
+    linear-gradient(rgb(110 231 183 / 42%) 0 0),
+    linear-gradient(rgb(16 185 129 / 34%) 0 0),
+    linear-gradient(rgb(16 185 129 / 34%) 0 0),
+    linear-gradient(rgb(16 185 129 / 34%) 0 0),
+    linear-gradient(rgb(16 185 129 / 34%) 0 0),
+    linear-gradient(rgb(16 185 129 / 34%) 0 0),
+    linear-gradient(rgb(16 185 129 / 34%) 0 0),
+    linear-gradient(rgb(74 222 128 / 28%) 0 0),
+    linear-gradient(rgb(74 222 128 / 28%) 0 0),
+    linear-gradient(rgb(74 222 128 / 28%) 0 0),
+    linear-gradient(rgb(74 222 128 / 28%) 0 0),
+    linear-gradient(rgb(74 222 128 / 28%) 0 0),
+    linear-gradient(rgb(74 222 128 / 28%) 0 0),
+    linear-gradient(rgb(74 222 128 / 28%) 0 0);
+  background-position:
+    0 0,
+    0 0,
+    14vw 24vh,
+    calc(14vw + 18px) 24vh,
+    calc(14vw + 36px) 24vh,
+    14vw calc(24vh + 18px),
+    calc(14vw + 36px) calc(24vh + 18px),
+    76vw 22vh,
+    calc(76vw + 18px) calc(22vh + 18px),
+    calc(76vw + 36px) calc(22vh - 18px),
+    calc(76vw + 36px) 22vh,
+    calc(76vw + 36px) calc(22vh + 18px),
+    calc(76vw + 54px) 22vh,
+    24vw 76vh,
+    calc(24vw + 18px) 76vh,
+    calc(24vw + 36px) 76vh,
+    calc(24vw + 54px) 76vh,
+    calc(24vw + 18px) calc(76vh + 18px),
+    calc(24vw + 36px) calc(76vh + 18px),
+    calc(24vw + 72px) calc(76vh + 18px);
+  background-repeat:
+    repeat,
+    repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat;
+  background-size:
+    32px 32px,
+    32px 32px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px;
   filter: drop-shadow(0 0 5px rgb(110 231 183 / 24%));
-  animation: rule28-rows 5.5s steps(5, end) infinite;
+  animation: rule28-rows 16s steps(6, end) infinite;
 }
 
 :root[data-theme="cellular-automata-night"] body::after {
-  opacity: 0.32;
+  opacity: 0.42;
   background:
     linear-gradient(180deg, rgb(2 6 5 / 0%) 0%, rgb(2 6 5 / 55%) 72%, rgb(2 6 5 / 82%) 100%),
+    linear-gradient(rgb(110 231 183 / 30%) 0 0),
+    linear-gradient(rgb(110 231 183 / 30%) 0 0),
+    linear-gradient(rgb(110 231 183 / 30%) 0 0),
+    linear-gradient(rgb(110 231 183 / 30%) 0 0),
+    linear-gradient(rgb(110 231 183 / 30%) 0 0),
+    linear-gradient(rgb(16 185 129 / 28%) 0 0),
+    linear-gradient(rgb(16 185 129 / 28%) 0 0),
+    linear-gradient(rgb(16 185 129 / 28%) 0 0),
+    linear-gradient(rgb(16 185 129 / 28%) 0 0),
     radial-gradient(circle at 52% 62%, rgb(110 231 183 / 10%), transparent 34%);
+  background-position:
+    0 0,
+    54vw 56vh,
+    calc(54vw + 18px) 56vh,
+    54vw calc(56vh + 18px),
+    calc(54vw + 54px) calc(56vh + 36px),
+    calc(54vw + 36px) calc(56vh + 54px),
+    38vw 18vh,
+    calc(38vw + 18px) calc(18vh + 18px),
+    calc(38vw + 36px) calc(18vh + 18px),
+    calc(38vw + 18px) calc(18vh + 36px),
+    0 0;
+  background-repeat:
+    repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    repeat;
+  background-size:
+    auto,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    auto;
   animation: rule28-scan 14s ease-in-out infinite;
 }
 
@@ -73,15 +196,15 @@
 
 @keyframes rule28-rows {
   0% {
-    background-position: 0 0, 0 0, 0 0;
+    transform: translate3d(0, 0, 0);
   }
 
   50% {
-    background-position: 0 0, 0 0, 32px 32px;
+    transform: translate3d(12px, -6px, 0);
   }
 
   100% {
-    background-position: 0 0, 0 0, 96px 96px;
+    transform: translate3d(0, 0, 0);
   }
 }
 

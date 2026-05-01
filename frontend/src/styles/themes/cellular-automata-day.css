@@ -43,23 +43,117 @@
 }
 
 :root[data-theme="cellular-automata-day"] body::before {
-  opacity: 0.54;
+  opacity: 0.62;
   background-image:
-    linear-gradient(90deg, rgb(47 133 90 / 7%) 1px, transparent 1px),
-    linear-gradient(rgb(47 133 90 / 7%) 1px, transparent 1px),
-    repeating-conic-gradient(from 0deg, rgb(47 133 90 / 18%) 0 25%, transparent 0 50%, rgb(180 217 117 / 14%) 0 75%, transparent 0 100%);
-  background-position: 0 0, 0 0, 0 0;
-  background-size: 32px 32px, 32px 32px, 96px 96px;
-  animation: conway-generations 6s steps(4, end) infinite;
+    linear-gradient(90deg, rgb(47 133 90 / 6%) 1px, transparent 1px),
+    linear-gradient(rgb(47 133 90 / 6%) 1px, transparent 1px),
+    linear-gradient(rgb(47 133 90 / 28%) 0 0),
+    linear-gradient(rgb(47 133 90 / 28%) 0 0),
+    linear-gradient(rgb(47 133 90 / 28%) 0 0),
+    linear-gradient(rgb(47 133 90 / 28%) 0 0),
+    linear-gradient(rgb(47 133 90 / 28%) 0 0),
+    linear-gradient(rgb(180 217 117 / 26%) 0 0),
+    linear-gradient(rgb(180 217 117 / 26%) 0 0),
+    linear-gradient(rgb(180 217 117 / 26%) 0 0),
+    linear-gradient(rgb(180 217 117 / 26%) 0 0),
+    linear-gradient(rgb(180 217 117 / 26%) 0 0),
+    linear-gradient(rgb(180 217 117 / 26%) 0 0),
+    linear-gradient(rgb(37 114 77 / 20%) 0 0),
+    linear-gradient(rgb(37 114 77 / 20%) 0 0),
+    linear-gradient(rgb(37 114 77 / 20%) 0 0),
+    linear-gradient(rgb(37 114 77 / 20%) 0 0),
+    linear-gradient(rgb(37 114 77 / 20%) 0 0),
+    linear-gradient(rgb(37 114 77 / 20%) 0 0);
+  background-position:
+    0 0,
+    0 0,
+    12vw 18vh,
+    calc(12vw + 18px) calc(18vh + 18px),
+    calc(12vw + 36px) calc(18vh - 18px),
+    calc(12vw + 36px) 18vh,
+    calc(12vw + 36px) calc(18vh + 18px),
+    72vw 16vh,
+    calc(72vw + 18px) 16vh,
+    calc(72vw + 36px) 16vh,
+    calc(72vw + 18px) calc(16vh + 18px),
+    calc(72vw + 36px) calc(16vh + 18px),
+    calc(72vw + 54px) calc(16vh + 18px),
+    18vw 72vh,
+    calc(18vw + 18px) 72vh,
+    18vw calc(72vh + 18px),
+    calc(18vw + 54px) calc(72vh + 36px),
+    calc(18vw + 36px) calc(72vh + 54px),
+    calc(18vw + 54px) calc(72vh + 54px);
+  background-repeat:
+    repeat,
+    repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    no-repeat;
+  background-size:
+    32px 32px,
+    32px 32px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px,
+    14px 14px;
+  animation: conway-generations 18s steps(6, end) infinite;
 }
 
 :root[data-theme="cellular-automata-day"] body::after {
-  opacity: 0.24;
+  opacity: 0.36;
   background-image:
-    repeating-conic-gradient(from 0deg, transparent 0 25%, rgb(47 133 90 / 18%) 0 50%, transparent 0 100%);
-  background-position: 48px 48px;
-  background-size: 160px 160px;
-  animation: conway-gliders 24s steps(8, end) infinite;
+    linear-gradient(rgb(47 133 90 / 18%) 0 0),
+    linear-gradient(rgb(47 133 90 / 18%) 0 0),
+    linear-gradient(rgb(47 133 90 / 18%) 0 0),
+    linear-gradient(rgb(47 133 90 / 18%) 0 0),
+    linear-gradient(rgb(47 133 90 / 18%) 0 0),
+    linear-gradient(rgb(180 217 117 / 20%) 0 0),
+    linear-gradient(rgb(180 217 117 / 20%) 0 0),
+    linear-gradient(rgb(180 217 117 / 20%) 0 0),
+    linear-gradient(rgb(180 217 117 / 20%) 0 0),
+    linear-gradient(rgb(180 217 117 / 20%) 0 0);
+  background-position:
+    58vw 62vh,
+    calc(58vw + 18px) 62vh,
+    calc(58vw + 36px) 62vh,
+    calc(58vw + 18px) calc(62vh + 18px),
+    calc(58vw + 18px) calc(62vh - 18px),
+    38vw 36vh,
+    calc(38vw + 18px) 36vh,
+    calc(38vw + 18px) calc(36vh + 18px),
+    calc(38vw + 36px) calc(36vh + 18px),
+    calc(38vw + 36px) calc(36vh + 36px);
+  background-repeat: no-repeat;
+  background-size: 14px 14px;
+  animation: conway-gliders 26s steps(8, end) infinite;
 }
 
 :root[data-theme="cellular-automata-day"] .brand::before {
@@ -68,33 +162,29 @@
 
 @keyframes conway-generations {
   0% {
-    background-position: 0 0, 0 0, 0 0;
+    transform: translate3d(0, 0, 0);
   }
 
-  25% {
-    background-position: 0 0, 0 0, 32px 0;
+  33% {
+    transform: translate3d(10px, 0, 0);
   }
 
-  50% {
-    background-position: 0 0, 0 0, 32px 32px;
-  }
-
-  75% {
-    background-position: 0 0, 0 0, 0 32px;
+  66% {
+    transform: translate3d(10px, 10px, 0);
   }
 
   100% {
-    background-position: 0 0, 0 0, 0 0;
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes conway-gliders {
   from {
-    background-position: 48px 48px;
+    transform: translate3d(0, 0, 0);
   }
 
   to {
-    background-position: 208px 208px;
+    transform: translate3d(64px, 64px, 0);
   }
 }
 
