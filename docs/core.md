@@ -50,6 +50,108 @@ Seeder создает пользователей с паролем `password123`
 make core-clickhouse
 ```
 
+## Историческая аналитика JSON payload
+
+Таблица ClickHouse `mqtt_packets` хранит исходный MQTT payload в колонке
+`payload`, а JSON-представление - в `payload_json` как строку. Это позволяет
+начать историческую аналитику без миграции схемы: пользователь выбирает период,
+Kafka/MQTT topics, устройства и поля payload, а API строит безопасные
+ClickHouse-запросы через JSON-функции.
+
+Для будущего экрана статистики пакетных данных базовый flow такой:
+
+1. Ограничить выборку периодом, topic scope и device scope.
+2. Выполнить discovery доступных полей payload через `JSONExtractKeys`.
+3. Определить типы выбранных полей через `JSONType`.
+4. Для числовых полей строить time-series агрегаты через `JSONExtractFloat`.
+5. Для строковых/boolean полей строить распределения значений через
+   `JSONExtractString`, `JSONExtractBool` или обобщенный `JSONExtract`.
+
+Пример discovery полей:
+
+```sql
+SELECT
+    arrayJoin(JSONExtractKeys(payload_json)) AS field,
+    count() AS packets_count,
+    uniqExact(device_identifier) AS devices_count,
+    uniqExact(mqtt_topic) AS mqtt_topics_count
+FROM mqtt_packets
+WHERE
+    payload_type = 'json'
+    AND ingested_at >= now() - INTERVAL 1 HOUR
+GROUP BY field
+ORDER BY packets_count DESC;
+```
+
+Пример проверки типов поля:
+
+```sql
+SELECT
+    JSONType(payload_json, 'temperature') AS field_type,
+    count() AS packets_count
+FROM mqtt_packets
+WHERE
+    payload_type = 'json'
+    AND JSONHas(payload_json, 'temperature')
+GROUP BY field_type;
+```
+
+Пример числовой статистики по выбранному полю:
+
+```sql
+SELECT
+    toStartOfMinute(ingested_at) AS bucket,
+    avg(JSONExtractFloat(payload_json, 'temperature')) AS avg_value,
+    min(JSONExtractFloat(payload_json, 'temperature')) AS min_value,
+    max(JSONExtractFloat(payload_json, 'temperature')) AS max_value,
+    count() AS packets_count
+FROM mqtt_packets
+WHERE
+    payload_type = 'json'
+    AND JSONHas(payload_json, 'temperature')
+GROUP BY bucket
+ORDER BY bucket;
+```
+
+Пример распределения строковых значений:
+
+```sql
+SELECT
+    JSONExtractString(payload_json, 'status') AS status,
+    count() AS packets_count
+FROM mqtt_packets
+WHERE
+    payload_type = 'json'
+    AND JSONHas(payload_json, 'status')
+GROUP BY status
+ORDER BY packets_count DESC;
+```
+
+Для вложенных payload-полей путь передается отдельными аргументами:
+
+```sql
+SELECT JSONExtractFloat(payload_json, 'metrics', 'temperature')
+FROM mqtt_packets
+WHERE JSONHas(payload_json, 'metrics', 'temperature');
+```
+
+Пользователь не должен вводить SQL или произвольные JSON paths. Frontend
+показывает только обнаруженные поля, а backend валидирует field path и сам
+выбирает подходящую JSON-функцию. Если одни и те же payload-структуры приходят
+через разные Kafka topics из-за нагрузки, аналитика должна фильтровать по
+`kafka_topic`, `mqtt_topic`, `device_identifier` и набору payload-полей, а не
+предполагать один topic на один тип данных.
+
+Если статистика по нескольким полям станет горячей, можно добавить
+materialized views: например, отдельную таблицу агрегатов по
+`field_name`, `device_identifier`, `mqtt_topic` и time bucket. До этого
+достаточно использовать `payload_json String` и функции `JSONExtract*`.
+
+Справка ClickHouse: JSON-функции описаны в официальной документации
+<https://clickhouse.com/docs/sql-reference/functions/json-functions>. Для новых
+инсталляций можно отдельно оценить нативный тип `JSON`, но текущая схема со
+строковым `payload_json` остается совместимой и проще для первого MVP.
+
 Запуск Kafka consumer:
 
 ```bash
