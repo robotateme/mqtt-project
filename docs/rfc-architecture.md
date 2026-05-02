@@ -150,6 +150,61 @@ DDD/CQRS/Hexagonal Clean Architecture являются подготовкой к
   сервисами. После физического разделения каждый сервис владеет своим storage,
   а синхронизация идет через события, API или read models.
 
+## Saga orchestration
+
+При разделении `core` на микросервисы сценарии, которые меняют состояние
+нескольких bounded contexts, выполняются через Saga. Распределенные транзакции
+между сервисами не используются: каждый сервис фиксирует только собственное
+состояние, а согласованность достигается через orchestration, события,
+идемпотентность и compensating actions.
+
+Базовое правило:
+
+- Если бизнес-сценарий затрагивает один bounded context, он остается локальным
+  command handler-ом этого сервиса.
+- Если сценарий затрагивает несколько сервисов и требует явного порядка шагов,
+  timeout-ов, retry и компенсаций, используется orchestrated Saga.
+- Если сценарий является простым fan-out уведомлением без общего результата,
+  допустима event choreography, но только после фиксации contracts и failure
+  semantics в RFC.
+
+Saga orchestrator является application service отдельного bounded context или
+отдельного process manager-а. Он не содержит доменные правила чужих сервисов:
+его ответственность - state machine сценария, correlation id, порядок команд,
+обработка ответов, retry policy, timeout policy и запуск compensating commands.
+
+Требования к Saga-контрактам:
+
+- Каждый шаг Saga имеет command, success event и failure event с версионируемой
+  payload schema.
+- Все команды и обработчики событий идемпотентны по `correlation_id`,
+  `causation_id` и business key.
+- Каждый внешний side effect публикуется через transactional outbox или
+  эквивалентный reliable messaging pattern.
+- Для каждого шага заранее описывается компенсация или явное решение, почему
+  компенсация невозможна и требуется ручное вмешательство.
+- Saga state хранится отдельно от read models и доступен для диагностики:
+  текущий шаг, попытки, последняя ошибка, deadline, completed/compensated
+  steps.
+- Observability обязательна: logs, metrics и traces должны включать
+  `saga_name`, `saga_id`, `correlation_id`, `step`, `status`.
+
+Примеры будущих Saga-сценариев:
+
+- Регистрация устройства: Device Registry создает устройство, Identity/Auth
+  проверяет ownership/tenant, Realtime Notifications публикует событие о новом
+  устройстве.
+- Активация правил интерпретации: Packet Interpretation валидирует rule set,
+  Telemetry Storage готовит read model/материализацию, Realtime Notifications
+  сообщает frontend о готовности.
+- Отключение tenant/site: Device Registry переводит устройства в inactive,
+  Packet Ingestion прекращает прием команд для сегмента, Telemetry Analytics
+  закрывает активные задачи агрегации.
+
+Saga не должна становиться общим сервисом бизнес-логики. Если orchestrator
+начинает принимать решения за несколько доменов, границы bounded contexts
+пересматриваются в отдельном RFC.
+
 Порядок выделения сервиса:
 
 1. Зафиксировать bounded context и ubiquitous language в RFC.
