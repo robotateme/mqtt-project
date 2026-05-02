@@ -8,6 +8,8 @@ repositories. The source of truth stays in this repository:
 - `README.md`
 - `docs/*.md`
 - `frontend/README.md`
+- `scripts/README.md`
+- `docs/architecture.puml`
 - `docs/assets/*`
 
 Generate or update the local wiki checkout:

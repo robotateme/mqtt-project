@@ -37,7 +37,9 @@ override them explicitly.
 
 The bus exposes Prometheus metrics at `GET /metrics`. Metrics are stored in
 Redis by default so the CLI worker and HTTP endpoint can share counters across
-processes.
+processes. In Laradock, Prometheus scrapes the endpoint through nginx at the
+internal target `nginx:8082/metrics`; Grafana is preconfigured with the
+`Prometheus` datasource.
 
 Useful metric families:
 
@@ -50,6 +52,20 @@ Useful metric families:
 - `bus_outbox_pending`
 - `bus_worker_up`
 - `bus_mqtt_processing_seconds`
+
+Useful PromQL queries for packet pipeline load:
+
+```promql
+rate(bus_mqtt_messages_total[1m])
+rate(bus_outbox_enqueues_total[1m])
+rate(bus_outbox_published_total[1m])
+rate(bus_kafka_published_total[1m])
+bus_outbox_pending
+bus_kafka_out_queue
+rate(bus_kafka_backpressure_total[1m])
+histogram_quantile(0.95, rate(bus_mqtt_processing_seconds_bucket[5m]))
+bus_worker_up
+```
 
 ## Code layout
 

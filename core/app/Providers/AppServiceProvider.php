@@ -7,12 +7,16 @@ namespace App\Providers;
 use App\Support\ClickHouse\ClickHouseClient;
 use App\Support\Mercure\MercureClient;
 use App\Support\Packets\PacketInterpreter;
-use Core\Application\Devices\DeviceRepository;
 use Core\Application\Auth\JwtTokenService;
+use Core\Application\Bus\EventBus;
+use Core\Application\Bus\QueueBus;
+use Core\Application\Devices\DeviceRepository;
 use Core\Application\Packets\PacketStoragePort;
 use Core\Application\Users\UserRepository;
 use Core\Infrastructure\ClickHouse\ClickHousePacketStorage;
 use Core\Infrastructure\Jwt\FirebaseJwtTokenService;
+use Core\Infrastructure\Laravel\LaravelEventBus;
+use Core\Infrastructure\Laravel\LaravelQueueBus;
 use Core\Infrastructure\PostgreSql\EloquentDeviceRepository;
 use Core\Infrastructure\PostgreSql\EloquentUserRepository;
 use Illuminate\Http\Client\Factory as HttpFactory;
@@ -58,6 +62,8 @@ final class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(UserRepository::class, EloquentUserRepository::class);
         $this->app->bind(DeviceRepository::class, EloquentDeviceRepository::class);
+        $this->app->bind(EventBus::class, LaravelEventBus::class);
+        $this->app->bind(QueueBus::class, LaravelQueueBus::class);
 
         $this->app->singleton(JwtTokenService::class, function (): JwtTokenService {
             return new FirebaseJwtTokenService(

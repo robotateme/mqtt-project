@@ -12,6 +12,7 @@ pages=(
   "README.md:Home.md"
   "docs/architecture.md:Architecture.md"
   "docs/infrastructure.md:Infrastructure.md"
+  "docs/rfc-architecture.md:RFC-Architecture.md"
   "docs/makefile.md:Makefile.md"
   "docs/bus.md:Bus.md"
   "docs/core.md:Core.md"
@@ -19,6 +20,7 @@ pages=(
   "docs/validation.md:Validation.md"
   "docs/notes.md:Notes.md"
   "docs/work-reports.md:Work-reports.md"
+  "scripts/README.md:Scripts.md"
 )
 
 if [ ! -d "$WIKI_DIR/.git" ]; then
@@ -53,11 +55,38 @@ done
 if [ -d "$ROOT_DIR/docs/assets" ]; then
   cp -R "$ROOT_DIR/docs/assets/." "$WIKI_DIR/assets/"
 fi
+cp "$ROOT_DIR/docs/architecture.puml" "$WIKI_DIR/architecture.puml"
+
+rewrite_links() {
+  local file="$1"
+
+  perl -0 -pi \
+    -e 's#\]\(docs/architecture\.md\)#](Architecture)#g;' \
+    -e 's#\]\(docs/infrastructure\.md\)#](Infrastructure)#g;' \
+    -e 's#\]\(docs/rfc-architecture\.md\)#](RFC-Architecture)#g;' \
+    -e 's#\]\(rfc-architecture\.md\)#](RFC-Architecture)#g;' \
+    -e 's#\]\(docs/makefile\.md\)#](Makefile)#g;' \
+    -e 's#\]\(docs/bus\.md\)#](Bus)#g;' \
+    -e 's#\]\(docs/core\.md\)#](Core)#g;' \
+    -e 's#\]\(frontend/README\.md\)#](Frontend)#g;' \
+    -e 's#\]\(docs/validation\.md\)#](Validation)#g;' \
+    -e 's#\]\(docs/notes\.md\)#](Notes)#g;' \
+    -e 's#\]\(docs/work-reports\.md\)#](Work-reports)#g;' \
+    -e 's#\]\(scripts/README\.md\)#](Scripts)#g;' \
+    -e 's#\]\(docs/assets/#](assets/#g;' \
+    "$file"
+}
+
+find "$WIKI_DIR" -maxdepth 1 -type f -name '*.md' -print0 |
+  while IFS= read -r -d '' file; do
+    rewrite_links "$file"
+  done
 
 cat > "$WIKI_DIR/_Sidebar.md" <<'EOF'
 - [Home](Home)
 - [Architecture](Architecture)
 - [Infrastructure](Infrastructure)
+- [RFC Architecture](RFC-Architecture)
 - [Makefile](Makefile)
 - [Bus](Bus)
 - [Core](Core)
@@ -65,6 +94,7 @@ cat > "$WIKI_DIR/_Sidebar.md" <<'EOF'
 - [Validation](Validation)
 - [Notes](Notes)
 - [Work reports](Work-reports)
+- [Scripts](Scripts)
 EOF
 
 git -C "$WIKI_DIR" add -A

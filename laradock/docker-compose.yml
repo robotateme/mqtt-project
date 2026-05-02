@@ -48,6 +48,14 @@ volumes:
     driver: ${VOLUMES_DRIVER}
   graylog:
     driver: ${VOLUMES_DRIVER}
+  grafana:
+    driver: ${VOLUMES_DRIVER}
+  loki:
+    driver: ${VOLUMES_DRIVER}
+  promtail:
+    driver: ${VOLUMES_DRIVER}
+  prometheus:
+    driver: ${VOLUMES_DRIVER}
   docker-in-docker:
     driver: ${VOLUMES_DRIVER}
   react:
@@ -210,6 +218,7 @@ services:
         - DOCKER_TLS_CERTDIR=/certs
         - DOCKER_CERT_PATH=/certs/client
         - CHOKIDAR_USEPOLLING=true
+        - REDIS_PASSWORD=${REDIS_PASSWORD}
       networks:
         - frontend
         - backend
@@ -330,6 +339,7 @@ services:
         - DOCKER_CERT_PATH=/certs/client
         - FAKETIME=${PHP_FPM_FAKETIME}
         - TZ=${WORKSPACE_TIMEZONE}
+        - REDIS_PASSWORD=${REDIS_PASSWORD}
 
       depends_on:
         - workspace
@@ -400,6 +410,7 @@ services:
         - mosquitto
       environment:
           - TZ=${WORKSPACE_TIMEZONE}
+          - REDIS_PASSWORD=${REDIS_PASSWORD}
       extra_hosts:
         - "dockerhost:${DOCKER_HOST_IP}"
       networks:
@@ -1353,9 +1364,65 @@ services:
       build:
         context: ./grafana
       volumes:
-        - ${DATA_PATH_HOST}/grafana:/var/lib/grafana
+        - grafana:/var/lib/grafana
+        - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      environment:
+        - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+        - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+        - GF_USERS_ALLOW_SIGN_UP=false
+        - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+        - GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES=false
+        - GF_PLUGINS_PREINSTALL_DISABLED=true
       ports:
         - "${GRAFANA_PORT}:3000"
+      depends_on:
+        - loki
+        - prometheus
+      networks:
+        - backend
+
+### Prometheus ############################################
+    prometheus:
+      restart: always
+      image: prom/prometheus:v2.55.1
+      command:
+        - --config.file=/etc/prometheus/prometheus.yml
+        - --storage.tsdb.path=/prometheus
+        - --web.enable-lifecycle
+      volumes:
+        - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+        - prometheus:/prometheus
+      ports:
+        - "${PROMETHEUS_PORT:-9090}:9090"
+      depends_on:
+        - nginx
+      networks:
+        - backend
+
+### Loki ###################################################
+    loki:
+      restart: always
+      image: grafana/loki:2.9.8
+      command: -config.file=/etc/loki/local-config.yaml
+      volumes:
+        - ./loki/local-config.yaml:/etc/loki/local-config.yaml:ro
+        - loki:/loki
+      ports:
+        - "${LOKI_PORT:-3100}:3100"
+      networks:
+        - backend
+
+### Promtail ###############################################
+    promtail:
+      restart: always
+      image: grafana/promtail:2.9.8
+      command: -config.file=/etc/promtail/config.yaml
+      volumes:
+        - ./promtail/config.yaml:/etc/promtail/config.yaml:ro
+        - promtail:/tmp
+        - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      depends_on:
+        - loki
       networks:
         - backend
 

@@ -12,9 +12,14 @@
 - `redis`
 - `mercure`
 - `clickhouse`
+- `prometheus`
+- `loki`
+- `promtail`
+- `grafana`
 
 `mosquitto` и `bus` в локальном Laradock представлены одним экземпляром для
-разработки. Масштабирование стенда описано в RFC-разделе корневого README.
+разработки. Масштабирование стенда описано в
+[RFC: сохранение архитектуры](rfc-architecture.md).
 
 Redis используется не только для Laravel queues/cache, но и как outbox для
 `bus`.
@@ -68,6 +73,9 @@ directory`, сначала проверьте владельца и права `
 | ClickHouse HTTP | `8123` |
 | ClickHouse native | `9000` |
 | Mosquitto WebSocket | `9001` |
+| Grafana HTTP | `3002` |
+| Prometheus HTTP | `9090` |
+| Loki HTTP | `3100` |
 
 HTTP endpoints доступны через `Host` header:
 
@@ -95,6 +103,64 @@ curl -H 'Host: frontend.localhost' http://localhost/
 
 ```bash
 make core-migrate
+```
+
+## Наблюдаемость
+
+Локальный Laradock поднимает Grafana, Prometheus, Loki и Promtail вместе с
+основным стеком. Grafana автоматически получает datasources `Prometheus` и
+`Loki`.
+
+Prometheus скрейпит:
+
+- `prometheus:9090` - собственные runtime-метрики Prometheus.
+- `nginx:8082/metrics` - Prometheus-метрики `bus` через внутренний nginx
+  listener. Этот порт не публикуется на хост и нужен только контейнерам внутри
+  Docker-сети.
+
+Откройте `http://localhost:3002`, войдите как `admin` / `admin` и используйте
+Explore с datasource `Prometheus` для нагрузки на пайплайн пакетов.
+
+Базовые PromQL-запросы:
+
+```promql
+rate(bus_mqtt_messages_total[1m])
+rate(bus_outbox_enqueues_total[1m])
+rate(bus_outbox_published_total[1m])
+rate(bus_kafka_published_total[1m])
+bus_outbox_pending
+bus_kafka_out_queue
+rate(bus_kafka_backpressure_total[1m])
+histogram_quantile(0.95, rate(bus_mqtt_processing_seconds_bucket[5m]))
+bus_worker_up
+```
+
+Назначение метрик:
+
+| Метрика | Что показывает |
+| --- | --- |
+| `bus_mqtt_messages_total` | входной поток MQTT-пакетов |
+| `bus_outbox_enqueues_total` | запись пакетов в Redis Streams outbox |
+| `bus_outbox_published_total` | успешная отправка outbox-сообщений дальше |
+| `bus_kafka_published_total` | produce calls в Kafka |
+| `bus_kafka_backpressure_total` | события backpressure producer-а |
+| `bus_kafka_out_queue` | текущая очередь Kafka producer-а |
+| `bus_outbox_pending` | pending-сообщения в Redis outbox |
+| `bus_mqtt_processing_seconds` | latency обработки MQTT-пакета |
+| `bus_worker_up` | состояние worker-а |
+
+## Логи
+
+Promtail читает Docker JSON logs контейнеров из `/var/lib/docker/containers` и
+отправляет их в Loki.
+
+Откройте `http://localhost:3002`, войдите как `admin` / `admin` и используйте
+Explore с datasource `Loki`. Полезные фильтры:
+
+```logql
+{job="docker"}
+{job="docker"} |= "php-worker"
+{job="docker"} |= "kafka"
 ```
 
 Стендовая архитектурная диаграмма не включает Docker/Laradock и IDE-клиенты:

@@ -1,0 +1,64 @@
+{
+  "name": "device-demo",
+  "packets": [
+    {
+      "topic": "devices/demo-001/connect",
+      "payload": {
+        "event": "connected",
+        "device_id": "demo-001",
+        "firmware": "1.4.2",
+        "protocol": "mqtt",
+        "boot_id": "boot-2026-05-03-001"
+      }
+    },
+    {
+      "topic": "devices/demo-001/telemetry",
+      "payload": {
+        "ts": "2026-05-03T12:00:00+03:00",
+        "temperature": 22.8,
+        "humidity": 41,
+        "voltage": 3.71,
+        "rssi": -58
+      }
+    },
+    {
+      "topic": "devices/demo-001/state",
+      "payload": {
+        "relay": "on",
+        "mode": "auto",
+        "uptime_seconds": 184,
+        "battery_percent": 86
+      }
+    },
+    {
+      "topic": "devices/demo-001/raw",
+      "payload": "BOOT demo-001 firmware=1.4.2 hw=rev-a rssi=-58"
+    },
+    {
+      "topic": "devices/demo-001/csv",
+      "payload": "ts,current,voltage\n2026-05-03T12:00:01+03:00,0.42,3.71"
+    },
+    {
+      "topic": "devices/demo-001/alarm",
+      "payload": {
+        "code": "temperature_high",
+        "severity": "warning",
+        "value": 78.4,
+        "threshold": 75
+      }
+    },
+    {
+      "topic": "devices/demo-001/binary",
+      "encoding": "base64",
+      "payload": "AQIDBAU="
+    },
+    {
+      "topic": "devices/demo-001/disconnect",
+      "payload": {
+        "event": "disconnected",
+        "device_id": "demo-001",
+        "reason": "scenario_finished"
+      }
+    }
+  ]
+}

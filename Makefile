@@ -3,7 +3,7 @@ SHELL := /usr/bin/env bash
 DC := docker compose -f laradock/docker-compose.yml --env-file laradock/.env
 DEPLOY_ENV_FILE ?= deploy/.env
 DEPLOY_DC := docker compose -f deploy/docker-compose.yml --env-file $(DEPLOY_ENV_FILE)
-SERVICES := nginx php-fpm php-worker workspace postgres redis mercure clickhouse zookeeper kafka mosquitto
+SERVICES := nginx php-fpm php-worker workspace postgres redis mercure clickhouse zookeeper kafka mosquitto prometheus loki promtail grafana
 CORE := /var/www/core
 BUS := /var/www/bus
 FRONTEND := /var/www/frontend
@@ -16,6 +16,7 @@ SAFE_GIT := git config --global --add safe.directory /var/www >/dev/null 2>&1 ||
 	core-test core-phpstan core-psalm core-analyse core-health \
 	core-horizon core-horizon-status core-telescope-prune \
 	bus-install bus-consume bus-test bus-phpstan bus-psalm bus-analyse bus-health bus-ready \
+	mqtt-test-publish \
 	frontend-install frontend-build frontend-health \
 	deploy-config deploy-build deploy-up deploy-down deploy-logs deploy-migrate deploy-health \
 	analyse check
@@ -56,6 +57,8 @@ help:
 	@printf '  \033[32m%-22s\033[0m %s\n' 'bus-analyse' 'Run bus static analysis'
 	@printf '  \033[32m%-22s\033[0m %s\n' 'bus-health' 'Check bus liveness endpoint'
 	@printf '  \033[32m%-22s\033[0m %s\n\n' 'bus-ready' 'Check bus worker readiness endpoint'
+	@printf '\033[1;35m%s\033[0m\n' 'MQTT test environment'
+	@printf '  \033[32m%-22s\033[0m %s\n\n' 'mqtt-test-publish' 'Publish scenario packets to Mosquitto'
 	@printf '\033[1;35m%s\033[0m\n' 'Frontend'
 	@printf '  \033[32m%-22s\033[0m %s\n' 'frontend-install' 'NPM clean install for Vue frontend'
 	@printf '  \033[32m%-22s\033[0m %s\n' 'frontend-build' 'Build Vue frontend assets'
@@ -165,6 +168,9 @@ bus-health:
 bus-ready:
 	curl -fsS -H 'Host: bus.localhost' http://localhost/ready
 	@printf '\n'
+
+mqtt-test-publish:
+	$(DC) exec workspace bash -lc 'cd /var/www && php mqtt-test-env/bin/publish.php $(args)'
 
 frontend-install:
 	$(DC) exec -T workspace bash -lc '$(SAFE_GIT); cd $(FRONTEND) && npm ci'
