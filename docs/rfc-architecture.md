@@ -83,6 +83,82 @@ Hexagonal Clean Architecture:
   `mockery/mockery` как инфраструктурной dev-зависимости Laravel feature-тестов
   не является разрешением использовать Mockery в unit-тестах.
 
+## Почему нативный PHPUnit
+
+Unit-тесты проверяют внутренние правила `Domain`, orchestration в `Application`
+и thin adapters без запуска лишнего framework/runtime слоя. Для этого
+достаточно стандартного PHPUnit API.
+
+Решение использовать только нативный PHPUnit в unit-тестах принято по следующим
+причинам:
+
+- PHPUnit уже является обязательным test runner-ом проекта; отдельный mocking
+  DSL добавляет второй язык тестов без необходимости.
+- `createMock()`, `createStub()` и `getMockBuilder()` типизируются понятнее для
+  PHPStan/Psalm, чем fluent DSL внешних mock-библиотек.
+- Тесты остаются ближе к PHP-контрактам: interface, method signature, return
+  value и assertion видны напрямую.
+- Меньше скрытой lifecycle-логики: unit-тесту не нужен глобальный teardown
+  внешнего mock container-а.
+- Unit-тесты должны поощрять простые порты и value objects. Если сценарий
+  требует сложного mocking DSL, это сигнал проверить дизайн зависимости или
+  вынести поведение за application-port.
+- Feature-тесты Laravel могут транзитивно или явно требовать `mockery/mockery`
+  из-за framework tooling. Это инфраструктурная деталь тестового рантайма, а не
+  разрешение использовать Mockery в unit-тестах проекта.
+
+## Будущая декомпозиция core
+
+`core` остается модульным монолитом до тех пор, пока стоимость сетевых
+контрактов, отдельного деплоя и operational overhead не станет ниже стоимости
+совместного процесса. Декомпозиция в микросервисы допускается только по
+bounded contexts, а не по техническим слоям.
+
+Потенциальные границы сервисов:
+
+- Identity/Auth - пользователи, роли, JWT, access policy.
+- Device Registry - устройства, ownership, tenant/site-привязка.
+- Packet Ingestion - прием Kafka-событий от `bus`, нормализация и базовая
+  валидация MQTT payload.
+- Packet Interpretation - правила интерпретации payload, сопоставление полей,
+  доменные события по смыслу пакета.
+- Telemetry Storage/Analytics - запись и чтение ClickHouse, историческая
+  аналитика payload.
+- Realtime Notifications - Mercure/WebSocket-публикация и подписки frontend.
+
+DDD/CQRS/Hexagonal Clean Architecture являются подготовкой к этой
+декомпозиции:
+
+- Bounded context сначала оформляется внутри `core` как отдельный namespace с
+  собственными command/query models, handlers, domain rules и ports.
+- Межконтекстное взаимодействие внутри монолита идет через application-порты,
+  команды, запросы и события, а не через прямой доступ к Eloquent models другого
+  контекста.
+- Command side и query side не смешиваются. При выделении микросервиса command
+  contracts становятся HTTP/Kafka commands, query contracts - отдельными read
+  API или materialized views.
+- Ports становятся service contracts. Infrastructure adapters меняются с
+  in-process Laravel/Eloquent/Queue/Event на HTTP clients, Kafka producers,
+  consumers или dedicated storage adapters без изменения Application-кода.
+- Domain events, которые сегодня проходят через `EventBus`, должны иметь
+  стабильные имена, payload schema и versioning, если становятся integration
+  events между сервисами.
+- Каждый будущий сервис сохраняет hexagonal структуру: inbound adapters
+  принимают HTTP/CLI/Kafka, Application выполняет use cases, Domain содержит
+  правила, Infrastructure реализует outbound ports.
+- Общая база данных не является допустимой интеграцией между выделенными
+  сервисами. После физического разделения каждый сервис владеет своим storage,
+  а синхронизация идет через события, API или read models.
+
+Порядок выделения сервиса:
+
+1. Зафиксировать bounded context и ubiquitous language в RFC.
+2. Убрать прямые зависимости Application-кода от чужих infrastructure classes.
+3. Описать commands, queries, events и failure semantics.
+4. Добавить контрактные тесты на текущий in-process adapter.
+5. Заменить adapter на сетевой или messaging transport.
+6. Только после этого отделять runtime, deploy pipeline и storage.
+
 ## Criteria
 
 Пример стандартного использования Criteria:
