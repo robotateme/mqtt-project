@@ -283,6 +283,43 @@ Unit-тесты пишутся на нативном PHPUnit: assertions, test d
 
 ## Criteria
 
+Criteria - это application-level контракт для описания read-side запросов без
+протечки ORM и storage-specific API в `Application`. Он нужен там, где query
+handler должен выразить фильтры, сортировку и лимит, но не должен знать, будет
+ли запрос выполнен через Eloquent, ClickHouse, HTTP read API или материализованную
+view будущего микросервиса.
+
+Решение:
+
+- Контракт `Core\Application\Persistence\SearchCriteria\Contracts\Criteria` и
+  value objects `Criteria`, `Filter`, `Order`, `FilterType`, `OrderType`
+  находятся в `Application`.
+- `Application` создает Criteria из command/query DTO и передает его в порт
+  чтения или repository interface.
+- `Infrastructure` применяет Criteria к конкретному backend-у. Для PostgreSQL
+  это делает `Core\Infrastructure\Persistence\SQL\EloquentCriteriaContext`.
+- Eloquent `Builder`, модели, relation API, raw SQL и storage-specific
+  operators не передаются в `Application` и не возвращаются из него.
+- Repository/read adapter остается тонким: он маппит Criteria на backend query
+  и возвращает результат, но не прячет внутри себя отдельные бизнес-сценарии.
+- Набор операторов Criteria намеренно ограничен. Новый оператор добавляется
+  только если он нужен use case-у и может быть реализован одинаково понятно для
+  текущего и будущих read adapters.
+- Поля Criteria должны быть частью публичного read contract. Если внешнее имя
+  поля отличается от колонки backend-а, маппинг делается в Infrastructure, а не
+  в handler-е.
+
+Связь с CQRS:
+
+- Criteria относится к query side и не используется для command-сценариев,
+  изменяющих состояние.
+- Query handler отвечает за перевод пользовательского запроса в Criteria и
+  вызов read-порта.
+- Read adapter отвечает за эффективное выполнение Criteria на своем storage.
+- При выделении микросервиса Criteria может остаться in-process контрактом
+  внутри сервиса или стать частью query API/read model contract. В обоих
+  случаях `Application` не должен зависеть от Eloquent.
+
 Пример стандартного использования Criteria:
 
 ```php

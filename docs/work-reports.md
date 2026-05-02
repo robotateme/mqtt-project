@@ -6,7 +6,7 @@
 в диапазоне `0.5-4.0` ч и зависит от объема diff: мелкие правки - `0.5`, средние
 - `1.0-2.0`, крупные - `3.0-4.0`.
 
-Итого: `143.5` ч.
+Итого: `144.0` ч.
 
 | # | Изменение из git-history | Оценка, ч |
 | --- | --- | ---: |
@@ -89,6 +89,7 @@
 | 77 | Добавил Saga orchestration в RFC | 0.5 |
 | 78 | Описал event-driven alerts в RFC | 0.5 |
 | 79 | Упорядочил архитектурный RFC | 0.5 |
+| 80 | Описал решение Criteria в RFC | 0.5 |
 
 ## Выполненные работы
 
@@ -263,3 +264,6 @@
 - Упорядочил архитектурный RFC: перестроил разделы вокруг runtime-решения,
   packet pipeline, alerts, Saga orchestration, декомпозиции `core`, unit-тестов
   и Criteria.
+- Описал в RFC решение по Criteria: application-level контракт для read-side
+  запросов, запрет протечки Eloquent в Application, thin infrastructure adapters
+  и связь с CQRS/read models.
