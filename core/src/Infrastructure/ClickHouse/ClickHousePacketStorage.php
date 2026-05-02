@@ -6,6 +6,7 @@ namespace Core\Infrastructure\ClickHouse;
 
 use App\Support\ClickHouse\ClickHouseClient;
 use Core\Application\Packets\PacketStoragePort;
+use JsonException;
 
 final readonly class ClickHousePacketStorage implements PacketStoragePort
 {
@@ -15,6 +16,9 @@ final readonly class ClickHousePacketStorage implements PacketStoragePort
     ) {
     }
 
+    /**
+     * @throws JsonException
+     */
     public function store(array $packets): void
     {
         $this->client->insertJsonEachRow($this->table, $packets);

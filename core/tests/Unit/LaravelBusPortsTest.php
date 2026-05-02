@@ -8,7 +8,6 @@ use Core\Infrastructure\Laravel\LaravelEventBus;
 use Core\Infrastructure\Laravel\LaravelQueueBus;
 use Illuminate\Contracts\Bus\Dispatcher as BusDispatcher;
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
-use Mockery;
 use Tests\TestCase;
 
 /**
@@ -18,31 +17,27 @@ use Tests\TestCase;
  */
 final class LaravelBusPortsTest extends TestCase
 {
-    protected function tearDown(): void
-    {
-        Mockery::close();
-
-        parent::tearDown();
-    }
-
     public function test_event_bus_dispatches_through_laravel_events(): void
     {
         $event = new class {
         };
-        $dispatcher = Mockery::mock(EventDispatcher::class);
-        $dispatcher->shouldReceive('dispatch')->once()->with($event)->andReturn([]);
+        $dispatcher = $this->createMock(EventDispatcher::class);
+        $dispatcher->expects(self::once())
+            ->method('dispatch')
+            ->with($event);
 
         new LaravelEventBus($dispatcher)->dispatch($event);
-
-        self::addToAssertionCount(1);
     }
 
     public function test_queue_bus_dispatches_through_laravel_bus(): void
     {
         $job = new class {
         };
-        $dispatcher = Mockery::mock(BusDispatcher::class);
-        $dispatcher->shouldReceive('dispatch')->once()->with($job)->andReturn('job-id');
+        $dispatcher = $this->createMock(BusDispatcher::class);
+        $dispatcher->expects(self::once())
+            ->method('dispatch')
+            ->with($job)
+            ->willReturn('job-id');
 
         self::assertSame('job-id', new LaravelQueueBus($dispatcher)->dispatch($job));
     }
@@ -51,8 +46,11 @@ final class LaravelBusPortsTest extends TestCase
     {
         $job = new class {
         };
-        $dispatcher = Mockery::mock(BusDispatcher::class);
-        $dispatcher->shouldReceive('dispatchSync')->once()->with($job)->andReturn('done');
+        $dispatcher = $this->createMock(BusDispatcher::class);
+        $dispatcher->expects(self::once())
+            ->method('dispatchSync')
+            ->with($job)
+            ->willReturn('done');
 
         self::assertSame('done', new LaravelQueueBus($dispatcher)->dispatchSync($job));
     }
