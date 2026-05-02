@@ -150,6 +150,61 @@ DDD/CQRS/Hexagonal Clean Architecture являются подготовкой к
   сервисами. После физического разделения каждый сервис владеет своим storage,
   а синхронизация идет через события, API или read models.
 
+## Event-driven packet scenarios
+
+Обработка MQTT-пакетов строится как event-driven pipeline. Исходный packet
+event от `bus` остается техническим integration event с неизменным контрактом:
+Kafka key - MQTT topic, Kafka value - исходный MQTT payload. Бизнес-смысл
+появляется позже, в bounded context `Packet Interpretation`.
+
+Базовый поток:
+
+```text
+bus -> Kafka mqtt.events -> Packet Ingestion -> PacketReceived
+    -> Packet Interpretation -> Domain events
+    -> Alerting/Notifications/Analytics/Realtime subscribers
+```
+
+Правила:
+
+- `Packet Ingestion` отвечает за прием, idempotency, нормализацию envelope и
+  базовую техническую валидацию.
+- `Packet Interpretation` применяет пользовательские/системные правила к
+  payload и публикует доменные события: `TemperatureThresholdExceeded`,
+  `DeviceStateChanged`, `PayloadFieldDiscovered`, `TelemetryAnomalyDetected`.
+- События должны иметь стабильное имя, версию schema, `event_id`,
+  `correlation_id`, `causation_id`, device id, tenant/site и timestamp.
+- Подписчики не читают чужие базы напрямую. Они получают событие, обращаются к
+  собственным read models или используют публичный query/API контракт другого
+  bounded context.
+- Повторная доставка события считается нормой. Все handlers обязаны быть
+  идемпотентными по `event_id` или business key.
+- Fan-out в несколько каналов выполняется через отдельные subscribers/adapters,
+  а не через один handler с жестко зашитыми интеграциями.
+
+Пример alert-сценария превышения температуры:
+
+```text
+Temperature packet
+  -> PacketReceived
+  -> TemperatureThresholdExceeded
+  -> AlertRequested
+  -> SMSNotificationRequested
+  -> TelegramNotificationRequested
+  -> DiscordNotificationRequested
+  -> NotificationDelivered / NotificationFailed
+```
+
+SMS, Telegram, Discord, email, push и другие внешние сервисы являются outbound
+adapters bounded context `Notifications` или отдельного `Alerting` context.
+Application-код публикует команды/события уровня `SendAlertNotification`, а
+конкретный transport выбирается policy/routing rule-ом: severity, tenant,
+device group, user preferences, quiet hours, escalation policy.
+
+Alert fan-out может быть простой choreography, если достаточно независимой
+доставки в каналы. Если требуется общий результат, порядок шагов, escalation,
+acknowledgement, timeout или компенсация, сценарий оформляется как Saga.
+
 ## Saga orchestration
 
 При разделении `core` на микросервисы сценарии, которые меняют состояние
@@ -200,6 +255,10 @@ Saga orchestrator является application service отдельного boun
 - Отключение tenant/site: Device Registry переводит устройства в inactive,
   Packet Ingestion прекращает прием команд для сегмента, Telemetry Analytics
   закрывает активные задачи агрегации.
+- Превышение температуры: Packet Interpretation публикует
+  `TemperatureThresholdExceeded`, Alerting создает alert incident, Notifications
+  отправляет SMS/Telegram/Discord, Realtime Notifications обновляет frontend,
+  escalation запускается, если alert не подтвержден за заданный timeout.
 
 Saga не должна становиться общим сервисом бизнес-логики. Если orchestrator
 начинает принимать решения за несколько доменов, границы bounded contexts

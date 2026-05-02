@@ -6,7 +6,7 @@
 в диапазоне `0.5-4.0` ч и зависит от объема diff: мелкие правки - `0.5`, средние
 - `1.0-2.0`, крупные - `3.0-4.0`.
 
-Итого: `142.5` ч.
+Итого: `143.0` ч.
 
 | # | Изменение из git-history | Оценка, ч |
 | --- | --- | ---: |
@@ -87,6 +87,7 @@
 | 75 | Закрепил PHPUnit для unit-тестов | 0.5 |
 | 76 | Обосновал PHPUnit и декомпозицию core | 1.0 |
 | 77 | Добавил Saga orchestration в RFC | 0.5 |
+| 78 | Описал event-driven alerts в RFC | 0.5 |
 
 ## Выполненные работы
 
@@ -255,3 +256,6 @@
 - Добавил в RFC правила Saga orchestration для будущего разделения `core` на
   микросервисы: orchestrator, idempotency, compensating actions, outbox и
   observability.
+- Добавил в RFC event-driven сценарии обработки packet events: интерпретацию
+  payload, доменные события, alert fan-out в SMS/Telegram/Discord и связь с
+  Saga для escalation, timeout и подтверждений.
