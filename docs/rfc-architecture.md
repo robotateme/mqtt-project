@@ -77,6 +77,11 @@ Hexagonal Clean Architecture:
   конфликтует с framework extension points.
 - В PHP-коде глобальные классы импортируются через `use`, без leading slash в
   теле класса.
+- Unit-тесты пишутся на нативном PHPUnit: assertions, test doubles,
+  `createMock()`, `createStub()` и `getMockBuilder()`. Mockery, Prophecy и
+  другие внешние mocking DSL не используются в unit-тестах проекта. Наличие
+  `mockery/mockery` как инфраструктурной dev-зависимости Laravel feature-тестов
+  не является разрешением использовать Mockery в unit-тестах.
 
 ## Criteria
 
