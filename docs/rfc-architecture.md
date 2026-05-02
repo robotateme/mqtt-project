@@ -5,13 +5,15 @@
 ## Контекст
 
 Проект принимает MQTT-пакеты от устройств, проводит их через интеграционную
-шину и сохраняет интерпретированные данные. Архитектура должна выдерживать
-несколько MQTT topic-групп, tenant/site-сегментацию и отдельные
-Mosquitto-кластеры без изменения downstream-контракта.
+шину, интерпретирует payload и сохраняет данные. Архитектура должна выдерживать
+несколько MQTT topic-групп, tenant/site-сегментацию, отдельные Mosquitto-
+кластеры и будущую декомпозицию `core` на микросервисы без ломки downstream-
+контрактов.
 
 ## Решение
 
-Основной runtime-поток остается таким:
+Текущий runtime остается модульным монолитом вокруг `core` и отдельной шиной
+`bus`:
 
 ```text
 Devices -> Mosquitto cluster(s) -> bus instance(s) -> Redis Streams outbox
@@ -20,6 +22,10 @@ Devices -> Mosquitto cluster(s) -> bus instance(s) -> Redis Streams outbox
                                       -> Mercure events
                                       -> PostgreSQL: users, devices, app data
 ```
+
+Внутри `core` границы строятся по DDD bounded contexts, command/query models,
+domain events и application ports. Это позволяет сначала держать систему в
+одном Laravel runtime, а позже выделять микросервисы по бизнес-границам.
 
 ## Архитектурный стиль
 
@@ -77,92 +83,18 @@ Hexagonal Clean Architecture:
   конфликтует с framework extension points.
 - В PHP-коде глобальные классы импортируются через `use`, без leading slash в
   теле класса.
-- Unit-тесты пишутся на нативном PHPUnit: assertions, test doubles,
-  `createMock()`, `createStub()` и `getMockBuilder()`. Mockery, Prophecy и
-  другие внешние mocking DSL не используются в unit-тестах проекта. Наличие
-  `mockery/mockery` как инфраструктурной dev-зависимости Laravel feature-тестов
-  не является разрешением использовать Mockery в unit-тестах.
 
-## Почему нативный PHPUnit
-
-Unit-тесты проверяют внутренние правила `Domain`, orchestration в `Application`
-и thin adapters без запуска лишнего framework/runtime слоя. Для этого
-достаточно стандартного PHPUnit API.
-
-Решение использовать только нативный PHPUnit в unit-тестах принято по следующим
-причинам:
-
-- PHPUnit уже является обязательным test runner-ом проекта; отдельный mocking
-  DSL добавляет второй язык тестов без необходимости.
-- `createMock()`, `createStub()` и `getMockBuilder()` типизируются понятнее для
-  PHPStan/Psalm, чем fluent DSL внешних mock-библиотек.
-- Тесты остаются ближе к PHP-контрактам: interface, method signature, return
-  value и assertion видны напрямую.
-- Меньше скрытой lifecycle-логики: unit-тесту не нужен глобальный teardown
-  внешнего mock container-а.
-- Unit-тесты должны поощрять простые порты и value objects. Если сценарий
-  требует сложного mocking DSL, это сигнал проверить дизайн зависимости или
-  вынести поведение за application-port.
-- Feature-тесты Laravel могут транзитивно или явно требовать `mockery/mockery`
-  из-за framework tooling. Это инфраструктурная деталь тестового рантайма, а не
-  разрешение использовать Mockery в unit-тестах проекта.
-
-## Будущая декомпозиция core
-
-`core` остается модульным монолитом до тех пор, пока стоимость сетевых
-контрактов, отдельного деплоя и operational overhead не станет ниже стоимости
-совместного процесса. Декомпозиция в микросервисы допускается только по
-bounded contexts, а не по техническим слоям.
-
-Потенциальные границы сервисов:
-
-- Identity/Auth - пользователи, роли, JWT, access policy.
-- Device Registry - устройства, ownership, tenant/site-привязка.
-- Packet Ingestion - прием Kafka-событий от `bus`, нормализация и базовая
-  валидация MQTT payload.
-- Packet Interpretation - правила интерпретации payload, сопоставление полей,
-  доменные события по смыслу пакета.
-- Telemetry Storage/Analytics - запись и чтение ClickHouse, историческая
-  аналитика payload.
-- Realtime Notifications - Mercure/WebSocket-публикация и подписки frontend.
-
-DDD/CQRS/Hexagonal Clean Architecture являются подготовкой к этой
-декомпозиции:
-
-- Bounded context сначала оформляется внутри `core` как отдельный namespace с
-  собственными command/query models, handlers, domain rules и ports.
-- Межконтекстное взаимодействие внутри монолита идет через application-порты,
-  команды, запросы и события, а не через прямой доступ к Eloquent models другого
-  контекста.
-- Command side и query side не смешиваются. При выделении микросервиса command
-  contracts становятся HTTP/Kafka commands, query contracts - отдельными read
-  API или materialized views.
-- Ports становятся service contracts. Infrastructure adapters меняются с
-  in-process Laravel/Eloquent/Queue/Event на HTTP clients, Kafka producers,
-  consumers или dedicated storage adapters без изменения Application-кода.
-- Domain events, которые сегодня проходят через `EventBus`, должны иметь
-  стабильные имена, payload schema и versioning, если становятся integration
-  events между сервисами.
-- Каждый будущий сервис сохраняет hexagonal структуру: inbound adapters
-  принимают HTTP/CLI/Kafka, Application выполняет use cases, Domain содержит
-  правила, Infrastructure реализует outbound ports.
-- Общая база данных не является допустимой интеграцией между выделенными
-  сервисами. После физического разделения каждый сервис владеет своим storage,
-  а синхронизация идет через события, API или read models.
-
-## Event-driven packet scenarios
+## Packet pipeline
 
 Обработка MQTT-пакетов строится как event-driven pipeline. Исходный packet
 event от `bus` остается техническим integration event с неизменным контрактом:
 Kafka key - MQTT topic, Kafka value - исходный MQTT payload. Бизнес-смысл
-появляется позже, в bounded context `Packet Interpretation`.
-
-Базовый поток:
+появляется в bounded context `Packet Interpretation`.
 
 ```text
 bus -> Kafka mqtt.events -> Packet Ingestion -> PacketReceived
     -> Packet Interpretation -> Domain events
-    -> Alerting/Notifications/Analytics/Realtime subscribers
+    -> Alerting / Notifications / Analytics / Realtime subscribers
 ```
 
 Правила:
@@ -174,15 +106,18 @@ bus -> Kafka mqtt.events -> Packet Ingestion -> PacketReceived
   `DeviceStateChanged`, `PayloadFieldDiscovered`, `TelemetryAnomalyDetected`.
 - События должны иметь стабильное имя, версию schema, `event_id`,
   `correlation_id`, `causation_id`, device id, tenant/site и timestamp.
+- Повторная доставка события считается нормой. Все handlers обязаны быть
+  идемпотентными по `event_id` или business key.
 - Подписчики не читают чужие базы напрямую. Они получают событие, обращаются к
   собственным read models или используют публичный query/API контракт другого
   bounded context.
-- Повторная доставка события считается нормой. Все handlers обязаны быть
-  идемпотентными по `event_id` или business key.
-- Fan-out в несколько каналов выполняется через отдельные subscribers/adapters,
-  а не через один handler с жестко зашитыми интеграциями.
 
-Пример alert-сценария превышения температуры:
+## Alerts
+
+Alert-сценарии являются продолжением packet pipeline. Например, превышение
+температуры не должно зашиваться в Kafka consumer или storage adapter. Consumer
+публикует факт пакета, интерпретатор превращает его в доменное событие, а
+Alerting/Notifications реагируют через собственные handlers.
 
 ```text
 Temperature packet
@@ -201,14 +136,16 @@ Application-код публикует команды/события уровня
 конкретный transport выбирается policy/routing rule-ом: severity, tenant,
 device group, user preferences, quiet hours, escalation policy.
 
-Alert fan-out может быть простой choreography, если достаточно независимой
-доставки в каналы. Если требуется общий результат, порядок шагов, escalation,
-acknowledgement, timeout или компенсация, сценарий оформляется как Saga.
+Fan-out в несколько каналов выполняется через отдельные subscribers/adapters, а
+не через один handler с жестко зашитыми интеграциями. Если достаточно
+независимой доставки в каналы, допустима event choreography. Если требуется
+общий результат, порядок шагов, escalation, acknowledgement, timeout или
+компенсация, сценарий оформляется как Saga.
 
 ## Saga orchestration
 
-При разделении `core` на микросервисы сценарии, которые меняют состояние
-нескольких bounded contexts, выполняются через Saga. Распределенные транзакции
+Saga нужна для сценариев, которые меняют состояние нескольких bounded contexts
+или требуют управляемого многошагового процесса. Распределенные транзакции
 между сервисами не используются: каждый сервис фиксирует только собственное
 состояние, а согласованность достигается через orchestration, события,
 идемпотентность и compensating actions.
@@ -244,7 +181,7 @@ Saga orchestrator является application service отдельного boun
 - Observability обязательна: logs, metrics и traces должны включать
   `saga_name`, `saga_id`, `correlation_id`, `step`, `status`.
 
-Примеры будущих Saga-сценариев:
+Примеры Saga-сценариев:
 
 - Регистрация устройства: Device Registry создает устройство, Identity/Auth
   проверяет ownership/tenant, Realtime Notifications публикует событие о новом
@@ -264,14 +201,85 @@ Saga не должна становиться общим сервисом биз
 начинает принимать решения за несколько доменов, границы bounded contexts
 пересматриваются в отдельном RFC.
 
+## Будущая декомпозиция core
+
+`core` остается модульным монолитом до тех пор, пока стоимость сетевых
+контрактов, отдельного деплоя и operational overhead не станет ниже стоимости
+совместного процесса. Декомпозиция в микросервисы допускается только по
+bounded contexts, а не по техническим слоям.
+
+Потенциальные границы сервисов:
+
+- Identity/Auth - пользователи, роли, JWT, access policy.
+- Device Registry - устройства, ownership, tenant/site-привязка.
+- Packet Ingestion - прием Kafka-событий от `bus`, нормализация и базовая
+  валидация MQTT payload.
+- Packet Interpretation - правила интерпретации payload, сопоставление полей,
+  доменные события по смыслу пакета.
+- Telemetry Storage/Analytics - запись и чтение ClickHouse, историческая
+  аналитика payload.
+- Alerting/Notifications - alert incidents, routing policy, SMS, Telegram,
+  Discord, email, push и другие каналы доставки.
+- Realtime Notifications - Mercure/WebSocket-публикация и подписки frontend.
+
+DDD/CQRS/Hexagonal Clean Architecture являются подготовкой к этой
+декомпозиции:
+
+- Bounded context сначала оформляется внутри `core` как отдельный namespace с
+  собственными command/query models, handlers, domain rules и ports.
+- Межконтекстное взаимодействие внутри монолита идет через application-порты,
+  команды, запросы и события, а не через прямой доступ к Eloquent models другого
+  контекста.
+- Command side и query side не смешиваются. При выделении микросервиса command
+  contracts становятся HTTP/Kafka commands, query contracts - отдельными read
+  API или materialized views.
+- Ports становятся service contracts. Infrastructure adapters меняются с
+  in-process Laravel/Eloquent/Queue/Event на HTTP clients, Kafka producers,
+  consumers или dedicated storage adapters без изменения Application-кода.
+- Domain events, которые сегодня проходят через `EventBus`, должны иметь
+  стабильные имена, payload schema и versioning, если становятся integration
+  events между сервисами.
+- Каждый будущий сервис сохраняет hexagonal структуру: inbound adapters
+  принимают HTTP/CLI/Kafka, Application выполняет use cases, Domain содержит
+  правила, Infrastructure реализует outbound ports.
+- Общая база данных не является допустимой интеграцией между выделенными
+  сервисами. После физического разделения каждый сервис владеет своим storage,
+  а синхронизация идет через события, API или read models.
+
 Порядок выделения сервиса:
 
 1. Зафиксировать bounded context и ubiquitous language в RFC.
 2. Убрать прямые зависимости Application-кода от чужих infrastructure classes.
-3. Описать commands, queries, events и failure semantics.
+3. Описать commands, queries, events, Saga/failure semantics и observability.
 4. Добавить контрактные тесты на текущий in-process adapter.
 5. Заменить adapter на сетевой или messaging transport.
 6. Только после этого отделять runtime, deploy pipeline и storage.
+
+## Unit-тесты
+
+Unit-тесты пишутся на нативном PHPUnit: assertions, test doubles,
+`createMock()`, `createStub()` и `getMockBuilder()`. Mockery, Prophecy и другие
+внешние mocking DSL не используются в unit-тестах проекта. Наличие
+`mockery/mockery` как инфраструктурной dev-зависимости Laravel feature-тестов
+не является разрешением использовать Mockery в unit-тестах.
+
+Решение использовать только нативный PHPUnit в unit-тестах принято по следующим
+причинам:
+
+- PHPUnit уже является обязательным test runner-ом проекта; отдельный mocking
+  DSL добавляет второй язык тестов без необходимости.
+- `createMock()`, `createStub()` и `getMockBuilder()` типизируются понятнее для
+  PHPStan/Psalm, чем fluent DSL внешних mock-библиотек.
+- Тесты остаются ближе к PHP-контрактам: interface, method signature, return
+  value и assertion видны напрямую.
+- Меньше скрытой lifecycle-логики: unit-тесту не нужен глобальный teardown
+  внешнего mock container-а.
+- Unit-тесты должны поощрять простые порты и value objects. Если сценарий
+  требует сложного mocking DSL, это сигнал проверить дизайн зависимости или
+  вынести поведение за application-port.
+- Feature-тесты Laravel могут транзитивно или явно требовать `mockery/mockery`
+  из-за framework tooling. Это инфраструктурная деталь тестового рантайма, а не
+  разрешение использовать Mockery в unit-тестах проекта.
 
 ## Criteria
 
