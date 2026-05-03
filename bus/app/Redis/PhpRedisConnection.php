@@ -29,6 +29,17 @@ final readonly class PhpRedisConnection implements RedisConnectionPort
     #[Override]
     public function command(string $command, string|int ...$arguments): mixed
     {
-        return $this->redis->rawCommand($command, ...$arguments);
+        /** @psalm-suppress MixedAssignment Redis rawCommand can return command-specific scalar or nested shapes. */
+        $result = $this->redis->rawCommand($command, ...$arguments);
+
+        if ($result === false) {
+            $lastError = $this->redis->getLastError();
+
+            if (is_string($lastError) && $lastError !== '') {
+                return $lastError;
+            }
+        }
+
+        return $result;
     }
 }

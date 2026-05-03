@@ -72,6 +72,7 @@ directory`, сначала проверьте владельца и права `
 | Kafka | `9092` |
 | ClickHouse HTTP | `8123` |
 | ClickHouse native | `9000` |
+| Mosquitto MQTT | Docker network `1883` |
 | Mosquitto WebSocket | `9001` |
 | Grafana HTTP | `3002` |
 | Prometheus HTTP | `9090` |
@@ -121,6 +122,12 @@ Prometheus скрейпит:
 Откройте `http://localhost:3002`, войдите как `admin` / `admin` и используйте
 Explore с datasource `Prometheus` для нагрузки на пайплайн пакетов.
 
+Grafana также автоматически импортирует dashboard `MQTT Bus Packets` в папку
+`MQTT Project`. Он объединяет:
+
+- Loki-логи входящих MQTT-пакетов от Mosquitto.
+- Prometheus-графики скорости приема MQTT и публикации в Kafka.
+
 Базовые PromQL-запросы:
 
 ```promql
@@ -154,11 +161,16 @@ bus_worker_up
 Promtail читает Docker JSON logs контейнеров из `/var/lib/docker/containers` и
 отправляет их в Loki.
 
+`bus` пишет в stdout структурированное событие `mqtt_packet_received` для
+каждого MQTT-пакета, полученного от Mosquitto. В событии есть `bus_id`, `topic`,
+`payload_bytes`, `payload_preview`, `payload_sha256` и `retained`.
+
 Откройте `http://localhost:3002`, войдите как `admin` / `admin` и используйте
 Explore с datasource `Loki`. Полезные фильтры:
 
 ```logql
 {job="docker"}
+{job="docker"} |= "mqtt_packet_received" | json
 {job="docker"} |= "php-worker"
 {job="docker"} |= "kafka"
 ```

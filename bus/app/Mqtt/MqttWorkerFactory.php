@@ -6,6 +6,7 @@ namespace Bus\Mqtt;
 
 use Bus\Config\Value\BusConfig;
 use Bus\Kafka\KafkaPublisher;
+use Bus\Logging\JsonPacketLogger;
 use Bus\Metrics\MetricsFactory;
 use Bus\Outbox\OutboxPublisher;
 use Bus\Outbox\RedisOutboxStore;
@@ -57,6 +58,7 @@ final readonly class MqttWorkerFactory
             new OutboxPublisher($outbox, $publisher, $config->outbox->batchSize, $metrics),
             new RuntimeStatus($config->runtime->statusFile, $config->runtime->statusIntervalMs, $config->app->busId),
             $metrics,
+            new JsonPacketLogger($config->app->busId),
         );
     }
 }

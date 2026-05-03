@@ -7,6 +7,8 @@ namespace Bus\Mqtt;
 use Bus\Contracts\MetricsRecorder;
 use Bus\Contracts\MqttClientPort;
 use Bus\Contracts\OutboxStorePort;
+use Bus\Contracts\PacketLogger;
+use Bus\Logging\NoopPacketLogger;
 use Bus\Metrics\NoopMetricsRecorder;
 use Bus\Outbox\OutboxPublisher;
 use Bus\Runtime\RuntimeStatus;
@@ -30,6 +32,7 @@ final class MqttWorker
         private OutboxPublisher $outboxPublisher,
         private RuntimeStatus $status,
         private MetricsRecorder $metrics = new NoopMetricsRecorder(),
+        private PacketLogger $packetLogger = new NoopPacketLogger(),
     ) {
         $this->startedAt = gmdate('c');
     }
@@ -71,8 +74,9 @@ final class MqttWorker
      */
     private function handleMqttMessage(string $topic, string $message, bool $retained, array $matchedWildcards): void
     {
-        unset($retained, $matchedWildcards);
+        unset($matchedWildcards);
 
+        $this->packetLogger->received($topic, $message, strlen($message), $retained);
         $this->consume($topic, $message);
     }
 

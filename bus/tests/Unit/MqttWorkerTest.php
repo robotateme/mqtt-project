@@ -8,7 +8,9 @@ use Bus\Contracts\KafkaProducerPort;
 use Bus\Contracts\MetricsRecorder;
 use Bus\Contracts\MqttClientPort;
 use Bus\Contracts\OutboxStorePort;
+use Bus\Contracts\PacketLogger;
 use Bus\Kafka\KafkaPublisher;
+use Bus\Logging\JsonPacketLogger;
 use Bus\Mqtt\MqttWorker;
 use Bus\Outbox\OutboxMessage;
 use Bus\Outbox\OutboxPublisher;
@@ -76,6 +78,7 @@ final class MqttWorkerTest extends TestCase
         $outbox = new WorkerFakeOutboxStore();
         $producer = new WorkerFakeKafkaProducer();
         $metrics = new WorkerFakeMetricsRecorder();
+        $packetLogger = new WorkerFakePacketLogger();
         $statusFile = sys_get_temp_dir() . '/bus-worker-status-' . bin2hex(random_bytes(6)) . '.json';
         $worker = new MqttWorker(
             $mqtt,
@@ -92,6 +95,7 @@ final class MqttWorkerTest extends TestCase
             ),
             status: new RuntimeStatus($statusFile, intervalMs: 0, busId: 'bus-test'),
             metrics: $metrics,
+            packetLogger: $packetLogger,
         );
 
         $worker->run();
@@ -118,10 +122,48 @@ final class MqttWorkerTest extends TestCase
         self::assertSame(2, $metrics->mqttMessages);
         self::assertSame(2, $metrics->outboxPublishes);
         self::assertSame([true], $metrics->workerUpValues);
+        self::assertSame([
+            [
+                'topic' => 'devices/device-42/telemetry',
+                'payload' => '{"temperature":21.5}',
+                'payloadBytes' => 20,
+                'retained' => false,
+            ],
+            [
+                'topic' => 'devices/device-43/telemetry',
+                'payload' => '{"temperature":22.0}',
+                'payloadBytes' => 20,
+                'retained' => false,
+            ],
+        ], $packetLogger->receivedPackets);
 
         $worker->stop();
         self::assertSame([true, false], $metrics->workerUpValues);
         unlink($statusFile);
+    }
+
+    public function test_packet_logger_writes_structured_json_line(): void
+    {
+        $stream = fopen('php://temp', 'wb+');
+        self::assertIsResource($stream);
+
+        $logger = new JsonPacketLogger('bus-test', $stream, payloadPreviewBytes: 15);
+        $logger->received('devices/device-42/telemetry', '{"temperature":21.5}', 20, retained: true);
+
+        rewind($stream);
+        $line = fgets($stream);
+        self::assertIsString($line);
+
+        $record = json_decode($line, true, flags: JSON_THROW_ON_ERROR);
+        self::assertSame('info', $record['level']);
+        self::assertSame('mqtt_packet_received', $record['event']);
+        self::assertSame('mosquitto', $record['source']);
+        self::assertSame('bus-test', $record['bus_id']);
+        self::assertSame('devices/device-42/telemetry', $record['topic']);
+        self::assertSame(20, $record['payload_bytes']);
+        self::assertSame('{"temperature":', $record['payload_preview']);
+        self::assertSame(hash('sha256', '{"temperature":21.5}'), $record['payload_sha256']);
+        self::assertTrue($record['retained']);
     }
 }
 
@@ -275,5 +317,23 @@ final class WorkerFakeMetricsRecorder implements MetricsRecorder
     public function setWorkerUp(bool $up): void
     {
         $this->workerUpValues[] = $up;
+    }
+}
+
+final class WorkerFakePacketLogger implements PacketLogger
+{
+    /**
+     * @var list<array{topic: string, payload: string, payloadBytes: int, retained: bool}>
+     */
+    public array $receivedPackets = [];
+
+    public function received(string $topic, string $payload, int $payloadBytes, bool $retained): void
+    {
+        $this->receivedPackets[] = [
+            'topic' => $topic,
+            'payload' => $payload,
+            'payloadBytes' => $payloadBytes,
+            'retained' => $retained,
+        ];
     }
 }

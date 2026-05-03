@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: MQTT Project
+    orgId: 1
+    folder: MQTT Project
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/json

@@ -33,6 +33,9 @@ status, Redis outbox metadata and the default Redis Stream consumer name. Keep
 `OUTBOX_BUS_ID` and `OUTBOX_CONSUMER` empty unless a legacy deployment needs to
 override them explicitly.
 
+In Laradock, `mosquitto:1883` is the internal MQTT listener used by the bus and
+test publisher. Host-facing WebSocket MQTT remains available on port `9001`.
+
 ## Prometheus
 
 The bus exposes Prometheus metrics at `GET /metrics`. Metrics are stored in
@@ -65,6 +68,29 @@ bus_kafka_out_queue
 rate(bus_kafka_backpressure_total[1m])
 histogram_quantile(0.95, rate(bus_mqtt_processing_seconds_bucket[5m]))
 bus_worker_up
+```
+
+## Packet logs
+
+The worker writes one structured JSON line to stdout for every MQTT packet
+received from Mosquitto. Docker stores the line in container logs, Promtail ships
+it to Loki, and Grafana shows it in the `MQTT Bus Packets` dashboard.
+
+The log event is `mqtt_packet_received` and includes:
+
+- `source` - `mosquitto`.
+- `bus_id` - current bus instance id.
+- `topic` - MQTT topic.
+- `payload_bytes` - raw payload size in bytes.
+- `payload_preview` - shortened payload preview for debugging.
+- `payload_sha256` - full payload hash for correlation without storing the whole
+  body in logs.
+- `retained` - MQTT retained flag.
+
+Useful LogQL query:
+
+```logql
+{job="docker"} |= "mqtt_packet_received" | json
 ```
 
 ## Code layout
